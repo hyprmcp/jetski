@@ -12,17 +12,18 @@ services:
 configs:
   config.yaml:
     content: |
-      issuer: http://127.0.0.1:5556/dex
+      issuer: http://localhost:5556/dex
       web:
         http: 0.0.0.0:5556
+        allowedOrigins: ['*']
       storage:
         type: sqlite3
       staticClients:
-        - id: web-app
-          redirectURIs:
-          - 'http://localhost:4200/callback'
+        - id: ui
           name: 'Jetski Development'
-          secret: web-app-secret
+          public: true
+          redirectURIs:
+          - 'http://localhost:4200'
       enablePasswordDB: true
       staticPasswords:
         - email: "admin@example.com"
