@@ -15,7 +15,7 @@ async function initializeOAuth() {
   console.log('configure');
   oauthService.configure({
     issuer: 'http://localhost:5556/dex',
-    redirectUri: location.origin + '/home',
+    redirectUri: location.origin,
     clientId: 'ui',
     scope: 'openid profile email',
     responseType: 'code',
