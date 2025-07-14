@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/coreos/go-oidc/v3/oidc"
 	"net/http"
 	"syscall"
 
@@ -21,6 +22,7 @@ type Registry struct {
 	logger           *zap.Logger
 	execDbMigrations bool
 	tracers          *tracers.Tracers
+	oidcProvider     *oidc.Provider
 }
 
 func New(ctx context.Context, options ...RegistryOption) (*Registry, error) {
@@ -57,6 +59,12 @@ func newRegistry(ctx context.Context, reg *Registry) (*Registry, error) {
 		reg.dbPool = db
 	}
 
+	if oidcProvider, err := reg.createOIDCProvider(ctx); err != nil {
+		return nil, err
+	} else {
+		reg.oidcProvider = oidcProvider
+	}
+
 	return reg, nil
 }
 
@@ -81,6 +89,7 @@ func (r *Registry) GetRouter() http.Handler {
 		r.GetLogger(),
 		r.GetDbPool(),
 		r.GetTracers(),
+		r.GetOIDCProvider(),
 	)
 }
 

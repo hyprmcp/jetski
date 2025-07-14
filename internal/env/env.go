@@ -12,6 +12,8 @@ import (
 
 var (
 	databaseUrl                   string
+	oidcUrl                       string
+	oidcClientID                  string
 	databaseMaxConns              *int
 	sentryDSN                     string
 	sentryDebug                   bool
@@ -38,6 +40,8 @@ func Initialize() {
 	}
 
 	databaseUrl = envutil.RequireEnv("DATABASE_URL")
+	oidcUrl = envutil.RequireEnv("OIDC_URL")
+	oidcClientID = envutil.RequireEnv("OIDC_CLIENT_ID")
 	databaseMaxConns = envutil.GetEnvParsedOrNil("DATABASE_MAX_CONNS", strconv.Atoi)
 	enableQueryLogging = envutil.GetEnvParsedOrDefault("ENABLE_QUERY_LOGGING", strconv.ParseBool, false)
 	serverShutdownDelayDuration = envutil.GetEnvParsedOrNil("SERVER_SHUTDOWN_DELAY_DURATION", envparse.PositiveDuration)
@@ -69,6 +73,14 @@ func Initialize() {
 
 func DatabaseUrl() string {
 	return databaseUrl
+}
+
+func OIDCUrl() string {
+	return oidcUrl
+}
+
+func OIDCClientID() string {
+	return oidcClientID
 }
 
 // DatabaseMaxConns allows to override the MaxConns parameter of the pgx pool config.

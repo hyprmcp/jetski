@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jetski-sh/jetski/internal/env"
 	"github.com/jetski-sh/jetski/internal/frontend"
 	"github.com/jetski-sh/jetski/internal/handlers"
 	"github.com/jetski-sh/jetski/internal/middleware"
@@ -16,7 +17,7 @@ import (
 )
 
 func NewRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers,
+	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, oidcProvider *oidc.Provider,
 ) http.Handler {
 	router := chi.NewRouter()
 	router.Use(
@@ -25,39 +26,33 @@ func NewRouter(
 		// Reject bodies larger than 1MiB
 		chimiddleware.RequestSize(1048576),
 	)
-	router.Mount("/api", ApiRouter(logger, db, tracers))
+	router.Mount("/api", ApiRouter(logger, db, tracers, oidcProvider))
 	router.Mount("/internal", InternalRouter())
 	router.Mount("/", FrontendRouter())
 	return router
 }
 
 func ApiRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers,
+	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, oidcProvider *oidc.Provider,
 ) http.Handler {
 	r := chi.NewRouter()
 	r.Use(
 		chimiddleware.RequestID,
 		chimiddleware.RealIP,
-		// middleware.Sentry,
+		middleware.Sentry,
 		middleware.LoggerCtxMiddleware(logger),
-		// middleware.LoggingMiddleware,
+		middleware.LoggingMiddleware,
 		middleware.ContextInjectorMiddleware(db),
 	)
 
-	provider, err := oidc.NewProvider(context.Background(), "http://localhost:5556/dex")
-	if err != nil {
-		// handle error
-	}
-	verifier := provider.Verifier(&oidc.Config{ClientID: "ui"})
-
 	r.Route("/v1", func(r chi.Router) {
 		r.Use(
-		/*middleware.OTEL(tracers.Default()),
-		  middleware.SentryUser,
-		  // TODO auth auth.Authentication.Middleware,
-		  httprate.Limit(30, 1*time.Second, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
-		  httprate.Limit(60, 1*time.Minute, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
-		  httprate.Limit(2000, 1*time.Hour, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),*/
+			middleware.OTEL(tracers.Default()),
+			/* middleware.SentryUser,
+			   // TODO auth auth.Authentication.Middleware,
+			   httprate.Limit(30, 1*time.Second, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
+			   httprate.Limit(60, 1*time.Minute, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
+			   httprate.Limit(2000, 1*time.Hour, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),*/
 		)
 
 		r.Get("/whoami", func(w http.ResponseWriter, r *http.Request) {
@@ -67,6 +62,7 @@ func ApiRouter(
 			if len(parts) == 2 {
 				rawIDToken = parts[1]
 			}
+			verifier := oidcProvider.Verifier(&oidc.Config{ClientID: env.OIDCClientID()})
 			idToken, err := verifier.Verify(context.Background(), rawIDToken)
 			if err != nil {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -79,7 +75,7 @@ func ApiRouter(
 			}
 
 			w.WriteHeader(200)
-			w.Write([]byte(claims.Email))
+			_, _ = w.Write([]byte(claims.Email))
 		})
 
 		// TODO routes
