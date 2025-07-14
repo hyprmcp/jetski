@@ -1,2 +1,8 @@
 [tools]
 node = "24"
+
+[env]
+JETSKI_ENV = '.env.development.local'
+
+[tasks.serve]
+run = "go run cmd/main.go serve"
