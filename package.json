@@ -1,9 +1,14 @@
 {
   "name": "jetski",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "buildconfig": "node hack/update-frontend-version.js",
+    "sentry-upload": "hack/sentry-release.sh",
+    "prestart": "npm run buildconfig",
+    "prebuild": "npm run buildconfig",
     "build": "ng build",
     "build:prod": "npm run build -- --configuration=production",
     "build:dev": "npm run build -- --configuration=development",
@@ -30,6 +35,7 @@
     "@angular/forms": "^20.0.0",
     "@angular/platform-browser": "^20.0.0",
     "@angular/router": "^20.0.0",
+    "@sentry/angular": "^9.38.0",
     "angular-oauth2-oidc": "^20.0.2",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
