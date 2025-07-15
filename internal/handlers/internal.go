@@ -22,7 +22,6 @@ func getFrontendEnvironmentHandler() http.HandlerFunc {
 		PosthogToken          *string  `json:"posthogToken,omitempty"`
 		PosthogAPIHost        *string  `json:"posthogApiHost,omitempty"`
 		PosthogUIHost         *string  `json:"posthogUiHost,omitempty"`
-		RegistryHost          string   `json:"registryHost"`
 	}{
 		SentryDSN:             env.FrontendSentryDSN(),
 		SentryEnvironment:     env.SentryEnvironment(),
