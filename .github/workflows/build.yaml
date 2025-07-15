@@ -103,6 +103,8 @@ jobs:
           dist/jetski migrate --down
         env:
           DATABASE_URL: postgres://test-user:test-password@localhost:5432/jetski
+          OIDC_URL: "-"
+          OIDC_CLIENT_ID: "-"
 
       - name: Generate SBOM for frontend project
         uses: anchore/sbom-action@cee1b8e05ae5b2593a75e197229729eabaa9f8ec # v0.20.2
