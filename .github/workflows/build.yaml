@@ -86,7 +86,7 @@ jobs:
           VERSION: ${{ github.ref_name }}
 
       - name: Build application
-        run: go build -ldflags="$LDFLAGS" -o dist/jetski ./cmd/
+        run: go build -ldflags="$LDFLAGS" -o dist/jetski .
         env:
           CGO_ENABLED: '0'
           LDFLAGS: >-

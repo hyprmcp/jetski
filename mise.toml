@@ -14,4 +14,4 @@ depends = ["tidy"]
 run = "golangci-lint run"
 
 [tasks.serve]
-run = "go run cmd/main.go serve"
+run = "go run . serve"

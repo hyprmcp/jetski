@@ -1,4 +1,4 @@
-package serve
+package cmd
 
 import (
 	"context"
@@ -14,28 +14,29 @@ import (
 	"github.com/spf13/cobra"
 )
 
-type ServeOptions struct{ Migrate bool }
+type serveOptions struct{ Migrate bool }
 
-var serveOpts = ServeOptions{Migrate: true}
+func NewServeCommand() *cobra.Command {
+	opts := serveOptions{
+		Migrate: true,
+	}
 
-var ServeCommand = &cobra.Command{
-	Use:    "serve",
-	Short:  "run the jetski server",
-	Args:   cobra.NoArgs,
-	PreRun: func(cmd *cobra.Command, args []string) { env.Initialize() },
-	Run: func(cmd *cobra.Command, args []string) {
-		runServe(cmd.Context(), serveOpts)
-	},
+	cmd := &cobra.Command{
+		Use:    "serve",
+		Short:  "run the jetski server",
+		Args:   cobra.NoArgs,
+		PreRun: func(cmd *cobra.Command, args []string) { env.Initialize() },
+		Run: func(cmd *cobra.Command, args []string) {
+			runServe(cmd.Context(), opts)
+		},
+	}
+
+	cmd.Flags().BoolVar(&opts.Migrate, "migrate", opts.Migrate, "run database migrations before starting the server")
+
+	return cmd
 }
 
-func init() {
-	ServeCommand.Flags().BoolVar(&serveOpts.Migrate, "migrate", serveOpts.Migrate,
-		"run database migrations before starting the server")
-
-	RootCommand.AddCommand(ServeCommand)
-}
-
-func runServe(ctx context.Context, opts ServeOptions) {
+func runServe(ctx context.Context, opts serveOptions) {
 	util.Must(sentry.Init(sentry.ClientOptions{
 		Dsn:              env.SentryDSN(),
 		Debug:            env.SentryDebug(),

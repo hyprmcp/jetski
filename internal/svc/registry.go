@@ -25,6 +25,11 @@ type Registry struct {
 	oidcProvider     *oidc.Provider
 }
 
+func NewDefault(ctx context.Context) (*Registry, error) {
+	var reg Registry
+	return newRegistry(ctx, &reg)
+}
+
 func New(ctx context.Context, options ...RegistryOption) (*Registry, error) {
 	var reg Registry
 	for _, opt := range options {
