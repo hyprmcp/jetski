@@ -7,7 +7,7 @@ if [ ! -d "$MIGRATIONS_DIR" ]; then
   exit 1
 fi
 
-max_version=0
+max_version=-1
 
 while IFS= read -r file; do
   if [[ $file =~ ^([0-9]+) ]]; then
@@ -21,7 +21,7 @@ while IFS= read -r file; do
   fi
 done < <(ls "$MIGRATIONS_DIR")
 
-if [ "$max_version" -eq 0 ]; then
+if [ "$max_version" -eq -1 ]; then
   echo "Error: No migration files found in $MIGRATIONS_DIR"
   exit 1
 fi
