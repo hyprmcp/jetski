@@ -5,7 +5,9 @@ export async function getRemoteEnvironment(): Promise<RemoteEnvironment> {
   if (cached) {
     try {
       return JSON.parse(cached);
-    } catch (e) {}
+    } catch (e) {
+      console.error('failed to parse remote environment json', e);
+    }
   }
   const result = await (await fetch('/internal/environment')).json();
   sessionStorage['remoteEnvironment'] = JSON.stringify(result);
