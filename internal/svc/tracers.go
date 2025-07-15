@@ -2,8 +2,6 @@ package svc
 
 import (
 	"context"
-	"fmt"
-
 	sentryotel "github.com/getsentry/sentry-go/otel"
 	"github.com/go-logr/zapr"
 	"github.com/jetski-sh/jetski/internal/env"
@@ -45,38 +43,5 @@ func (reg *Registry) createTracer(ctx context.Context) (*tracers.Tracers, error)
 	otel.SetTracerProvider(tracers.DefaultProvider)
 	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(tmps...))
 
-	if cfg := env.OtelAgentSampler(); cfg != nil {
-		tracers.AgentProvider = trace.NewTracerProvider(append(
-			tpopts,
-			trace.WithSampler(samplerFromConfig(cfg)),
-		)...)
-	}
-
-	if cfg := env.OtelRegistrySampler(); cfg != nil {
-		tracers.RegistryProvider = trace.NewTracerProvider(append(
-			tpopts,
-			trace.WithSampler(samplerFromConfig(cfg)),
-		)...)
-	}
-
 	return &tracers, nil
-}
-
-func samplerFromConfig(cfg *env.SamplerConfig) trace.Sampler {
-	switch cfg.Sampler {
-	case env.SamplerAlwaysOn:
-		return trace.AlwaysSample()
-	case env.SamplerAlwaysOff:
-		return trace.NeverSample()
-	case env.SamplerTraceIDRatio:
-		return trace.TraceIDRatioBased(cfg.Arg)
-	case env.SamplerParentBasedAlwaysOn:
-		return trace.ParentBased(trace.AlwaysSample())
-	case env.SamplerParsedBasedAlwaysOff:
-		return trace.ParentBased(trace.NeverSample())
-	case env.SamplerParentBasedTraceIDRatio:
-		return trace.ParentBased(trace.TraceIDRatioBased(cfg.Arg))
-	default:
-		panic(fmt.Sprintf("invalid SamplerType: %v", cfg.Sampler))
-	}
 }

@@ -18,8 +18,6 @@ var (
 	sentryDSN                     string
 	sentryDebug                   bool
 	sentryEnvironment             string
-	otelAgentSampler              *SamplerConfig
-	otelRegistrySampler           *SamplerConfig
 	otelExporterSentryEnabled     bool
 	otelExporterOtlpEnabled       bool
 	enableQueryLogging            bool
@@ -51,18 +49,6 @@ func Initialize() {
 	sentryEnvironment = envutil.GetEnv("SENTRY_ENVIRONMENT")
 	otelExporterSentryEnabled = envutil.GetEnvParsedOrDefault("OTEL_EXPORTER_SENTRY_ENABLED", strconv.ParseBool, false)
 	otelExporterOtlpEnabled = envutil.GetEnvParsedOrDefault("OTEL_EXPORTER_OTLP_ENABLED", strconv.ParseBool, false)
-	if s := envutil.GetEnvParsedOrNil("OTEL_AGENT_SAMPLER", parseSamplerType); s != nil {
-		otelAgentSampler = &SamplerConfig{
-			Sampler: *s,
-			Arg:     envutil.GetEnvParsedOrDefault("OTEL_AGENT_SAMPLER_ARG", envparse.Float, 1.0),
-		}
-	}
-	if s := envutil.GetEnvParsedOrNil("OTEL_REGISTRY_SAMPLER", parseSamplerType); s != nil {
-		otelRegistrySampler = &SamplerConfig{
-			Sampler: *s,
-			Arg:     envutil.GetEnvParsedOrDefault("OTEL_REGISTRY_SAMPLER_ARG", envparse.Float, 1.0),
-		}
-	}
 
 	frontendSentryDSN = envutil.GetEnvOrNil("FRONTEND_SENTRY_DSN")
 	frontendSentryTraceSampleRate = envutil.GetEnvParsedOrNil("FRONTEND_SENTRY_TRACE_SAMPLE_RATE", envparse.Float)
@@ -129,14 +115,6 @@ func FrontendPosthogUIHost() *string {
 
 func ServerShutdownDelayDuration() *time.Duration {
 	return serverShutdownDelayDuration
-}
-
-func OtelAgentSampler() *SamplerConfig {
-	return otelAgentSampler
-}
-
-func OtelRegistrySampler() *SamplerConfig {
-	return otelRegistrySampler
 }
 
 func OtelExporterSentryEnabled() bool {
