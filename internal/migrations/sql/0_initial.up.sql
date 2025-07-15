@@ -64,3 +64,26 @@ CREATE TABLE MCPServerLog (
 CREATE INDEX fk_MCPServerLog_deployment_revision_id ON MCPServerLog (deployment_revision_id);
 CREATE INDEX fk_MCPServerLog_organization_id ON MCPServerLog (organization_id);
 CREATE INDEX fk_MCPServerLog_user_account_id ON MCPServerLog (user_account_id);
+
+CREATE TYPE CONTEXT_PROPERTY_TYPE AS ENUM ('string', 'number', 'boolean');
+
+CREATE TABLE ContextProperty (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  project_id UUID NOT NULL REFERENCES Project (id),
+  type CONTEXT_PROPERTY_TYPE NOT NULL,
+  name TEXT NOT NULL,
+  required BOOL NOT NULL DEFAULT FALSE
+);
+CREATE INDEX fk_ContextProperty_project_id ON ContextProperty (project_id);
+
+CREATE TABLE Context (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
+  auth_token_digest TEXT NOT NULL,
+  user_account_id UUID NOT NULL REFERENCES UserAccount (id),
+  context_property_id UUID NOT NULL REFERENCES ContextProperty(id),
+  context_property_value JSONB
+);
+CREATE INDEX fk_Context_user_account_id ON Context (user_account_id);
+CREATE INDEX fk_Context_context_property_id ON Context (context_property_id);

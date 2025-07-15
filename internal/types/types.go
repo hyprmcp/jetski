@@ -68,3 +68,29 @@ type MCPServerLog struct {
 	ToolResponse         *string    `db:"tool_response" json:"-"`
 	UserAgent            *string    `db:"user_agent" json:"userAgent"`
 }
+
+type ContextPropertyType string
+
+const (
+	ContextPropertyTypeString  ContextPropertyType = "string"
+	ContextPropertyTypeNumber  ContextPropertyType = "number"
+	ContextPropertyTypeBoolean ContextPropertyType = "boolean"
+)
+
+type ContextProperty struct {
+	ID        uuid.UUID           `db:"id" json:"id"`
+	CreatedAt time.Time           `db:"created_at" json:"createdAt"`
+	ProjectID uuid.UUID           `db:"project_id" json:"projectId"`
+	Type      ContextPropertyType `db:"type" json:"type"`
+	Name      string              `db:"name" json:"name"`
+	Required  bool                `db:"required" json:"required"`
+}
+
+type Context struct {
+	ID                   uuid.UUID `db:"id" json:"id"`
+	CreatedAt            time.Time `db:"created_at" json:"createdAt"`
+	AuthTokenDigest      string    `db:"auth_token_digest" json:"authTokenDigest"`
+	UserAccountID        uuid.UUID `db:"user_account_id" json:"userAccountId"`
+	ContextPropertyID    uuid.UUID `db:"context_property_id" json:"contextPropertyId"`
+	ContextPropertyValue any       `db:"context_property_value" json:"contextPropertyValue"`
+}

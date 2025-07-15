@@ -1,3 +1,12 @@
+DROP INDEX IF EXISTS fk_Context_context_property_id;
+DROP INDEX IF EXISTS fk_Context_user_account_id;
+DROP TABLE IF EXISTS Context;
+
+DROP INDEX IF EXISTS fk_ContextProperty_project_id;
+DROP TABLE IF EXISTS ContextProperty;
+
+DROP TYPE IF EXISTS CONTEXT_PROPERTY_TYPE;
+
 DROP INDEX IF EXISTS fk_MCPServerLog_user_id;
 DROP INDEX IF EXISTS fk_MCPServerLog_organization_id;
 DROP INDEX IF EXISTS fk_MCPServerLog_deployment_revision_id;
