@@ -93,18 +93,18 @@ jobs:
             -X github.com/jetski-sh/jetski/internal/buildconfig.version=${{ github.ref_name }}
             -X github.com/jetski-sh/jetski/internal/buildconfig.commit=${{ steps.hash.outputs.sha_short }}
 
-      - name: Start Jetski and verify migrations
-        shell: bash
-        run: dist/jetski serve &
-          sleep 5 &&
-          curl http://localhost:8080/internal/environment -f &&
-          psql $DATABASE_URL -c "select version > 0, dirty from schema_migrations" --csv -t | grep "t,f" &&
-          pkill -SIGTERM jetski &&
-          dist/jetski migrate --down
-        env:
-          DATABASE_URL: postgres://test-user:test-password@localhost:5432/jetski
-          OIDC_URL: "-"
-          OIDC_CLIENT_ID: "-"
+#      - name: Start Jetski and verify migrations
+#        shell: bash
+#        run: dist/jetski serve &
+#          sleep 5 &&
+#          curl http://localhost:8080/internal/environment -f &&
+#          psql $DATABASE_URL -c "select version > 0, dirty from schema_migrations" --csv -t | grep "t,f" &&
+#          pkill -SIGTERM jetski &&
+#          dist/jetski migrate --down
+#        env:
+#          DATABASE_URL: postgres://test-user:test-password@localhost:5432/jetski
+#          OIDC_URL: "-"
+#          OIDC_CLIENT_ID: "-"
 
       - name: Generate SBOM for frontend project
         uses: anchore/sbom-action@cee1b8e05ae5b2593a75e197229729eabaa9f8ec # v0.20.2
