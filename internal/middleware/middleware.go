@@ -1,10 +1,14 @@
 package middleware
 
 import (
+	"github.com/coreos/go-oidc/v3/oidc"
+	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jetski-sh/jetski/internal/auth"
+	"github.com/jetski-sh/jetski/internal/env"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -52,55 +56,57 @@ func LoggingMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
+func AuthMiddleware(oidcProvider *oidc.Provider) func(next http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			ctx := r.Context()
+			logger := GetLogger(ctx)
+			authHeader := r.Header.Get("Authorization")
+			var rawIDToken string
+			parts := strings.Split(authHeader, "Bearer ")
+			if len(parts) == 2 {
+				rawIDToken = parts[1]
+			}
+			verifier := oidcProvider.Verifier(&oidc.Config{ClientID: env.OIDCClientID()})
+			idToken, err := verifier.Verify(ctx, rawIDToken)
+			if err != nil {
+				logger.Info("failed to verify token", zap.Error(err))
+				http.Error(w, "failed to verify token", http.StatusUnauthorized)
+				return
+			}
+			var claims auth.UserAuthInfo
+			if err := idToken.Claims(&claims); err != nil {
+				logger.Error("failed to parse token claims", zap.Error(err))
+				// TODO sentry
+				http.Error(w, "failed to parse token claims", http.StatusUnauthorized)
+				return
+			}
+			ctx = withUserAuthInfo(ctx, &claims)
+			next.ServeHTTP(w, r.WithContext(ctx))
+		})
+	}
+}
+
 var Sentry = sentryhttp.New(sentryhttp.Options{Repanic: true}).Handle
 
-/*
 func SentryUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		if hub := sentry.GetHubFromContext(ctx); hub != nil {
-			if auth, err := auth.Authentication.Get(ctx); err == nil {
-				hub.Scope().SetUser(sentry.User{
-					ID:    auth.CurrentUserID().String(),
-					Email: auth.CurrentUserEmail(),
-				})
-			}
+			user := GetUserAuthInfo(ctx)
+			hub.Scope().SetUser(sentry.User{
+				ID:    user.Subject,
+				Email: user.Email,
+			})
 		}
 		h.ServeHTTP(w, r)
 	})
 }
 
-
 func RateLimitUserIDKey(r *http.Request) (string, error) {
-	if auth, err := auth.Authentication.Get(r.Context()); err != nil {
-		return "", err
-	} else {
-		return getTokenIdKey(auth.Token(), auth.CurrentUserID()), nil
-	}
+	user := GetUserAuthInfo(r.Context())
+	return user.Subject, nil
 }
-
-func RateLimitCurrentDeploymentTargetIdKeyFunc(r *http.Request) (string, error) {
-	if auth, err := auth.AgentAuthentication.Get(r.Context()); err != nil {
-		return "", err
-	} else {
-		return getTokenIdKey(auth.Token(), auth.CurrentDeploymentTargetID()), nil
-	}
-}
-
-func getTokenIdKey(token any, id uuid.UUID) string {
-	prefix := ""
-	switch token.(type) {
-	case jwt.Token:
-		prefix = "jwt"
-	case authkey.Key:
-		prefix = "authkey"
-	default:
-		panic("unknown token type")
-	}
-	return fmt.Sprintf("%v-%v", prefix, id)
-}
-
-*/
 
 func SetRequestPattern(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

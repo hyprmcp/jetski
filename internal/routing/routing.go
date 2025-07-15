@@ -1,19 +1,18 @@
 package routing
 
 import (
-	"context"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/httprate"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jetski-sh/jetski/internal/env"
 	"github.com/jetski-sh/jetski/internal/frontend"
 	"github.com/jetski-sh/jetski/internal/handlers"
 	"github.com/jetski-sh/jetski/internal/middleware"
 	"github.com/jetski-sh/jetski/internal/tracers"
 	"go.uber.org/zap"
 	"net/http"
-	"strings"
+	"time"
 )
 
 func NewRouter(
@@ -43,39 +42,21 @@ func ApiRouter(
 		middleware.LoggerCtxMiddleware(logger),
 		middleware.LoggingMiddleware,
 		middleware.ContextInjectorMiddleware(db),
+		middleware.AuthMiddleware(oidcProvider),
 	)
 
 	r.Route("/v1", func(r chi.Router) {
 		r.Use(
 			middleware.OTEL(tracers.Default()),
-			/* middleware.SentryUser,
-			   // TODO auth auth.Authentication.Middleware,
-			   httprate.Limit(30, 1*time.Second, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
-			   httprate.Limit(60, 1*time.Minute, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
-			   httprate.Limit(2000, 1*time.Hour, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),*/
+			middleware.SentryUser,
+			httprate.Limit(30, 1*time.Second, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
+			httprate.Limit(60, 1*time.Minute, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
+			httprate.Limit(2000, 1*time.Hour, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
 		)
 
 		r.Get("/whoami", func(w http.ResponseWriter, r *http.Request) {
-			authHeader := r.Header.Get("Authorization")
-			var rawIDToken string
-			parts := strings.Split(authHeader, "Bearer ")
-			if len(parts) == 2 {
-				rawIDToken = parts[1]
-			}
-			verifier := oidcProvider.Verifier(&oidc.Config{ClientID: env.OIDCClientID()})
-			idToken, err := verifier.Verify(context.Background(), rawIDToken)
-			if err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-			var claims struct {
-				Email string `json:"email"`
-			}
-			if err := idToken.Claims(&claims); err != nil {
-				http.Error(w, err.Error(), http.StatusInternalServerError)
-			}
-
-			w.WriteHeader(200)
-			_, _ = w.Write([]byte(claims.Email))
+			user := middleware.GetUserAuthInfo(r.Context())
+			_, _ = w.Write([]byte(user.Email))
 		})
 
 		// TODO routes

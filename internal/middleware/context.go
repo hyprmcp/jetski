@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"context"
+	"github.com/jetski-sh/jetski/internal/auth"
 	"github.com/jetski-sh/jetski/internal/db/queryable"
 
 	"go.uber.org/zap"
@@ -13,6 +14,7 @@ const (
 	ctxKeyDb contextKey = iota
 	ctxKeyLogger
 	ctxKeyIPAddress
+	ctxKeyUserAuthInfo
 )
 
 func GetDb(ctx context.Context) queryable.Queryable {
@@ -54,4 +56,17 @@ func GetRequestIPAddress(ctx context.Context) string {
 
 func withRequestIPAddress(ctx context.Context, address string) context.Context {
 	return context.WithValue(ctx, ctxKeyIPAddress, address)
+}
+
+func GetUserAuthInfo(ctx context.Context) *auth.UserAuthInfo {
+	if val, ok := ctx.Value(ctxKeyUserAuthInfo).(*auth.UserAuthInfo); ok {
+		if val != nil {
+			return val
+		}
+	}
+	panic("no user auth info in context")
+}
+
+func withUserAuthInfo(ctx context.Context, user *auth.UserAuthInfo) context.Context {
+	return context.WithValue(ctx, ctxKeyUserAuthInfo, user)
 }
