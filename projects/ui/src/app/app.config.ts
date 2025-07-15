@@ -12,17 +12,18 @@ import {
 } from '@angular/common/http';
 import { OAuthService, provideOAuthClient } from 'angular-oauth2-oidc';
 import { routes } from './app.routes';
+import { environment } from '../env/env';
 
 async function initializeOAuth() {
   const oauthService = inject(OAuthService);
   console.log('configure');
   oauthService.configure({
-    issuer: 'http://localhost:5556/dex',
+    issuer: environment.oidc.issuer,
     redirectUri: location.origin,
-    clientId: 'ui',
+    clientId: environment.oidc.clientId,
     scope: 'openid profile email',
     responseType: 'code',
-    showDebugInformation: true,
+    showDebugInformation: !environment.production,
   });
 
   console.log('try login');

@@ -17,6 +17,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "internal/frontend/dist/ui",
             "browser": "projects/ui/src/main.ts",
             "tsConfig": "projects/ui/tsconfig.app.json",
             "inlineStyleLanguage": "scss",
@@ -44,7 +45,13 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/ui/src/env/env.ts",
+                  "with": "projects/ui/src/env/env.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
