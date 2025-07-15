@@ -102,7 +102,7 @@
               "projects/ui/**/*.ts",
               "projects/ui/**/*.html"
             ],
-            "eslintConfig": "projects/ui/eslint.config.js"
+            "eslintConfig": "projects/ui/eslint.config.cjs"
           }
         }
       }

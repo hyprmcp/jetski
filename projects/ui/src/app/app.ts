@@ -1,7 +1,6 @@
-import {Component, inject, OnInit} from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Event, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, Observable } from 'rxjs';
-import * as Sentry from '@sentry/angular';
 
 @Component({
   selector: 'app-root',

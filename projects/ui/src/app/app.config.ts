@@ -1,5 +1,6 @@
 import {
-  ApplicationConfig, ErrorHandler,
+  ApplicationConfig,
+  ErrorHandler,
   inject,
   provideAppInitializer,
   provideBrowserGlobalErrorListeners,
@@ -13,7 +14,7 @@ import {
 import { OAuthService, provideOAuthClient } from 'angular-oauth2-oidc';
 import { routes } from './app.routes';
 import { environment } from '../env/env';
-import * as Sentry from "@sentry/angular";
+import * as Sentry from '@sentry/angular';
 
 async function initializeOAuth() {
   const oauthService = inject(OAuthService);
