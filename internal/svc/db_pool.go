@@ -39,7 +39,7 @@ func (reg *Registry) createDBPool(ctx context.Context) (*pgxpool.Pool, error) {
 		return nil, err
 	}
 	config.AfterConnect = func(ctx context.Context, conn *pgx.Conn) error {
-		var typeNames []string
+		typeNames := []string{"DEPLOYMENT_REVISION_EVENT_TYPE"}
 		for _, typeName := range typeNames {
 			if pgType, err := conn.LoadType(ctx, typeName); err != nil {
 				return err
