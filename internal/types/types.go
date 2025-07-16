@@ -24,11 +24,12 @@ type OrganizationUserAccount struct {
 }
 
 type Project struct {
-	ID             uuid.UUID `db:"id" json:"id"`
-	CreatedAt      time.Time `db:"created_at" json:"createdAt"`
-	CreatedBy      uuid.UUID `db:"created_by" json:"createdBy"`
-	OrganizationID uuid.UUID `db:"organization_id" json:"organizationId"`
-	Name           string    `db:"name" json:"name"`
+	ID                         uuid.UUID  `db:"id" json:"id"`
+	CreatedAt                  time.Time  `db:"created_at" json:"createdAt"`
+	CreatedBy                  uuid.UUID  `db:"created_by" json:"createdBy"`
+	OrganizationID             uuid.UUID  `db:"organization_id" json:"organizationId"`
+	Name                       string     `db:"name" json:"name"`
+	LatestDeploymentRevisionID *uuid.UUID `db:"latest_deployment_revision_id" json:"latestDeploymentRevisionId"`
 }
 
 type DeploymentRevision struct {

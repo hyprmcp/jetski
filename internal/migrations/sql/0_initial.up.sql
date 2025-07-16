@@ -37,6 +37,8 @@ CREATE TABLE DeploymentRevision (
   oci_url TEXT NOT NULL
 );
 CREATE INDEX fk_DeploymentRevision_project_id ON DeploymentRevision (project_id);
+ALTER TABLE Project ADD COLUMN latest_deployment_revision_id UUID REFERENCES DeploymentRevision (id);
+CREATE INDEX fk_Project_latest_deployment_revision_id ON Project (latest_deployment_revision_id);
 
 CREATE TYPE DEPLOYMENT_REVISION_EVENT_TYPE AS ENUM ('ok', 'error', 'progressing');
 
