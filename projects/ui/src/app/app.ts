@@ -3,6 +3,7 @@ import { Event, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter, Observable } from 'rxjs';
 import { OAuthService } from 'angular-oauth2-oidc';
 import * as Sentry from '@sentry/angular';
+import posthog from 'posthog-js';
 
 @Component({
   selector: 'app-root',
@@ -24,9 +25,8 @@ export class App implements OnInit {
       if (email) {
         Sentry.setUser({ email });
       }
-      // TODO
-      // posthog.setPersonProperties({email});
-      // posthog.capture('$pageview');
+      posthog.setPersonProperties({ email });
+      posthog.capture('$pageview');
     });
   }
 }

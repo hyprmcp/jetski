@@ -5,6 +5,7 @@ import { getRemoteEnvironment } from './env/remote';
 import * as Sentry from '@sentry/angular';
 import { environment } from './env/env';
 import { buildConfig } from './buildconfig';
+import posthog from 'posthog-js';
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
 
@@ -22,7 +23,7 @@ bootstrapApplication(App, appConfig).catch((err) => console.error(err));
     });
   }
 
-  /*if (remoteEnvironment.posthogToken) {
+  if (remoteEnvironment.posthogToken) {
     posthog.init(remoteEnvironment.posthogToken, {
       api_host: remoteEnvironment.posthogApiHost,
       ui_host: remoteEnvironment.posthogUiHost,
@@ -53,5 +54,5 @@ bootstrapApplication(App, appConfig).catch((err) => console.error(err));
         },
       ],
     });
-  }*/
+  }
 })().catch((err) => console.error(err));
