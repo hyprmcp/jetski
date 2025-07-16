@@ -6,6 +6,7 @@ import (
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/frontend"
 	"github.com/jetski-sh/jetski/internal/handlers"
 	"github.com/jetski-sh/jetski/internal/middleware"
@@ -55,9 +56,12 @@ func ApiRouter(
 		)
 
 		r.Get("/whoami", func(w http.ResponseWriter, r *http.Request) {
-			user := middleware.GetUserAuthInfo(r.Context())
+			user := context.GetUserAuthInfo(r.Context())
 			_, _ = w.Write([]byte(user.Email))
 		})
+
+		r.Route("/organizations", handlers.OrganizationsRouter)
+		r.Route("/projects", handlers.ProjectsRouter)
 
 		// TODO routes
 	})

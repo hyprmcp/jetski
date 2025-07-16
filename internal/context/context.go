@@ -1,4 +1,4 @@
-package middleware
+package context
 
 import (
 	"context"
@@ -27,7 +27,7 @@ func GetDb(ctx context.Context) queryable.Queryable {
 	panic("db not contained in context")
 }
 
-func withDb(ctx context.Context, db queryable.Queryable) context.Context {
+func WithDb(ctx context.Context, db queryable.Queryable) context.Context {
 	ctx = context.WithValue(ctx, ctxKeyDb, db)
 	return ctx
 }
@@ -42,7 +42,7 @@ func GetLogger(ctx context.Context) *zap.Logger {
 	panic("logger not contained in context")
 }
 
-func withLogger(ctx context.Context, logger *zap.Logger) context.Context {
+func WithLogger(ctx context.Context, logger *zap.Logger) context.Context {
 	ctx = context.WithValue(ctx, ctxKeyLogger, logger)
 	return ctx
 }
@@ -54,7 +54,7 @@ func GetRequestIPAddress(ctx context.Context) string {
 	panic("no IP address in context")
 }
 
-func withRequestIPAddress(ctx context.Context, address string) context.Context {
+func WithRequestIPAddress(ctx context.Context, address string) context.Context {
 	return context.WithValue(ctx, ctxKeyIPAddress, address)
 }
 
@@ -67,6 +67,6 @@ func GetUserAuthInfo(ctx context.Context) *auth.UserAuthInfo {
 	panic("no user auth info in context")
 }
 
-func withUserAuthInfo(ctx context.Context, user *auth.UserAuthInfo) context.Context {
+func WithUserAuthInfo(ctx context.Context, user *auth.UserAuthInfo) context.Context {
 	return context.WithValue(ctx, ctxKeyUserAuthInfo, user)
 }

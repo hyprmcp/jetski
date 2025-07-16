@@ -8,6 +8,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jetski-sh/jetski/internal/auth"
+	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/env"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
@@ -23,8 +24,8 @@ func ContextInjectorMiddleware(
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
-			ctx = withDb(ctx, db)
-			ctx = withRequestIPAddress(ctx, r.RemoteAddr)
+			ctx = internalctx.WithDb(ctx, db)
+			ctx = internalctx.WithRequestIPAddress(ctx, r.RemoteAddr)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -34,7 +35,7 @@ func LoggerCtxMiddleware(logger *zap.Logger) func(next http.Handler) http.Handle
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			logger := logger.With(zap.String("requestId", middleware.GetReqID(r.Context())))
-			ctx := withLogger(r.Context(), logger)
+			ctx := internalctx.WithLogger(r.Context(), logger)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -46,7 +47,7 @@ func LoggingMiddleware(handler http.Handler) http.Handler {
 		now := time.Now()
 		handler.ServeHTTP(ww, r)
 		elapsed := time.Since(now)
-		logger := GetLogger(r.Context())
+		logger := internalctx.GetLogger(r.Context())
 		logger.Info("handling request",
 			zap.String("method", r.Method),
 			zap.String("path", r.URL.Path),
@@ -60,7 +61,7 @@ func AuthMiddleware(oidcProvider *oidc.Provider) func(next http.Handler) http.Ha
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
-			logger := GetLogger(ctx)
+			logger := internalctx.GetLogger(ctx)
 			authHeader := r.Header.Get("Authorization")
 			var rawIDToken string
 			parts := strings.Split(authHeader, "Bearer ")
@@ -81,7 +82,7 @@ func AuthMiddleware(oidcProvider *oidc.Provider) func(next http.Handler) http.Ha
 				http.Error(w, "failed to parse token claims", http.StatusUnauthorized)
 				return
 			}
-			ctx = withUserAuthInfo(ctx, &claims)
+			ctx = internalctx.WithUserAuthInfo(ctx, &claims)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
@@ -93,7 +94,7 @@ func SentryUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		if hub := sentry.GetHubFromContext(ctx); hub != nil {
-			user := GetUserAuthInfo(ctx)
+			user := internalctx.GetUserAuthInfo(ctx)
 			hub.Scope().SetUser(sentry.User{
 				ID:    user.Subject,
 				Email: user.Email,
@@ -104,7 +105,7 @@ func SentryUser(h http.Handler) http.Handler {
 }
 
 func RateLimitUserIDKey(r *http.Request) (string, error) {
-	user := GetUserAuthInfo(r.Context())
+	user := internalctx.GetUserAuthInfo(r.Context())
 	return user.Subject, nil
 }
 
