@@ -4,12 +4,21 @@
   "extends": "../../tsconfig.json",
   "compilerOptions": {
     "outDir": "../../out-tsc/app",
-    "types": []
+    "types": [],
+    "paths": {
+      "@spartan-ng/helm/button": ["./libs/ui/ui-button-helm/src/index.ts"],
+      "@spartan-ng/helm/card": ["./libs/ui/ui-card-helm/src/index.ts"],
+      "@spartan-ng/helm/checkbox": ["./libs/ui/ui-checkbox-helm/src/index.ts"],
+      "@spartan-ng/helm/icon": ["./libs/ui/ui-icon-helm/src/index.ts"],
+      "@spartan-ng/helm/input": ["./libs/ui/ui-input-helm/src/index.ts"],
+      "@spartan-ng/helm/menu": ["./libs/ui/ui-menu-helm/src/index.ts"],
+      "@spartan-ng/helm/select": ["./libs/ui/ui-select-helm/src/index.ts"],
+      "@spartan-ng/helm/table": ["./libs/ui/ui-table-helm/src/index.ts"],
+      "@spartan-ng/helm/typography": [
+        "./libs/ui/ui-typography-helm/src/index.ts"
+      ]
+    }
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "src/**/*.spec.ts"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["src/**/*.spec.ts"]
 }
