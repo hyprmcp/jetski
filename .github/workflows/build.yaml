@@ -113,7 +113,7 @@ jobs:
       - name: Generate SBOM for frontend project
         uses: anchore/sbom-action@cee1b8e05ae5b2593a75e197229729eabaa9f8ec # v0.20.2
         with:
-          file: package-lock.json
+          file: pnpm-lock.yaml
           output-file: dist/frontend.spdx.json
           format: spdx-json
           upload-release-assets: false
