@@ -11,7 +11,11 @@ import {
   provideHttpClient,
   withInterceptorsFromDi,
 } from '@angular/common/http';
-import { OAuthService, provideOAuthClient } from 'angular-oauth2-oidc';
+import {
+  OAuthService,
+  OAuthStorage,
+  provideOAuthClient,
+} from 'angular-oauth2-oidc';
 import { routes } from './app.routes';
 import { environment } from '../env/env';
 import * as Sentry from '@sentry/angular';
@@ -23,11 +27,11 @@ async function initializeOAuth() {
     issuer: environment.oidc.issuer,
     redirectUri: location.origin,
     clientId: environment.oidc.clientId,
-    scope: 'openid profile email',
+    scope: 'openid profile email offline_access',
     responseType: 'code',
     showDebugInformation: !environment.production,
   });
-
+  oauthService.setupAutomaticSilentRefresh();
   console.log('try login');
   return await oauthService.loadDiscoveryDocumentAndLogin();
 }
@@ -50,5 +54,10 @@ export const appConfig: ApplicationConfig = {
       },
     }),
     provideAppInitializer(initializeOAuth),
+    { provide: OAuthStorage, useFactory: storageFactory },
   ],
 };
+
+function storageFactory(): OAuthStorage {
+  return localStorage;
+}

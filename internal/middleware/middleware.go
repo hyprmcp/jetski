@@ -71,7 +71,7 @@ func AuthMiddleware(oidcProvider *oidc.Provider) func(next http.Handler) http.Ha
 			idToken, err := verifier.Verify(ctx, rawIDToken)
 			if err != nil {
 				logger.Info("failed to verify token", zap.Error(err))
-				http.Error(w, "failed to verify token", http.StatusUnauthorized)
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
 			var claims auth.UserAuthInfo
