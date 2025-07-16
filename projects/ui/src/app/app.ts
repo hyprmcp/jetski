@@ -21,7 +21,7 @@ import posthog from 'posthog-js';
   `,
   styleUrl: './app.css',
 })
-export class App {
+export class App implements OnInit {
   protected title = 'jetski';
 
   private oauthService = inject(OAuthService);
