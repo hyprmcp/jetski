@@ -28,6 +28,8 @@ CREATE TABLE Project (
 );
 CREATE INDEX fk_Project_organization_id ON Project (organization_id);
 
+-- TODO build number where?
+
 CREATE TABLE DeploymentRevision (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
@@ -38,6 +40,7 @@ CREATE TABLE DeploymentRevision (
 );
 CREATE INDEX fk_DeploymentRevision_project_id ON DeploymentRevision (project_id);
 ALTER TABLE Project ADD COLUMN latest_deployment_revision_id UUID REFERENCES DeploymentRevision (id);
+-- TODO also latest deployment revision event?
 CREATE INDEX fk_Project_latest_deployment_revision_id ON Project (latest_deployment_revision_id);
 
 CREATE TYPE DEPLOYMENT_REVISION_EVENT_TYPE AS ENUM ('ok', 'error', 'progressing');

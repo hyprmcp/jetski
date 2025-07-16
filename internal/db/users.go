@@ -41,3 +41,21 @@ func AddUserToOrganization(ctx context.Context, userID, orgID uuid.UUID) error {
 	`, pgx.NamedArgs{"orgID": orgID, "userID": userID})
 	return err
 }
+
+func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT id, created_at, email FROM UserAccount WHERE email = @email
+	`, pgx.NamedArgs{"email": email})
+	if err != nil {
+		return nil, err
+	}
+	user, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[types.UserAccount])
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apierrors.ErrNotFound
+		}
+		return nil, err
+	}
+	return user, nil
+}

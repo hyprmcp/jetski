@@ -62,8 +62,7 @@ func ApiRouter(
 
 		r.Route("/organizations", handlers.OrganizationsRouter)
 		r.Route("/projects", handlers.ProjectsRouter)
-
-		// TODO routes
+		r.Route("/dashboard", handlers.DashboardRouter)
 	})
 
 	return r

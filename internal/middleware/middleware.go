@@ -1,15 +1,19 @@
 package middleware
 
 import (
+	"errors"
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/jetski-sh/jetski/internal/apierrors"
 	"github.com/jetski-sh/jetski/internal/auth"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
+	"github.com/jetski-sh/jetski/internal/db"
 	"github.com/jetski-sh/jetski/internal/env"
+	"github.com/jetski-sh/jetski/internal/types"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -82,7 +86,20 @@ func AuthMiddleware(oidcProvider *oidc.Provider) func(next http.Handler) http.Ha
 				http.Error(w, "failed to parse token claims", http.StatusUnauthorized)
 				return
 			}
+			var user *types.UserAccount
+			if user, err = db.GetUserByEmail(ctx, claims.Email); err != nil {
+				if errors.Is(err, apierrors.ErrNotFound) {
+					logger.Info("no user found for email", zap.Error(err), zap.String("email", claims.Email))
+					http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
+					return
+				}
+				logger.Error("failed to get user by email", zap.Error(err), zap.String("email", claims.Email))
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				// TODO sentry
+				return
+			}
 			ctx = internalctx.WithUserAuthInfo(ctx, &claims)
+			ctx = internalctx.WithUser(ctx, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

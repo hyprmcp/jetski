@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/jetski-sh/jetski/internal/auth"
 	"github.com/jetski-sh/jetski/internal/db/queryable"
+	"github.com/jetski-sh/jetski/internal/types"
 
 	"go.uber.org/zap"
 )
@@ -15,6 +16,7 @@ const (
 	ctxKeyLogger
 	ctxKeyIPAddress
 	ctxKeyUserAuthInfo
+	ctxKeyUser
 )
 
 func GetDb(ctx context.Context) queryable.Queryable {
@@ -69,4 +71,17 @@ func GetUserAuthInfo(ctx context.Context) *auth.UserAuthInfo {
 
 func WithUserAuthInfo(ctx context.Context, user *auth.UserAuthInfo) context.Context {
 	return context.WithValue(ctx, ctxKeyUserAuthInfo, user)
+}
+
+func GetUser(ctx context.Context) *types.UserAccount {
+	if val, ok := ctx.Value(ctxKeyUser).(*types.UserAccount); ok {
+		if val != nil {
+			return val
+		}
+	}
+	panic("no user in context")
+}
+
+func WithUser(ctx context.Context, user *types.UserAccount) context.Context {
+	return context.WithValue(ctx, ctxKeyUser, user)
 }
