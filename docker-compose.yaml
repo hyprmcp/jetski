@@ -8,7 +8,6 @@ services:
       - source: config.yaml
         target: /config.yaml
 
-
 configs:
   config.yaml:
     content: |
