@@ -7,7 +7,7 @@ CREATE TABLE Organization (
 CREATE TABLE UserAccount (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  email TEXT NOT NULL
+  email TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE Organization_UserAccount (

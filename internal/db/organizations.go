@@ -32,3 +32,21 @@ func GetOrganizationsOfUser(ctx context.Context, userID uuid.UUID) ([]types.Orga
 		return result, nil
 	}
 }
+
+func CreateOrganization(ctx context.Context, name string) (*types.Organization, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		INSERT INTO Organization (name)
+		VALUES (@name)
+		RETURNING id, created_at, name
+	`, pgx.NamedArgs{"name": name})
+	if err != nil {
+		return nil, err
+	}
+	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[types.Organization])
+	if err != nil {
+		return nil, err
+	} else {
+		return result, nil
+	}
+}

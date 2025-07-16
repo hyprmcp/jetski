@@ -17,6 +17,8 @@ DROP TABLE IF EXISTS DeploymentRevisionEvent;
 
 DROP TYPE IF EXISTS DEPLOYMENT_REVISION_EVENT_TYPE;
 DROP INDEX IF EXISTS fk_DeploymentRevision_project_id;
+
+ALTER TABLE Project DROP COLUMN latest_deployment_revision_id;
 DROP TABLE IF EXISTS DeploymentRevision;
 
 DROP INDEX IF EXISTS fk_Project_organization_id;

@@ -1,0 +1,47 @@
+user: admin@example.com
+organizations:
+  - name: jetski
+    projects:
+      - name: v0-jetski
+        deploymentRevisions:
+          - port: 8080
+            ociUrl: some-oci-url
+            events:
+              - type: progressing
+              - type: error
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            events:
+              - type: progressing
+              - type: ok
+      - name: v0-jetski-mcp
+        deploymentRevisions:
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            events:
+              - type: progressing
+              - type: ok
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            events:
+              - type: progressing
+              - type: ok
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            events:
+              - type: progressing
+              - type: error
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            events:
+              - type: progressing
+              - type: ok
+      - name: v0-jetski-frontend
+        deploymentRevisions:
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            events:
+              - type: progressing
+  - name: test
+    projects:
+      - name: empty-project
