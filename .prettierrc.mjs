@@ -1,15 +1,12 @@
-/**
- * @see https://prettier.io/docs/en/configuration.html
- * @type {import("prettier").Config}
- */
-const config = {
+export default {
+  arrowParens: "avoid",
   bracketSameLine: true,
   bracketSpacing: false,
   singleQuote: true,
-  semi: true,
+  trailingComma: "all",
   tabWidth: 2,
-  printWidth: 120,
-  trailingComma: 'es5',
+  useTabs: false,
+  semi: true,
+  printWidth: 80,
+  plugins: ["prettier-plugin-organize-imports"],
 };
-
-export default config;

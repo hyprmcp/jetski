@@ -5,11 +5,7 @@
   "projects": {
     "ui": {
       "projectType": "application",
-      "schematics": {
-        "@schematics/angular:component": {
-          "style": "scss"
-        }
-      },
+      "schematics": {},
       "root": "projects/ui",
       "sourceRoot": "projects/ui/src",
       "prefix": "app",
@@ -20,16 +16,13 @@
             "outputPath": "internal/frontend/dist/ui",
             "browser": "projects/ui/src/main.ts",
             "tsConfig": "projects/ui/tsconfig.app.json",
-            "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
                 "input": "projects/ui/public"
               }
             ],
-            "styles": [
-              "projects/ui/src/styles.scss"
-            ]
+            "styles": ["projects/ui/src/styles.css"]
           },
           "configurations": {
             "production": {
@@ -83,16 +76,13 @@
           "builder": "@angular/build:karma",
           "options": {
             "tsConfig": "projects/ui/tsconfig.spec.json",
-            "inlineStyleLanguage": "scss",
             "assets": [
               {
                 "glob": "**/*",
                 "input": "projects/ui/public"
               }
             ],
-            "styles": [
-              "projects/ui/src/styles.scss"
-            ]
+            "styles": ["projects/ui/src/styles.css"]
           }
         },
         "lint": {
@@ -110,8 +100,6 @@
   },
   "cli": {
     "analytics": false,
-    "schematicCollections": [
-      "angular-eslint"
-    ]
+    "schematicCollections": ["angular-eslint"]
   }
 }

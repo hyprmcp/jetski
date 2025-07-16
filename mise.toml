@@ -1,5 +1,6 @@
 [tools]
 node = "24"
+pnpm = "10"
 go = "1.24"
 golangci-lint = "2"
 
