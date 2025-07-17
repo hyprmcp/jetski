@@ -1,20 +1,36 @@
-import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Component, computed, inject } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
+import {
+  ActivatedRoute,
+  NavigationEnd,
+  Router,
+  RouterLink,
+} from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import {
+  lucideChevronsUpDown,
+  lucideMonitor,
+  lucideMoon,
+  lucideSun,
+} from '@ng-icons/lucide';
+import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
-import { ThemeService } from '../../services/theme.service';
-import { RouterLink } from '@angular/router';
-import { OAuthService } from 'angular-oauth2-oidc';
 import {
   HlmMenuComponent,
   HlmMenuGroupComponent,
   HlmMenuItemDirective,
+  HlmMenuItemSubIndicatorComponent,
   HlmMenuLabelComponent,
   HlmMenuSeparatorComponent,
+  HlmSubMenuComponent,
 } from '@spartan-ng/helm/menu';
-import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideSun, lucideMoon, lucideMonitor } from '@ng-icons/lucide';
+import { OAuthService } from 'angular-oauth2-oidc';
+import { EMPTY, filter, map, startWith, switchMap } from 'rxjs';
+import { getOrganizations } from '../../../api/organization';
+import { getProjects } from '../../../api/project';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -28,28 +44,89 @@ import { lucideSun, lucideMoon, lucideMonitor } from '@ng-icons/lucide';
     HlmMenuLabelComponent,
     HlmMenuSeparatorComponent,
     HlmMenuGroupComponent,
+    HlmMenuItemSubIndicatorComponent,
+    HlmSubMenuComponent,
     BrnMenuTriggerDirective,
     NgIcon,
   ],
-  viewProviders: [provideIcons({ lucideSun, lucideMoon, lucideMonitor })],
+  viewProviders: [
+    provideIcons({
+      lucideSun,
+      lucideMoon,
+      lucideMonitor,
+      lucideChevronsUpDown,
+    }),
+  ],
   template: `
     <header
       class="fixed top-0 left-0 right-0 z-50 bg-background border-b border-border"
     >
       <div class="flex items-center justify-between px-6 py-3">
         <!-- Left side -->
-        <div class="flex items-center space-x-4">
-          <div class="flex items-center space-x-2">
+        <div class="flex items-center gap-4">
+          <a
+            [routerLink]="['/']"
+            class="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded"
+            aria-label="Home"
+          ></a>
+
+          <button
+            class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
+            [brnMenuTriggerFor]="projectMenu"
+          >
+            @if (selectedProject(); as proj) {
+              <span class="font-semibold text-lg">{{ proj.name }}</span>
+              <span
+                class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
+                >Hobby</span
+              >
+            } @else {
+              <span
+                class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
+                >Select a project…</span
+              >
+            }
             <div
-              class="w-6 h-6 bg-gradient-to-r from-blue-500 to-purple-600 rounded"
-            ></div>
-            <span class="font-semibold text-lg">jetski</span>
-            <span
-              class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
-              >Hobby</span
+              class="text-muted-foreground group-hover:text-foreground transition-colors leading-none"
             >
-          </div>
+              <ng-icon name="lucideChevronsUpDown" size="16" />
+            </div>
+          </button>
         </div>
+
+        <ng-template #projectMenu>
+          <hlm-menu>
+            <hlm-menu-label>Organizations</hlm-menu-label>
+            <hlm-menu-group>
+              @for (org of projectDropdownData(); track org.id) {
+                <a
+                  [routerLink]="['/organization', org.id]"
+                  class="cursor-pointer"
+                  hlmMenuItem
+                  [brnMenuTriggerFor]="projects"
+                >
+                  {{ org.name }}
+                  <hlm-menu-item-sub-indicator />
+                </a>
+
+                <ng-template #projects>
+                  <hlm-sub-menu>
+                    <hlm-menu-label>Projects</hlm-menu-label>
+                    @for (proj of org.projects; track proj.id) {
+                      <a
+                        [routerLink]="['/project', proj.id]"
+                        class="cursor-pointer"
+                        hlmMenuItem
+                      >
+                        {{ proj.name }}
+                      </a>
+                    }
+                  </hlm-sub-menu>
+                </ng-template>
+              }
+            </hlm-menu-group>
+          </hlm-menu>
+        </ng-template>
 
         <!-- Right side -->
         <div class="flex items-center space-x-4">
@@ -63,14 +140,10 @@ import { lucideSun, lucideMoon, lucideMonitor } from '@ng-icons/lucide';
           <!-- Theme switcher -->
           <button
             (click)="toggleTheme()"
-            class="p-2 hover:bg-muted rounded-md transition-colors"
-            [attr.aria-label]="getThemeLabel()"
+            class="p-2 hover:bg-muted rounded-md transition-colors text-muted-foreground hover:text-foreground leading-none"
+            [attr.aria-label]="themeLabel()"
           >
-            <ng-icon
-              [name]="getThemeIcon()"
-              size="16"
-              class="text-muted-foreground hover:text-foreground"
-            />
+            <ng-icon [name]="themeIcon()" size="16" />
           </button>
 
           <!-- User menu -->
@@ -116,14 +189,44 @@ import { lucideSun, lucideMoon, lucideMonitor } from '@ng-icons/lucide';
 export class HeaderComponent {
   public themeService = inject(ThemeService);
   private oauthService = inject(OAuthService);
+  private readonly route = inject(ActivatedRoute);
+  private readonly router = inject(Router);
 
-  toggleTheme() {
-    this.themeService.toggleTheme();
-  }
+  protected readonly projectId = toSignal(
+    this.router.events.pipe(
+      filter((e) => e instanceof NavigationEnd),
+      startWith(null),
+      switchMap(
+        () => this.route.firstChild?.firstChild?.firstChild?.params ?? EMPTY,
+      ),
+      map((params) => params['projectId'] as string | undefined),
+    ),
+  );
 
-  getThemeIcon(): string {
-    const theme = this.themeService.theme();
-    switch (theme) {
+  private readonly projects = getProjects();
+  private readonly organizations = getOrganizations();
+
+  protected readonly projectDropdownData = computed(() => {
+    const projects = this.projects.value();
+    const organizations = this.organizations.value();
+    if (!projects || !organizations) {
+      return [];
+    } else {
+      return organizations.map((org) => ({
+        ...org,
+        projects: projects.filter((proj) => proj.organizationId === org.id),
+      }));
+    }
+  });
+
+  protected readonly selectedProject = computed(() => {
+    const projects = this.projects.value();
+    const id = this.projectId();
+    return projects?.find((it) => it.id === id);
+  });
+
+  protected readonly themeIcon = computed(() => {
+    switch (this.themeService.theme()) {
       case 'light':
         return 'lucideSun';
       case 'dark':
@@ -133,11 +236,10 @@ export class HeaderComponent {
       default:
         return 'lucideMonitor';
     }
-  }
+  });
 
-  getThemeLabel(): string {
-    const theme = this.themeService.theme();
-    switch (theme) {
+  protected readonly themeLabel = computed(() => {
+    switch (this.themeService.theme()) {
       case 'light':
         return 'Switch to dark mode';
       case 'dark':
@@ -147,6 +249,10 @@ export class HeaderComponent {
       default:
         return 'Switch theme';
     }
+  });
+
+  toggleTheme() {
+    this.themeService.toggleTheme();
   }
 
   logout() {
