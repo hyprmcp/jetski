@@ -55,19 +55,19 @@ CREATE INDEX fk_DeploymentRevisionEvent_deployment_revision_id ON DeploymentRevi
 
 CREATE TABLE MCPServerLog (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_account_id UUID REFERENCES UserAccount (id),
+  mcp_session_id TEXT,
   started_at TIMESTAMP NOT NULL,
-  duration_ms BIGINT NOT NULL,
-  organization_id UUID NOT NULL REFERENCES Organization (id),
+  duration INTERVAL NOT NULL,
   deployment_revision_id UUID NOT NULL REFERENCES DeploymentRevision (id),
   auth_token_digest TEXT,
-  user_account_id UUID REFERENCES UserAccount (id),
-  tool_name TEXT NOT NULL,
-  tool_values TEXT,
-  tool_response TEXT,
-  user_agent TEXT
+  mcp_request JSONB,
+  mcp_response JSONB,
+  user_agent TEXT,
+  http_status_code INT,
+  http_error TEXT
 );
 CREATE INDEX fk_MCPServerLog_deployment_revision_id ON MCPServerLog (deployment_revision_id);
-CREATE INDEX fk_MCPServerLog_organization_id ON MCPServerLog (organization_id);
 CREATE INDEX fk_MCPServerLog_user_account_id ON MCPServerLog (user_account_id);
 
 CREATE TYPE CONTEXT_PROPERTY_TYPE AS ENUM ('string', 'number', 'boolean');
