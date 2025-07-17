@@ -16,3 +16,9 @@ run = "golangci-lint run"
 
 [tasks.serve]
 run = "go run . serve"
+
+[tasks.generate]
+run = "go run . generate"
+
+[tasks.purge]
+run = "go run . migrate --down"
