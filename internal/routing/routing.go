@@ -1,6 +1,9 @@
 package routing
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -12,8 +15,6 @@ import (
 	"github.com/jetski-sh/jetski/internal/middleware"
 	"github.com/jetski-sh/jetski/internal/tracers"
 	"go.uber.org/zap"
-	"net/http"
-	"time"
 )
 
 func NewRouter(
@@ -28,6 +29,7 @@ func NewRouter(
 	)
 	router.Mount("/api", ApiRouter(logger, db, tracers, oidcProvider))
 	router.Mount("/internal", InternalRouter())
+	router.Mount("/webhook", WebhookRouter(logger, db))
 	router.Mount("/", FrontendRouter())
 	return router
 }
@@ -71,6 +73,21 @@ func ApiRouter(
 func InternalRouter() http.Handler {
 	router := chi.NewRouter()
 	router.Route("/", handlers.InternalRouter)
+	return router
+}
+
+func WebhookRouter(logger *zap.Logger, db *pgxpool.Pool) http.Handler {
+	// TODO: Webhooks should either be authenticated or exposed on a separate port that is not publicly accessible.
+	router := chi.NewRouter()
+	router.Use(
+		chimiddleware.RequestID,
+		chimiddleware.RealIP,
+		middleware.Sentry,
+		middleware.LoggerCtxMiddleware(logger),
+		middleware.LoggingMiddleware,
+		middleware.ContextInjectorMiddleware(db),
+	)
+	router.Route("/", handlers.WebhookRouter)
 	return router
 }
 
