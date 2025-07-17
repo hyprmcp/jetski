@@ -21,3 +21,14 @@ export interface DeploymentRevisionEvent extends Base {
 export interface Organization extends Base {
   name: string;
 }
+
+export interface UserAccount extends Base {
+  email: string;
+}
+
+export interface Project extends Base {
+  createdBy: string;
+  name: string;
+  latestDeploymentRevisionId: string | undefined;
+  latestDeploymentRevisionEventId: string | undefined;
+}

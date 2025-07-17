@@ -14,7 +14,7 @@ import {
   Organization,
 } from '../../types/types';
 
-interface ProjectOverview extends Base {
+interface ProjectSummary extends Base {
   createdBy: string;
   name: string;
   latestDeploymentRevision: DeploymentRevision | undefined;
@@ -36,7 +36,7 @@ interface ProjectOverview extends Base {
     <div>
       <h3 hlmH3>Projects</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        @for (project of projects.value(); track project.name) {
+        @for (project of projectSummaries.value(); track project.name) {
           <section hlmCard>
             <div hlmCardContent>
               <div class="flex items-start justify-between mb-4">
@@ -156,11 +156,11 @@ interface ProjectOverview extends Base {
   `,
 })
 export class ProjectsGridComponent {
-  projects = httpResource(() => `/api/v1/dashboard/projects`, {
-    parse: (value) => value as ProjectOverview[],
+  projectSummaries = httpResource(() => `/api/v1/dashboard/projects`, {
+    parse: (value) => value as ProjectSummary[],
   });
 
-  getProjectUrl(project: ProjectOverview): string {
+  getProjectUrl(project: ProjectSummary): string {
     return `${project.organization.name}.jetski.cloud/${project.name}/mcp`;
   }
 }
