@@ -25,3 +25,24 @@ func CreateProject(ctx context.Context, orgID, createdBy uuid.UUID, name string)
 		return result, nil
 	}
 }
+
+func GetProjectsForUser(ctx context.Context, userID uuid.UUID) ([]types.Project, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT p.id, p.created_at, p.created_by, p.organization_id, p.name, p.latest_deployment_revision_id
+		FROM Project p
+		INNER JOIN Organization o ON p.organization_id = o.id
+		INNER JOIN Organization_UserAccount j ON o.id = j.organization_id
+		WHERE j.user_account_id = @id
+		ORDER BY o.name, p.name
+	`, pgx.NamedArgs{"id": userID})
+	if err != nil {
+		return nil, err
+	}
+	result, err := pgx.CollectRows(rows, pgx.RowToStructByName[types.Project])
+	if err != nil {
+		return nil, err
+	} else {
+		return result, nil
+	}
+}
