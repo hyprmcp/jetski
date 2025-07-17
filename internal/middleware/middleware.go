@@ -2,21 +2,20 @@ package middleware
 
 import (
 	"errors"
+	"github.com/lestrrat-go/jwx/v3/jwk"
+	"github.com/lestrrat-go/jwx/v3/jwt"
 	"net/http"
 	"strings"
 	"time"
 
-	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jetski-sh/jetski/internal/apierrors"
-	"github.com/jetski-sh/jetski/internal/auth"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
-	"github.com/jetski-sh/jetski/internal/env"
 	"github.com/jetski-sh/jetski/internal/types"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
@@ -62,44 +61,43 @@ func LoggingMiddleware(handler http.Handler) http.Handler {
 	return http.HandlerFunc(fn)
 }
 
-func AuthMiddleware(oidcProvider *oidc.Provider) func(next http.Handler) http.Handler {
+func AuthMiddleware(jwkSet jwk.Set) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 			logger := internalctx.GetLogger(ctx)
 			authHeader := r.Header.Get("Authorization")
-			var rawIDToken string
+			var rawAccessToken string
 			parts := strings.Split(authHeader, "Bearer ")
 			if len(parts) == 2 {
-				rawIDToken = parts[1]
+				rawAccessToken = parts[1]
 			}
-			verifier := oidcProvider.Verifier(&oidc.Config{ClientID: env.OIDCClientID()})
-			idToken, err := verifier.Verify(ctx, rawIDToken)
+			parsedAccessToken, err := jwt.ParseString(rawAccessToken, jwt.WithKeySet(jwkSet))
 			if err != nil {
-				logger.Info("failed to verify token", zap.Error(err))
+				logger.Info("failed to parse token", zap.Error(err))
 				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
-			var claims auth.UserAuthInfo
-			if err := idToken.Claims(&claims); err != nil {
-				logger.Error("failed to parse token claims", zap.Error(err))
-				// TODO sentry
-				http.Error(w, "failed to parse token claims", http.StatusUnauthorized)
+			var email string
+			err = parsedAccessToken.Get("email", &email)
+			if err != nil {
+				logger.Error("no email in token", zap.Error(err))
+				http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 				return
 			}
 			var user *types.UserAccount
-			if user, err = db.GetUserByEmail(ctx, claims.Email); err != nil {
+			if user, err = db.GetUserByEmail(ctx, email); err != nil {
 				if errors.Is(err, apierrors.ErrNotFound) {
-					logger.Info("no user found for email", zap.Error(err), zap.String("email", claims.Email))
+					logger.Info("no user found for email", zap.Error(err), zap.String("email", email))
 					http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 					return
 				}
-				logger.Error("failed to get user by email", zap.Error(err), zap.String("email", claims.Email))
+				logger.Error("failed to get user by email", zap.Error(err), zap.String("email", email))
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 				// TODO sentry
 				return
 			}
-			ctx = internalctx.WithUserAuthInfo(ctx, &claims)
+			ctx = internalctx.WithAccessToken(ctx, parsedAccessToken)
 			ctx = internalctx.WithUser(ctx, user)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
@@ -112,19 +110,26 @@ func SentryUser(h http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		if hub := sentry.GetHubFromContext(ctx); hub != nil {
-			user := internalctx.GetUserAuthInfo(ctx)
-			hub.Scope().SetUser(sentry.User{
-				ID:    user.Subject,
-				Email: user.Email,
-			})
+			token := internalctx.GetAccessToken(ctx)
+			if sub, ok := token.Subject(); ok {
+				var email string
+				_ = token.Get("email", &email)
+				hub.Scope().SetUser(sentry.User{
+					ID:    sub,
+					Email: email,
+				})
+			}
 		}
 		h.ServeHTTP(w, r)
 	})
 }
 
 func RateLimitUserIDKey(r *http.Request) (string, error) {
-	user := internalctx.GetUserAuthInfo(r.Context())
-	return user.Subject, nil
+	token := internalctx.GetAccessToken(r.Context())
+	if sub, ok := token.Subject(); ok {
+		return sub, nil
+	}
+	return "", nil
 }
 
 func SetRequestPattern(next http.Handler) http.Handler {

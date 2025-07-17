@@ -2,9 +2,9 @@ package context
 
 import (
 	"context"
-	"github.com/jetski-sh/jetski/internal/auth"
 	"github.com/jetski-sh/jetski/internal/db/queryable"
 	"github.com/jetski-sh/jetski/internal/types"
+	"github.com/lestrrat-go/jwx/v3/jwt"
 
 	"go.uber.org/zap"
 )
@@ -15,7 +15,7 @@ const (
 	ctxKeyDb contextKey = iota
 	ctxKeyLogger
 	ctxKeyIPAddress
-	ctxKeyUserAuthInfo
+	ctxKeyAccessToken
 	ctxKeyUser
 )
 
@@ -60,17 +60,17 @@ func WithRequestIPAddress(ctx context.Context, address string) context.Context {
 	return context.WithValue(ctx, ctxKeyIPAddress, address)
 }
 
-func GetUserAuthInfo(ctx context.Context) *auth.UserAuthInfo {
-	if val, ok := ctx.Value(ctxKeyUserAuthInfo).(*auth.UserAuthInfo); ok {
+func GetAccessToken(ctx context.Context) jwt.Token {
+	if val, ok := ctx.Value(ctxKeyAccessToken).(jwt.Token); ok {
 		if val != nil {
 			return val
 		}
 	}
-	panic("no user auth info in context")
+	panic("no token in context")
 }
 
-func WithUserAuthInfo(ctx context.Context, user *auth.UserAuthInfo) context.Context {
-	return context.WithValue(ctx, ctxKeyUserAuthInfo, user)
+func WithAccessToken(ctx context.Context, token jwt.Token) context.Context {
+	return context.WithValue(ctx, ctxKeyAccessToken, token)
 }
 
 func GetUser(ctx context.Context) *types.UserAccount {

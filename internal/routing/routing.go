@@ -1,15 +1,14 @@
 package routing
 
 import (
+	"github.com/lestrrat-go/jwx/v3/jwk"
 	"net/http"
 	"time"
 
-	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/frontend"
 	"github.com/jetski-sh/jetski/internal/handlers"
 	"github.com/jetski-sh/jetski/internal/middleware"
@@ -18,7 +17,7 @@ import (
 )
 
 func NewRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, oidcProvider *oidc.Provider,
+	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set,
 ) http.Handler {
 	router := chi.NewRouter()
 	router.Use(
@@ -27,7 +26,7 @@ func NewRouter(
 		// Reject bodies larger than 1MiB
 		chimiddleware.RequestSize(1048576),
 	)
-	router.Mount("/api", ApiRouter(logger, db, tracers, oidcProvider))
+	router.Mount("/api", ApiRouter(logger, db, tracers, jwkSet))
 	router.Mount("/internal", InternalRouter())
 	router.Mount("/webhook", WebhookRouter(logger, db))
 	router.Mount("/", FrontendRouter())
@@ -35,7 +34,7 @@ func NewRouter(
 }
 
 func ApiRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, oidcProvider *oidc.Provider,
+	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set,
 ) http.Handler {
 	r := chi.NewRouter()
 	r.Use(
@@ -45,7 +44,7 @@ func ApiRouter(
 		middleware.LoggerCtxMiddleware(logger),
 		middleware.LoggingMiddleware,
 		middleware.ContextInjectorMiddleware(db),
-		middleware.AuthMiddleware(oidcProvider),
+		middleware.AuthMiddleware(jwkSet),
 	)
 
 	r.Route("/v1", func(r chi.Router) {
@@ -56,11 +55,6 @@ func ApiRouter(
 			httprate.Limit(60, 1*time.Minute, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
 			httprate.Limit(2000, 1*time.Hour, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
 		)
-
-		r.Get("/whoami", func(w http.ResponseWriter, r *http.Request) {
-			user := context.GetUserAuthInfo(r.Context())
-			_, _ = w.Write([]byte(user.Email))
-		})
 
 		r.Route("/organizations", handlers.OrganizationsRouter)
 		r.Route("/projects", handlers.ProjectsRouter)
