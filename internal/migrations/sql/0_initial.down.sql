@@ -13,6 +13,7 @@ DROP INDEX IF EXISTS fk_MCPServerLog_deployment_revision_id;
 DROP TABLE IF EXISTS MCPServerLog;
 
 DROP INDEX IF EXISTS fk_DeploymentRevisionEvent_deployment_revision_id;
+ALTER TABLE Project DROP COLUMN latest_deployment_revision_event_id;
 DROP TABLE IF EXISTS DeploymentRevisionEvent;
 
 DROP TYPE IF EXISTS DEPLOYMENT_REVISION_EVENT_TYPE;

@@ -14,7 +14,7 @@ func CreateDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUI
 	rows, err := db.Query(ctx, `
 		INSERT INTO DeploymentRevision (project_id, created_by, port, oci_url)
 		VALUES (@projectID, @createdBy, @port, @ociUrl)
-		RETURNING id, created_at, created_by, project_id, port, oci_url
+		RETURNING id, created_at, created_by, project_id, port, oci_url, '#11' as build_number -- TODO build number
 	`, pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "port": port, "ociUrl": ociUrl})
 	if err != nil {
 		return nil, err
@@ -34,9 +34,20 @@ func CreateDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUI
 
 func AddDeploymentRevisionEvent(ctx context.Context, deploymentRevisionID uuid.UUID, eventType types.DeploymentRevisionEventType) error {
 	db := internalctx.GetDb(ctx)
-	_, err := db.Exec(ctx, `
+	var eventID uuid.UUID
+	err := db.QueryRow(ctx, `
 		INSERT INTO DeploymentRevisionEvent (deployment_revision_id, type)
 		VALUES (@drid, @type)
-	`, pgx.NamedArgs{"drid": deploymentRevisionID, "type": eventType})
+		RETURNING id
+	`, pgx.NamedArgs{"drid": deploymentRevisionID, "type": eventType}).Scan(&eventID)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec(ctx, `
+		UPDATE Project SET latest_deployment_revision_event_id = @eventID
+		WHERE id = (
+			SELECT project_id FROM DeploymentRevision WHERE id = @drid
+		)
+	`, pgx.NamedArgs{"eventID": eventID, "drid": deploymentRevisionID})
 	return err
 }

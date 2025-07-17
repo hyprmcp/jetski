@@ -36,6 +36,7 @@ organizations:
             events:
               - type: progressing
               - type: ok
+              - type: error
       - name: v0-jetski-frontend
         deploymentRevisions:
           - port: 8080

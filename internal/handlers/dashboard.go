@@ -12,6 +12,18 @@ func DashboardRouter(r chi.Router) {
 	r.Get("/projects", getProjectsForDashboard)
 }
 
+/*
+  {
+    name: 'v0-jetski-mcp',
+    initial: 'N',
+    url: 'jetski.jetski.cloud/v0-jetski-mcp/mcp',
+    deploymentStatus: 'deployed',
+    buildNumber: '#44',
+    lastDeployed: '15m ago',
+    healthStatus: 'healthy',
+  }
+*/
+
 func getProjectsForDashboard(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := internalctx.GetLogger(ctx)
@@ -23,4 +35,5 @@ func getProjectsForDashboard(w http.ResponseWriter, r *http.Request) {
 	} else {
 		RespondJSON(w, projects)
 	}
+
 }
