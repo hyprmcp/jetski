@@ -73,12 +73,16 @@ interface DeploymentRevisionSummary extends DeploymentRevision {
                       ) {
                         @switch (ev.type) {
                           @case ('ok') {
-                            <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                            <div
+                              class="w-2 h-2 rounded-full bg-green-500"
+                            ></div>
                             <span class="text-xs text-green-600">deployed</span>
                           }
                           @case ('progressing') {
                             <div class="w-2 h-2 rounded-full bg-blue-500"></div>
-                            <span class="text-xs text-blue-600">progressing</span>
+                            <span class="text-xs text-blue-600"
+                              >progressing</span
+                            >
                           }
                           @case ('error') {
                             <div class="w-2 h-2 rounded-full bg-red-500"></div>
@@ -154,49 +158,4 @@ export class RecentDeploymentsComponent {
       parse: (value) => value as DeploymentRevisionSummary[],
     },
   );
-
-  recentPreviews = [
-    {
-      project: 'v0-jetski',
-      author: 'John Smith',
-      status: 'deployed',
-      timestamp: '2m ago',
-      buildNumber: '#45',
-    },
-    {
-      project: 'v0-jetski-mcp',
-      author: 'Sarah Johnson',
-      status: 'deployed',
-      timestamp: '15m ago',
-      buildNumber: '#44',
-    },
-    {
-      project: 'v0-jetski/frontend',
-      author: 'Mike Chen',
-      status: 'deployed',
-      timestamp: '32m ago',
-      buildNumber: '#43',
-    },
-    {
-      project: 'v0-jetski',
-      author: 'Emma Wilson',
-      status: 'error',
-      timestamp: '1 hour ago',
-      buildNumber: '#42',
-    },
-    {
-      project: 'v0-jetski-mcp',
-      author: 'David Rodriguez',
-      status: 'superseded',
-      timestamp: '2h ago',
-      buildNumber: '#41',
-    },
-    {
-      project: 'v0-jetski/frontend',
-      author: 'Lisa Park',
-      status: 'superseded',
-      timestamp: '3h ago',
-      buildNumber: '#40',
-    },
-  ];
 }
