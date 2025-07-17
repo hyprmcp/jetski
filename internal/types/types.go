@@ -1,8 +1,9 @@
 package types
 
 import (
-	"github.com/google/uuid"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type Organization struct {
@@ -57,17 +58,18 @@ type DeploymentRevisionEvent struct {
 }
 
 type MCPServerLog struct {
-	ID                   uuid.UUID  `db:"id" json:"id"`
-	StartedAt            time.Time  `db:"started_at" json:"startedAt"`
-	DurationMs           int64      `db:"duration_ms" json:"durationMs"`
-	OrganizationID       uuid.UUID  `db:"organization_id" json:"organizationId"`
-	DeploymentRevisionID uuid.UUID  `db:"deployment_revision_id" json:"deploymentRevisionId"`
-	AuthTokenDigest      *string    `db:"auth_token_digest" json:"authTokenDigest"`
-	UserAccountID        *uuid.UUID `db:"user_account_id" json:"userAccountId"`
-	ToolName             string     `db:"tool_name" json:"toolName"`
-	ToolValues           *string    `db:"tool_values" json:"toolValues"`
-	ToolResponse         *string    `db:"tool_response" json:"-"`
-	UserAgent            *string    `db:"user_agent" json:"userAgent"`
+	ID                   uuid.UUID     `db:"id" json:"id"`
+	UserAccountID        *uuid.UUID    `db:"user_account_id" json:"userAccountId"`
+	MCPSessionID         *string       `db:"mcp_session_id" json:"mcpSessionId"`
+	StartedAt            time.Time     `db:"started_at" json:"startedAt"`
+	Duration             time.Duration `db:"duration" json:"duration"`
+	DeploymentRevisionID uuid.UUID     `db:"deployment_revision_id" json:"deploymentRevisionId"`
+	AuthTokenDigest      *string       `db:"auth_token_digest" json:"authTokenDigest"`
+	MCPRequest           any           `db:"mcp_request" json:"mcpRequest,omitempty"`
+	MCPResponse          any           `db:"mcp_response" json:"mcpResponse,omitempty"`
+	UserAgent            *string       `db:"user_agent" json:"userAgent,omitempty"`
+	HttpStatusCode       *int          `db:"http_status_code" json:"httpStatusCode,omitempty"`
+	HttpError            *string       `db:"http_error" json:"httpError,omitempty"`
 }
 
 type ContextPropertyType string

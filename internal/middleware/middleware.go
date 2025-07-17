@@ -2,6 +2,10 @@ package middleware
 
 import (
 	"errors"
+	"net/http"
+	"strings"
+	"time"
+
 	"github.com/coreos/go-oidc/v3/oidc"
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
@@ -17,9 +21,6 @@ import (
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
-	"net/http"
-	"strings"
-	"time"
 )
 
 func ContextInjectorMiddleware(
