@@ -5,6 +5,17 @@ import {
   HlmCardContentDirective,
 } from '@spartan-ng/helm/card';
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { httpResource } from '@angular/common/http';
+
+interface ProjectItem {
+  name: string;
+  initial: string;
+  url: string;
+  deploymentStatus: string;
+  buildNumber: string;
+  lastDeployed: string;
+  healthStatus: string;
+}
 
 @Component({
   selector: 'app-projects-grid',
@@ -19,7 +30,7 @@ import { HlmH3Directive } from '@spartan-ng/helm/typography';
     <div>
       <h3 hlmH3>Projects</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        @for (project of projects; track project.name) {
+        @for (project of projects.value(); track project.name) {
           <section hlmCard>
             <div hlmCardContent>
               <div class="flex items-start justify-between mb-4">
@@ -117,7 +128,10 @@ import { HlmH3Directive } from '@spartan-ng/helm/typography';
   `,
 })
 export class ProjectsGridComponent {
-  projects = [
+  projects = httpResource(() => `/api/v1/dashboard/projects`, {
+    parse: (value) => value as ProjectItem[],
+  });
+  /*projects = [
     {
       name: 'v0-jetski',
       initial: 'N',
@@ -145,5 +159,5 @@ export class ProjectsGridComponent {
       lastDeployed: '32m ago',
       healthStatus: 'healthy',
     },
-  ];
+  ];*/
 }
