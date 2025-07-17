@@ -1,8 +1,7 @@
 import { httpResource } from '@angular/common/http';
+import { Base } from './base';
 
-export interface Organization {
-  id: string;
-  createdAt: string;
+export interface Organization extends Base {
   name: string;
 }
 

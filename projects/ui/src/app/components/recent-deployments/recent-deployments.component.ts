@@ -5,20 +5,8 @@ import {
   HlmCardDirective,
 } from '@spartan-ng/helm/card';
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
-import { httpResource } from '@angular/common/http';
-import {
-  DeploymentRevision,
-  DeploymentRevisionEvent,
-  Project,
-  UserAccount,
-} from '../../types/types';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
-
-interface DeploymentRevisionSummary extends DeploymentRevision {
-  project: Project;
-  author: UserAccount;
-  projectLatestDeploymentRevisionEvent: DeploymentRevisionEvent | undefined;
-}
+import { getRecentDeployments } from '../../../api/dashboard';
 
 @Component({
   selector: 'app-recent-deployments',
@@ -152,10 +140,5 @@ interface DeploymentRevisionSummary extends DeploymentRevision {
   `,
 })
 export class RecentDeploymentsComponent {
-  deploymentRevisions = httpResource(
-    () => `/api/v1/dashboard/deployment-revisions`,
-    {
-      parse: (value) => value as DeploymentRevisionSummary[],
-    },
-  );
+  readonly deploymentRevisions = getRecentDeployments();
 }

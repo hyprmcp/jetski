@@ -5,22 +5,8 @@ import {
   HlmCardDirective,
 } from '@spartan-ng/helm/card';
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
-import { httpResource } from '@angular/common/http';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
-import {
-  Base,
-  DeploymentRevision,
-  DeploymentRevisionEvent,
-  Organization,
-} from '../../types/types';
-
-interface ProjectSummary extends Base {
-  createdBy: string;
-  name: string;
-  latestDeploymentRevision: DeploymentRevision | undefined;
-  latestDeploymentRevisionEvent: DeploymentRevisionEvent | undefined;
-  organization: Organization;
-}
+import { getProjectSummaries, ProjectSummary } from '../../../api/dashboard';
 
 @Component({
   selector: 'app-projects-grid',
@@ -156,9 +142,7 @@ interface ProjectSummary extends Base {
   `,
 })
 export class ProjectsGridComponent {
-  projectSummaries = httpResource(() => `/api/v1/dashboard/projects`, {
-    parse: (value) => value as ProjectSummary[],
-  });
+  readonly projectSummaries = getProjectSummaries();
 
   getProjectUrl(project: ProjectSummary): string {
     return `${project.organization.name}.jetski.cloud/${project.name}/mcp`;
