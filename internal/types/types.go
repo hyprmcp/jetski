@@ -111,5 +111,5 @@ type DeploymentRevisionSummary struct {
 	DeploymentRevision
 	Project                              Project                 `json:"project"`
 	Author                               UserAccount             `json:"author"`
-	ProjectLatestDeploymentRevisionEvent DeploymentRevisionEvent `json:"projectLatestDeploymentRevisionEvent""`
+	ProjectLatestDeploymentRevisionEvent DeploymentRevisionEvent `json:"projectLatestDeploymentRevisionEvent"`
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
 	"os"
+	"time"
 )
 
 type generateOptions struct{}
@@ -51,11 +52,13 @@ type testProject struct {
 type testDeploymentRevision struct {
 	Port   int                 `yaml:"port"`
 	OCIUrl string              `yaml:"ociUrl"`
+	Ago    string              `yaml:"ago"`
 	Events []testRevisionEvent `yaml:"events"`
 }
 
 type testRevisionEvent struct {
 	Type string `yaml:"type"`
+	Ago  string `yaml:"ago"`
 }
 
 func runGenerate(ctx context.Context, opts generateOptions) {
@@ -94,13 +97,23 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 				}
 				fmt.Printf("  Created project: %s\n", proj.Name)
 				for _, drData := range projData.DeploymentRevisions {
-					dr, err := db.CreateDeploymentRevision(ctx, proj.ID, user.ID, drData.Port, drData.OCIUrl)
+					ago, err := time.ParseDuration(drData.Ago)
+					if err != nil {
+						return fmt.Errorf("failed to parse duration: %w", err)
+					}
+					ts := time.Now().UTC().Add(ago * -1)
+					dr, err := db.CreateDeploymentRevision(ctx, proj.ID, user.ID, drData.Port, drData.OCIUrl, &ts)
 					if err != nil {
 						return fmt.Errorf("failed to create deployment revision: %w", err)
 					}
 					fmt.Printf("    Created deployment revision: %s\n", dr.ID)
 					for _, eventData := range drData.Events {
-						err := db.AddDeploymentRevisionEvent(ctx, dr.ID, types.DeploymentRevisionEventType(eventData.Type))
+						ago, err := time.ParseDuration(eventData.Ago)
+						if err != nil {
+							return fmt.Errorf("failed to parse duration: %w", err)
+						}
+						ts := time.Now().UTC().Add(ago * -1)
+						err = db.AddDeploymentRevisionEvent(ctx, dr.ID, types.DeploymentRevisionEventType(eventData.Type), &ts)
 						if err != nil {
 							return fmt.Errorf("failed to add deployment revision event: %w", err)
 						}
