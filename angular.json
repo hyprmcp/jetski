@@ -13,6 +13,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "outputPath": "internal/frontend/dist/ui",
             "browser": "projects/ui/src/main.ts",
             "tsConfig": "projects/ui/tsconfig.app.json",
             "assets": [
@@ -37,7 +38,13 @@
                   "maximumError": "8kB"
                 }
               ],
-              "outputHashing": "all"
+              "outputHashing": "all",
+              "fileReplacements": [
+                {
+                  "replace": "projects/ui/src/env/env.ts",
+                  "with": "projects/ui/src/env/env.prod.ts"
+                }
+              ]
             },
             "development": {
               "optimization": false,
@@ -56,6 +63,9 @@
             "development": {
               "buildTarget": "ui:build:development"
             }
+          },
+          "options": {
+            "proxyConfig": "projects/ui/src/proxy.conf.json"
           },
           "defaultConfiguration": "development"
         },
@@ -82,7 +92,7 @@
               "projects/ui/**/*.ts",
               "projects/ui/**/*.html"
             ],
-            "eslintConfig": "projects/ui/eslint.config.js"
+            "eslintConfig": "projects/ui/eslint.config.cjs"
           }
         }
       }

@@ -1,3 +1,24 @@
 [tools]
 node = "24"
 pnpm = "10"
+go = "1.24"
+golangci-lint = "2"
+
+[env]
+JETSKI_ENV = '.env.development.local'
+
+[tasks.tidy]
+run = "go mod tidy"
+
+[tasks.lint]
+depends = ["tidy"]
+run = "golangci-lint run"
+
+[tasks.serve]
+run = "go run . serve"
+
+[tasks.generate]
+run = "go run . generate"
+
+[tasks.purge]
+run = "go run . migrate --down"
