@@ -29,7 +29,7 @@ func CreateProject(ctx context.Context, orgID, createdBy uuid.UUID, name string)
 func GetProjectsForUser(ctx context.Context, userID uuid.UUID) ([]types.Project, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
-		SELECT p.id, p.created_at, p.created_by, p.organization_id, p.name, p.latest_deployment_revision_id
+		SELECT p.id, p.created_at, p.created_by, p.organization_id, p.name, p.latest_deployment_revision_id, latest_deployment_revision_event_id
 		FROM Project p
 		INNER JOIN Organization o ON p.organization_id = o.id
 		INNER JOIN Organization_UserAccount j ON o.id = j.organization_id
