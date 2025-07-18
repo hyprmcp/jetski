@@ -7,6 +7,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url
             ago: 23h
+            logs: 10
             events:
               - type: progressing
                 ago: 23h
@@ -15,6 +16,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 22h30m
+            logs: 10000
             events:
               - type: progressing
                 ago: 22h30m
@@ -25,6 +27,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 25h
+            logs: 1500
             events:
               - type: progressing
                 ago: 25h
@@ -33,6 +36,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 24h
+            logs: 1000
             events:
               - type: progressing
                 ago: 24h
@@ -41,6 +45,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 20h
+            logs: 100
             events:
               - type: progressing
                 ago: 20h
@@ -49,6 +54,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 18h
+            logs: 10000
             events:
               - type: progressing
                 ago: 18h
@@ -61,6 +67,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 15m
+            logs: 8
             events:
               - type: progressing
                 ago: 15m

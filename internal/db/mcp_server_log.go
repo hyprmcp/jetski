@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -59,4 +60,24 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 
 	*data = result
 	return nil
+}
+
+func GetLogsForProject(ctx context.Context, projectId uuid.UUID) ([]types.MCPServerLog, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT * FROM MCPServerLog
+		WHERE deployment_revision_id IN (
+			SELECT id FROM DeploymentRevision WHERE project_id = @projectId
+		)
+		ORDER BY started_at DESC
+		LIMIT 100
+	`, pgx.NamedArgs{"projectId": projectId})
+	if err != nil {
+		return nil, err
+	}
+	logs, err := pgx.CollectRows(rows, pgx.RowToStructByName[types.MCPServerLog])
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
 }
