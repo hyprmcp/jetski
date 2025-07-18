@@ -40,7 +40,6 @@ CREATE TABLE DeploymentRevision (
 );
 CREATE INDEX fk_DeploymentRevision_project_id ON DeploymentRevision (project_id);
 ALTER TABLE Project ADD COLUMN latest_deployment_revision_id UUID REFERENCES DeploymentRevision (id);
--- TODO also latest deployment revision event?
 CREATE INDEX fk_Project_latest_deployment_revision_id ON Project (latest_deployment_revision_id);
 
 CREATE TYPE DEPLOYMENT_REVISION_EVENT_TYPE AS ENUM ('ok', 'error', 'progressing');
@@ -52,6 +51,8 @@ CREATE TABLE DeploymentRevisionEvent (
   type DEPLOYMENT_REVISION_EVENT_TYPE NOT NULL
 );
 CREATE INDEX fk_DeploymentRevisionEvent_deployment_revision_id ON DeploymentRevisionEvent (deployment_revision_id);
+ALTER TABLE Project ADD COLUMN latest_deployment_revision_event_id UUID REFERENCES DeploymentRevisionEvent (id);
+CREATE INDEX fk_Project_latest_deployment_revision_event_id ON Project (latest_deployment_revision_event_id);
 
 CREATE TABLE MCPServerLog (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),

@@ -6,42 +6,64 @@ organizations:
         deploymentRevisions:
           - port: 8080
             ociUrl: some-oci-url
+            ago: 23h
             events:
               - type: progressing
+                ago: 23h
               - type: error
+                ago: 22h59m
           - port: 8080
             ociUrl: some-oci-url-fixed
+            ago: 22h30m
             events:
               - type: progressing
+                ago: 22h30m
               - type: ok
+                ago: 22h28m
       - name: v0-jetski-mcp
         deploymentRevisions:
           - port: 8080
             ociUrl: some-oci-url-fixed
+            ago: 25h
             events:
               - type: progressing
+                ago: 25h
               - type: ok
+                ago: 24h55m
           - port: 8080
             ociUrl: some-oci-url-fixed
+            ago: 24h
             events:
               - type: progressing
+                ago: 24h
               - type: ok
+                ago: 23h57m
           - port: 8080
             ociUrl: some-oci-url-fixed
+            ago: 20h
             events:
               - type: progressing
+                ago: 20h
               - type: error
+                ago: 19h
           - port: 8080
             ociUrl: some-oci-url-fixed
+            ago: 18h
             events:
               - type: progressing
+                ago: 18h
               - type: ok
+                ago: 17h57m
+              - type: error
+                ago: 12h
       - name: v0-jetski-frontend
         deploymentRevisions:
           - port: 8080
             ociUrl: some-oci-url-fixed
+            ago: 15m
             events:
               - type: progressing
+                ago: 15m
   - name: test
     projects:
       - name: empty-project

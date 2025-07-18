@@ -1,12 +1,12 @@
 import { httpResource } from '@angular/common/http';
+import { Base } from './base';
 
-export interface Project {
-  id: string;
-  createdAt: string;
+export interface Project extends Base {
   name: string;
   organizationId: string;
   createdBy: string;
   latestDeploymentRevisionId: string;
+  latestDeploymentRevisionEventId: string | undefined;
 }
 
 export function getProjects() {

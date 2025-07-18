@@ -1,21 +1,12 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
-  HlmCardDirective,
   HlmCardContentDirective,
+  HlmCardDirective,
 } from '@spartan-ng/helm/card';
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
-import { httpResource } from '@angular/common/http';
-
-interface ProjectItem {
-  name: string;
-  initial: string;
-  url: string;
-  deploymentStatus: string;
-  buildNumber: string;
-  lastDeployed: string;
-  healthStatus: string;
-}
+import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
+import { getProjectSummaries, ProjectSummary } from '../../../api/dashboard';
 
 @Component({
   selector: 'app-projects-grid',
@@ -25,12 +16,13 @@ interface ProjectItem {
     HlmCardDirective,
     HlmCardContentDirective,
     HlmH3Directive,
+    RelativeDatePipe,
   ],
   template: `
     <div>
       <h3 hlmH3>Projects</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        @for (project of projects.value(); track project.name) {
+        @for (project of projectSummaries.value(); track project.name) {
           <section hlmCard>
             <div hlmCardContent>
               <div class="flex items-start justify-between mb-4">
@@ -38,12 +30,12 @@ interface ProjectItem {
                   <div
                     class="w-10 h-10 bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg flex items-center justify-center text-white font-bold"
                   >
-                    {{ project.initial }}
+                    {{ project.name.at(0)?.toUpperCase() }}
                   </div>
                   <div>
                     <h4 class="font-semibold">{{ project.name }}</h4>
                     <p class="text-sm text-muted-foreground">
-                      {{ project.url }}
+                      {{ getProjectUrl(project) }}
                     </p>
                   </div>
                 </div>
@@ -85,40 +77,62 @@ interface ProjectItem {
               <div class="space-y-3">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center space-x-2">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span class="text-sm text-green-600">{{
-                      project.deploymentStatus
-                    }}</span>
-                    <span class="text-xs text-muted-foreground">{{
-                      project.buildNumber
-                    }}</span>
+                    @if (project.latestDeploymentRevision) {
+                      <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                      <span class="text-sm text-green-600"> deployed </span>
+
+                      <span class="text-xs text-muted-foreground">{{
+                        project.latestDeploymentRevision.buildNumber
+                      }}</span>
+                    } @else {
+                      <div
+                        class="w-2 h-2 rounded-full bg-muted-foreground"
+                      ></div>
+                      <span class="text-sm text-muted-foreground">
+                        not deployed yet
+                      </span>
+                    }
                   </div>
                   <div class="flex items-center space-x-1">
-                    <div class="w-2 h-2 rounded-full bg-green-500"></div>
-                    <span class="text-xs text-green-600">{{
-                      project.healthStatus
-                    }}</span>
+                    @if (project.latestDeploymentRevisionEvent; as ev) {
+                      @switch (ev.type) {
+                        @case ('ok') {
+                          <div class="w-2 h-2 rounded-full bg-green-500"></div>
+                          <span class="text-xs text-green-600">healthy</span>
+                        }
+                        @case ('progressing') {
+                          <div class="w-2 h-2 rounded-full bg-blue-500"></div>
+                          <span class="text-xs text-blue-600">progressing</span>
+                        }
+                        @case ('error') {
+                          <div class="w-2 h-2 rounded-full bg-red-500"></div>
+                          <span class="text-xs text-red-600">error</span>
+                        }
+                      }
+                    }
                   </div>
                 </div>
 
-                <div
-                  class="flex items-center space-x-1 text-xs text-muted-foreground"
-                >
-                  <svg
-                    class="w-3 h-3"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                @if (project.latestDeploymentRevision; as dr) {
+                  <div
+                    class="flex items-center space-x-1 text-xs text-muted-foreground"
                   >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    ></path>
-                  </svg>
-                  <span>Last deployed {{ project.lastDeployed }}</span>
-                </div>
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path>
+                    </svg>
+                    <span>Last deployed {{ dr.createdAt | relativeDate }}</span>
+                  </div>
+                }
               </div>
             </div>
           </section>
@@ -128,36 +142,9 @@ interface ProjectItem {
   `,
 })
 export class ProjectsGridComponent {
-  projects = httpResource(() => `/api/v1/dashboard/projects`, {
-    parse: (value) => value as ProjectItem[],
-  });
-  /*projects = [
-    {
-      name: 'v0-jetski',
-      initial: 'N',
-      url: 'jetski.jetski.cloud/v0-jetski/mcp',
-      deploymentStatus: 'deployed',
-      buildNumber: '#45',
-      lastDeployed: '2m ago',
-      healthStatus: 'healthy',
-    },
-    {
-      name: 'v0-jetski-mcp',
-      initial: 'N',
-      url: 'jetski.jetski.cloud/v0-jetski-mcp/mcp',
-      deploymentStatus: 'deployed',
-      buildNumber: '#44',
-      lastDeployed: '15m ago',
-      healthStatus: 'healthy',
-    },
-    {
-      name: 'v0-jetski/frontend',
-      initial: 'N',
-      url: 'jetski.jetski.cloud/v0-jetski-frontend/mcp',
-      deploymentStatus: 'deployed',
-      buildNumber: '#43',
-      lastDeployed: '32m ago',
-      healthStatus: 'healthy',
-    },
-  ];*/
+  readonly projectSummaries = getProjectSummaries();
+
+  getProjectUrl(project: ProjectSummary): string {
+    return `${project.organization.name}.jetski.cloud/${project.name}/mcp`;
+  }
 }

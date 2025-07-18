@@ -10,17 +10,31 @@ import (
 
 func DashboardRouter(r chi.Router) {
 	r.Get("/projects", getProjectsForDashboard)
+	r.Get("/deployment-revisions", getDeploymentRevisionsForDashboard)
 }
 
 func getProjectsForDashboard(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := internalctx.GetLogger(ctx)
 	user := internalctx.GetUser(ctx)
-	if projects, err := db.GetProjectsForUser(ctx, user.ID); err != nil {
+	if summaries, err := db.GetProjectSummaries(ctx, user.ID); err != nil {
 		log.Error("failed to get projects for user", zap.Error(err))
 		// TODO sentry
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 	} else {
-		RespondJSON(w, projects)
+		RespondJSON(w, summaries)
+	}
+}
+
+func getDeploymentRevisionsForDashboard(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	log := internalctx.GetLogger(ctx)
+	user := internalctx.GetUser(ctx)
+	if summaries, err := db.GetRecentDeploymentRevisionSummaries(ctx, user.ID); err != nil {
+		log.Error("failed to deployment revisions for user", zap.Error(err))
+		// TODO sentry
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	} else {
+		RespondJSON(w, summaries)
 	}
 }
