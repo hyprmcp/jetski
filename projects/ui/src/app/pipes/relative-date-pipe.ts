@@ -1,14 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import dayjs from 'dayjs';
+import { formatDistanceToNow } from 'date-fns';
 
 @Pipe({ name: 'relativeDate' })
 export class RelativeDatePipe implements PipeTransform {
-  transform(value: dayjs.ConfigType): string {
-    const d = dayjs(value);
-    if (d.isBefore()) {
-      return dayjs(value).fromNow();
-    } else {
-      return dayjs(value).toNow();
-    }
+  transform(value: string): string {
+    return formatDistanceToNow(value, { addSuffix: true });
   }
 }

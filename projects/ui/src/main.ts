@@ -6,12 +6,6 @@ import * as Sentry from '@sentry/angular';
 import { environment } from './env/env';
 import { buildConfig } from './buildconfig';
 import posthog from 'posthog-js';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
-import relativeTime from 'dayjs/plugin/relativeTime';
-
-dayjs.extend(duration);
-dayjs.extend(relativeTime);
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
 
