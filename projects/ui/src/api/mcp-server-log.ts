@@ -6,10 +6,17 @@ export interface MCPServerLog {
   duration: number;
   deploymentRevisionId: string;
   authTokenDigest?: string | null;
-  mcpRequest?: any;
+  mcpRequest?: JsonRpcRequest;
   mcpResponse?: any;
   userAgent?: string | null;
   httpStatusCode?: number | null;
   httpError?: string | null;
+}
+
+export interface JsonRpcRequest {
+  jsonrpc: string;
+  method: string;
+  params: any;
+  id: number;
 }
 

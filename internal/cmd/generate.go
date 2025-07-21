@@ -9,8 +9,10 @@ import (
 	"github.com/jetski-sh/jetski/internal/svc"
 	"github.com/jetski-sh/jetski/internal/types"
 	"github.com/jetski-sh/jetski/internal/util"
+	"github.com/sourcegraph/jsonrpc2"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -125,14 +127,23 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							UserAccountID:        &user.ID,
 							MCPSessionID:         util.PtrTo("mcp-session-id-xyz lorem ipsum whatever lorem ipsum whatever"),
 							StartedAt:            time.Now().UTC().Add(time.Duration((5 * time.Second).Nanoseconds() * int64(i))),
-							Duration:             100 * time.Millisecond,
+							Duration:             time.Duration(rand.Intn(1300)) * time.Millisecond,
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
-							MCPRequest:           fmt.Sprintf("{\"data\": \"request-%v lorem ipsum whatever lorem ipsum whatever lorem ipsum whatever\"}", i),
-							MCPResponse:          fmt.Sprintf("{\"data\": \"response-%v lorem ipsum whatever lorem ipsum whatever lorem ipsum whatever\"}", i),
-							UserAgent:            util.PtrTo("some-user-agent 4711 lorem ipsum whatever"),
-							HttpStatusCode:       util.PtrTo(200),
-							HttpError:            nil,
+							MCPRequest: jsonrpc2.Request{
+								Method: fmt.Sprintf("method-%v", i),
+								Params: nil,
+								ID:     jsonrpc2.ID{Num: uint64(i)},
+								Notif:  false,
+							},
+							MCPResponse: jsonrpc2.Response{
+								ID:     jsonrpc2.ID{Num: uint64(i)},
+								Result: nil,
+								Error:  &jsonrpc2.Error{},
+							},
+							UserAgent:      util.PtrTo("some-user-agent 4711 lorem ipsum whatever"),
+							HttpStatusCode: util.PtrTo(200),
+							HttpError:      nil,
 						}
 						err := db.CreateMCPServerLog(ctx, &log)
 						if err != nil {
