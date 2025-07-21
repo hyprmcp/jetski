@@ -14,7 +14,7 @@ export class ProjectDashboardComponent {
   private readonly route = inject(ActivatedRoute);
   projectId = toSignal(
     this.route.paramMap.pipe(
-      map((params) => params.get('projectId') ?? 'asdf'),
+      map((params) => params.get('projectId') ?? ''),
     ),
   );
 }

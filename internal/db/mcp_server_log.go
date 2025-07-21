@@ -62,16 +62,17 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 	return nil
 }
 
-func GetLogsForProject(ctx context.Context, projectId uuid.UUID) ([]types.MCPServerLog, error) {
+func GetLogsForProject(ctx context.Context, projectId uuid.UUID, count int, page int) ([]types.MCPServerLog, error) {
 	db := internalctx.GetDb(ctx)
+	offset := count * page
 	rows, err := db.Query(ctx, `
 		SELECT * FROM MCPServerLog
 		WHERE deployment_revision_id IN (
 			SELECT id FROM DeploymentRevision WHERE project_id = @projectId
 		)
 		ORDER BY started_at DESC
-		LIMIT 100
-	`, pgx.NamedArgs{"projectId": projectId})
+		LIMIT @count OFFSET @offset
+	`, pgx.NamedArgs{"projectId": projectId, "count": count, "offset": offset})
 	if err != nil {
 		return nil, err
 	}
