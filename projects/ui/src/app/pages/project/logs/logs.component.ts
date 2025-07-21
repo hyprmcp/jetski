@@ -25,7 +25,7 @@ import {
 import { httpResource } from '@angular/common/http';
 import { JsonRpcRequest, MCPServerLog } from '../../../../api/mcp-server-log';
 import { TimestampCellComponent } from './timestamp-cell.component';
-import { LogsActionDropdownComponent } from './table/logs-action-dropdown.component';
+import { LogsActionsComponent } from './table/logs-actions.component';
 
 @Component({
   selector: 'app-logs-component',
@@ -229,7 +229,7 @@ export class LogsComponent {
       id: 'action',
       enableHiding: false,
       cell: (info) =>
-        flexRenderComponent(LogsActionDropdownComponent, {
+        flexRenderComponent(LogsActionsComponent, {
           inputs: {
             mcpServerLog: info.row.original,
           },
