@@ -1,18 +1,21 @@
 import { Component, inject } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { LogsComponent } from '../logs/logs.component';
-import { map } from 'rxjs';
+import { filter, map } from 'rxjs';
+import { AsyncPipe } from '@angular/common';
 
 @Component({
-  template: ` <app-logs-component
-    [projectId]="projectId()"
-  ></app-logs-component>`,
-  imports: [LogsComponent],
+  template: `
+    @if (projectId | async; as projectId) {
+      <app-logs-component [projectId]="projectId"></app-logs-component>
+    }
+  `,
+  imports: [LogsComponent, AsyncPipe],
 })
 export class ProjectDashboardComponent {
   private readonly route = inject(ActivatedRoute);
-  projectId = toSignal(
-    this.route.paramMap.pipe(map((params) => params.get('projectId') ?? '')),
+  projectId = this.route.paramMap.pipe(
+    map((params) => params.get('projectId') ?? null),
+    filter((projectId) => projectId !== null),
   );
 }

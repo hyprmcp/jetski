@@ -11,7 +11,6 @@ import { HlmSelectModule } from '@spartan-ng/helm/select';
 import { HlmTableImports } from '@spartan-ng/helm/table';
 import {
   ColumnDef,
-  ColumnFiltersState,
   createAngularTable,
   flexRenderComponent,
   FlexRenderDirective,
@@ -26,6 +25,8 @@ import { httpResource } from '@angular/common/http';
 import { JsonRpcRequest, MCPServerLog } from '../../../../api/mcp-server-log';
 import { TimestampCellComponent } from './timestamp-cell.component';
 import { LogsActionsComponent } from './table/logs-actions.component';
+import { combineLatestWith, distinctUntilChanged, map, tap } from 'rxjs';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-logs-component',
@@ -237,16 +238,47 @@ export class LogsComponent {
     },
   ];
 
-  private readonly _columnFilters = signal<ColumnFiltersState>([]);
   private readonly _sorting = signal<SortingState>([]);
-  private readonly _pagination = signal<PaginationState>({
+  private readonly defaultPagination: PaginationState = {
     pageSize: 10,
     pageIndex: 0,
-  });
+  };
+  private readonly _pagination = signal<PaginationState>(
+    this.defaultPagination,
+  );
 
-  projectId = input<string>();
+  projectId = input.required<string>();
+
+  readonly data$ = toSignal(
+    toObservable(this.projectId).pipe(
+      distinctUntilChanged(),
+      tap(() => {
+        this._pagination.set(this.defaultPagination);
+      }),
+      combineLatestWith(toObservable(this._pagination)),
+      map(([projectId, pagination]) => {
+        return { projectId, pagination };
+      }),
+    ),
+  );
+
   readonly data = httpResource(
-    () => `/api/v1/projects/${this.projectId()}/logs`,
+    () => {
+      const data = this.data$();
+      if (data?.projectId && data?.pagination) {
+        const { projectId, pagination } = data;
+        return {
+          url: `/api/v1/projects/${projectId}/logs`,
+          method: 'GET',
+          params: {
+            page: pagination.pageIndex,
+            count: pagination.pageSize,
+          },
+        };
+      } else {
+        return undefined;
+      }
+    },
     {
       parse: (value) => value as MCPServerLog[],
       defaultValue: [],
@@ -257,17 +289,11 @@ export class LogsComponent {
     data: this.data.value(),
     columns: this._columns,
     state: {
-      columnFilters: this._columnFilters(),
       sorting: this._sorting(),
       pagination: this._pagination(),
     },
-    onColumnFiltersChange: (updater) => {
-      if (updater instanceof Function) {
-        this._columnFilters.update(updater);
-      } else {
-        this._columnFilters.set(updater);
-      }
-    },
+    manualPagination: true,
+    pageCount: -1,
     onSortingChange: (updater) => {
       if (updater instanceof Function) {
         this._sorting.update(updater);
