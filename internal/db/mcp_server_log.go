@@ -62,17 +62,32 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 	return nil
 }
 
-func GetLogsForProject(ctx context.Context, projectId uuid.UUID, count int, page int) ([]types.MCPServerLog, error) {
+// Allowed columns for sorting to prevent SQL injection
+var allowedLogSortColumns = map[string]bool{
+	"started_at": true,
+	"duration":   true,
+	// Add more columns as needed
+}
+
+func GetLogsForProject(ctx context.Context, projectId uuid.UUID, count int, page int, sortBy string, sortDesc bool) ([]types.MCPServerLog, error) {
 	db := internalctx.GetDb(ctx)
 	offset := count * page
-	rows, err := db.Query(ctx, `
+	if !allowedLogSortColumns[sortBy] {
+		sortBy = "started_at"
+	}
+	direction := "ASC"
+	if sortDesc {
+		direction = "DESC"
+	}
+	query := fmt.Sprintf(`
 		SELECT * FROM MCPServerLog
 		WHERE deployment_revision_id IN (
 			SELECT id FROM DeploymentRevision WHERE project_id = @projectId
 		)
-		ORDER BY started_at DESC
+		ORDER BY %s %s
 		LIMIT @count OFFSET @offset
-	`, pgx.NamedArgs{"projectId": projectId, "count": count, "offset": offset})
+	`, sortBy, direction)
+	rows, err := db.Query(ctx, query, pgx.NamedArgs{"projectId": projectId, "count": count, "offset": offset})
 	if err != nil {
 		return nil, err
 	}

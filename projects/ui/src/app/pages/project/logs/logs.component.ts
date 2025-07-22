@@ -27,6 +27,7 @@ import { TimestampCellComponent } from './timestamp-cell.component';
 import { LogsActionsComponent } from './table/logs-actions.component';
 import { combineLatestWith, distinctUntilChanged, map, tap } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { TableHeadSortButtonComponent } from './table/sort-header-button.component';
 
 @Component({
   selector: 'app-logs-component',
@@ -193,7 +194,6 @@ export class LogsComponent {
     {
       accessorKey: 'startedAt',
       id: 'startedAt',
-      header: 'Timestamp',
       cell: (info) =>
         flexRenderComponent(TimestampCellComponent, {
           inputs: {
@@ -201,14 +201,16 @@ export class LogsComponent {
           },
         }),
       enableSorting: true,
+      header: () => flexRenderComponent(TableHeadSortButtonComponent),
     },
     {
       accessorKey: 'duration',
       id: 'duration',
-      header: 'Duration (ms)',
+      header: () => flexRenderComponent(TableHeadSortButtonComponent),
+      // header: 'Duration (ms)',
       cell: (info) =>
         `<span class="capitalize">${info.getValue<number>() / 1000 / 1000}</span>`,
-      enableSorting: false,
+      enableSorting: true,
     },
     {
       accessorKey: 'mcpRequest',
@@ -238,7 +240,13 @@ export class LogsComponent {
     },
   ];
 
-  private readonly _sorting = signal<SortingState>([]);
+  private readonly defaultSorting: SortingState = [
+    {
+      id: 'startedAt',
+      desc: true,
+    },
+  ];
+  private readonly _sorting = signal<SortingState>(this.defaultSorting);
   private readonly defaultPagination: PaginationState = {
     pageSize: 10,
     pageIndex: 0,
@@ -255,9 +263,12 @@ export class LogsComponent {
       tap(() => {
         this._pagination.set(this.defaultPagination);
       }),
-      combineLatestWith(toObservable(this._pagination)),
-      map(([projectId, pagination]) => {
-        return { projectId, pagination };
+      combineLatestWith(
+        toObservable(this._pagination),
+        toObservable(this._sorting),
+      ),
+      map(([projectId, pagination, sorting]) => {
+        return { projectId, pagination, sorting };
       }),
     ),
   );
@@ -265,14 +276,16 @@ export class LogsComponent {
   readonly data = httpResource(
     () => {
       const data = this.data$();
-      if (data?.projectId && data?.pagination) {
-        const { projectId, pagination } = data;
+      if (data?.projectId) {
+        const { projectId, pagination, sorting } = data;
         return {
           url: `/api/v1/projects/${projectId}/logs`,
           method: 'GET',
           params: {
-            page: pagination.pageIndex,
-            count: pagination.pageSize,
+            page: pagination?.pageIndex,
+            count: pagination?.pageSize,
+            sortDesc: sorting?.[0]?.desc ?? '',
+            sortBy: sorting?.[0]?.id ?? '',
           },
         };
       } else {
@@ -294,6 +307,7 @@ export class LogsComponent {
     },
     manualPagination: true,
     pageCount: -1,
+    manualSorting: true,
     onSortingChange: (updater) => {
       if (updater instanceof Function) {
         this._sorting.update(updater);

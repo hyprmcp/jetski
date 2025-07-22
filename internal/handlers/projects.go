@@ -61,7 +61,22 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if logs, err := db.GetLogsForProject(ctx, projectId, count, page); err != nil {
+	sortBy := r.URL.Query().Get("sortBy")
+	if sortBy == "" {
+		sortBy = "started_at"
+	}
+	sortDesc := false
+	if sortDescStr := r.URL.Query().Get("sortDesc"); sortDescStr != "" {
+		// TODO parse
+		if sortDescStr == "true" {
+			sortDesc = true
+		} else if sortDescStr != "false" {
+			http.Error(w, "invalid sortDesc parameter", http.StatusBadRequest)
+			return
+		}
+	}
+
+	if logs, err := db.GetLogsForProject(ctx, projectId, count, page, sortBy, sortDesc); err != nil {
 		log.Error("failed to get logs for project", zap.Error(err))
 		sentry.GetHubFromContext(ctx).CaptureException(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
