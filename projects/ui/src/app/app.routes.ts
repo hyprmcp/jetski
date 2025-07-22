@@ -4,13 +4,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 
 const authGuard: CanActivateFn = () => {
   const oauth = inject(OAuthService);
-  if (oauth.hasValidIdToken()) {
-    console.log('auth guard true');
-    return true;
-  } else {
-    console.log('auth guard false');
-    return false;
-  }
+  return oauth.hasValidIdToken();
 };
 
 export const routes: Routes = [
@@ -25,5 +19,4 @@ export const routes: Routes = [
       },
     ],
   },
-  /* Routes that don't require authentication go here */
 ];
