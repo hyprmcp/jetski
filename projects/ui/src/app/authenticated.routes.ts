@@ -1,26 +1,44 @@
 import { Routes } from '@angular/router';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { OrganizationDashboardComponent } from './pages/organization-dashboard/organization-dashboard.component';
 import { MonitoringComponent } from './pages/monitoring/monitoring.component';
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
 
 export const authenticatedRoutes: Routes = [
+  // other non-org scoped sites go here (e.g. /account/** or something like that
   {
-    path: 'dashboard',
-    component: DashboardComponent,
-  },
-  {
-    path: 'monitoring',
-    component: MonitoringComponent,
-  },
-  {
-    path: 'project/:projectId',
+    path: ':organizationName',
     children: [
-      { path: '', pathMatch: 'full', component: ProjectDashboardComponent },
+      {
+        path: '',
+        component: OrganizationDashboardComponent,
+      },
+      {
+        path: 'monitoring',
+        component: MonitoringComponent,
+      },
+      {
+        path: 'project',
+        children: [
+          {
+            path: ':projectName',
+            children: [
+              {
+                path: '',
+                component: ProjectDashboardComponent,
+              },
+              {
+                path: 'monitoring',
+                component: MonitoringComponent,
+              },
+            ],
+          },
+        ],
+      },
     ],
   },
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/dashboard',
+    redirectTo: '/dashboard', // TODO redirect to first or last selected org overview??
   },
 ];

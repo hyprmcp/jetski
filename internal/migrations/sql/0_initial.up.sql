@@ -1,7 +1,7 @@
 CREATE TABLE Organization (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
-  name TEXT NOT NULL
+  name TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE UserAccount (
@@ -24,7 +24,8 @@ CREATE TABLE Project (
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   created_by UUID NOT NULL REFERENCES UserAccount (id),
   organization_id UUID NOT NULL REFERENCES Organization (id),
-  name TEXT NOT NULL
+  name TEXT NOT NULL,
+  CONSTRAINT project_name_unique UNIQUE (organization_id, name)
 );
 CREATE INDEX fk_Project_organization_id ON Project (organization_id);
 

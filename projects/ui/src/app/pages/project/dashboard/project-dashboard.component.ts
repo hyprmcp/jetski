@@ -1,21 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
 import { LogsComponent } from '../logs/logs.component';
-import { filter, map } from 'rxjs';
-import { AsyncPipe } from '@angular/common';
+import { ContextService } from '../../../services/context.service';
 
 @Component({
   template: `
-    @if (projectId | async; as projectId) {
-      <app-logs-component [projectId]="projectId"></app-logs-component>
+    @if (contextService.selectedProject()) {
+      <app-logs-component
+        [projectId]="contextService.selectedProject()!.id"
+      ></app-logs-component>
     }
   `,
-  imports: [LogsComponent, AsyncPipe],
+  imports: [LogsComponent],
 })
 export class ProjectDashboardComponent {
-  private readonly route = inject(ActivatedRoute);
-  projectId = this.route.paramMap.pipe(
-    map((params) => params.get('projectId') ?? null),
-    filter((projectId) => projectId !== null),
-  );
+  readonly contextService = inject(ContextService);
 }

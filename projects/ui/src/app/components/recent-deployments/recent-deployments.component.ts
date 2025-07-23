@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   HlmCardContentDirective,
@@ -7,6 +7,7 @@ import {
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 import { getRecentDeployments } from '../../../api/dashboard';
+import { Organization } from '../../../api/organization';
 
 @Component({
   selector: 'app-recent-deployments',
@@ -140,5 +141,6 @@ import { getRecentDeployments } from '../../../api/dashboard';
   `,
 })
 export class RecentDeploymentsComponent {
-  readonly deploymentRevisions = getRecentDeployments();
+  readonly organization = input.required<Organization>();
+  readonly deploymentRevisions = getRecentDeployments(this.organization().id);
 }

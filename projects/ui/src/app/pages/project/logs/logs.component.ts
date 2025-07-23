@@ -276,7 +276,7 @@ export class LogsComponent {
 
   projectId = input.required<string>();
 
-  readonly data$ = toSignal(
+  readonly query = toSignal(
     toObservable(this.projectId).pipe(
       distinctUntilChanged(),
       tap(() => {
@@ -294,9 +294,9 @@ export class LogsComponent {
 
   readonly data = httpResource(
     () => {
-      const data = this.data$();
-      if (data?.projectId) {
-        const { projectId, pagination, sorting } = data;
+      const query = this.query();
+      if (query?.projectId) {
+        const { projectId, pagination, sorting } = query;
         return {
           url: `/api/v1/projects/${projectId}/logs`,
           method: 'GET',

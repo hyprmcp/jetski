@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-navigation',
@@ -29,8 +30,9 @@ import { RouterLink } from '@angular/router';
   `,
 })
 export class NavigationComponent {
+  readonly contextService = inject(ContextService);
   navItems = [
-    { label: 'Overview', href: '/dashboard', active: true },
+    { label: 'Overview', href: '/dashboard', active: false },
     { label: 'Monitoring', href: '/monitoring', active: false },
   ];
 }

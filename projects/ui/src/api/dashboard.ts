@@ -28,8 +28,18 @@ interface DeploymentRevisionSummary extends DeploymentRevision {
   projectLatestDeploymentRevisionEvent: DeploymentRevisionEvent | undefined;
 }
 
-export function getRecentDeployments() {
-  return httpResource(() => `/api/v1/dashboard/deployment-revisions`, {
-    parse: (value) => value as DeploymentRevisionSummary[],
-  });
+export function getRecentDeployments(orgId: string) {
+  return httpResource(
+    () => {
+      return {
+        url: `/api/v1/dashboard/deployment-revisions`,
+        params: {
+          organization_id: orgId,
+        },
+      };
+    },
+    {
+      parse: (value) => value as DeploymentRevisionSummary[],
+    },
+  );
 }
