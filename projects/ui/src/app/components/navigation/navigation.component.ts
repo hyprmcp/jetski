@@ -32,8 +32,5 @@ export class NavigationComponent {
   navItems = [
     { label: 'Overview', href: '/dashboard', active: true },
     { label: 'Monitoring', href: '/monitoring', active: false },
-    { label: 'Clients (todo)', href: '/clients', active: false },
-    { label: 'Users', href: '/users', active: false },
-    { label: 'Settings', href: '/settings', active: false },
   ];
 }
