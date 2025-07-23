@@ -49,10 +49,19 @@ import { TableHeadSortButtonComponent } from './table/sort-header-button.compone
   },
   template: `
     <div class="flex flex-col justify-between gap-4 sm:flex-row">
-      <button hlmBtn variant="outline" align="end" [brnMenuTriggerFor]="menu">
-        Columns
-        <ng-icon hlm name="lucideChevronDown" class="ml-2" size="sm" />
-      </button>
+      <div class="flex items-center justify-between grow">
+        <div>
+          <h1 class="text-2xl font-semibold text-foreground">Logs</h1>
+          <p class="text-muted-foreground">
+            Details about calls to your MCP servers
+          </p>
+        </div>
+        <button hlmBtn variant="outline" align="end" [brnMenuTriggerFor]="menu">
+          Columns
+          <ng-icon hlm name="lucideChevronDown" class="ml-2" size="sm" />
+        </button>
+      </div>
+
       <ng-template #menu>
         <hlm-menu class="w-32">
           @for (column of hidableColumns; track column.id) {
@@ -146,7 +155,7 @@ import { TableHeadSortButtonComponent } from './table/sort-header-button.compone
               _table.setPageSize($event); _table.resetPageIndex()
             "
           >
-            <hlm-select-trigger class="w-15 mr-1 inline-flex h-9">
+            <hlm-select-trigger class="mr-1 inline-flex h-9">
               <hlm-select-value />
             </hlm-select-trigger>
             <hlm-select-content>
@@ -193,7 +202,7 @@ export class LogsComponent {
   protected readonly _columns: ColumnDef<MCPServerLog>[] = [
     {
       accessorKey: 'startedAt',
-      id: 'startedAt',
+      id: 'started_at',
       cell: (info) =>
         flexRenderComponent(TimestampCellComponent, {
           inputs: {
@@ -201,7 +210,12 @@ export class LogsComponent {
           },
         }),
       enableSorting: true,
-      header: () => flexRenderComponent(TableHeadSortButtonComponent),
+      header: () =>
+        flexRenderComponent(TableHeadSortButtonComponent, {
+          inputs: {
+            header: 'Timestamp',
+          },
+        }),
     },
     {
       accessorKey: 'duration',
@@ -222,11 +236,16 @@ export class LogsComponent {
     },
     {
       accessorKey: 'httpStatusCode',
-      id: 'status',
-      header: 'Status',
+      id: 'http_status_code',
+      header: () =>
+        flexRenderComponent(TableHeadSortButtonComponent, {
+          inputs: {
+            header: 'Status Code',
+          },
+        }),
       cell: (info) =>
         `<span class="capitalize">${info.getValue<string>()}</span>`,
-      enableSorting: false,
+      enableSorting: true,
     },
     {
       id: 'action',
@@ -242,7 +261,7 @@ export class LogsComponent {
 
   private readonly defaultSorting: SortingState = [
     {
-      id: 'startedAt',
+      id: 'started_at',
       desc: true,
     },
   ];
@@ -284,7 +303,7 @@ export class LogsComponent {
           params: {
             page: pagination?.pageIndex,
             count: pagination?.pageSize,
-            sortDesc: sorting?.[0]?.desc ?? '',
+            sortOrder: (sorting?.[0]?.desc ?? false) ? 'desc' : 'asc',
             sortBy: sorting?.[0]?.id ?? '',
           },
         };
@@ -308,6 +327,7 @@ export class LogsComponent {
     manualPagination: true,
     pageCount: -1,
     manualSorting: true,
+    enableMultiSort: false,
     onSortingChange: (updater) => {
       if (updater instanceof Function) {
         this._sorting.update(updater);

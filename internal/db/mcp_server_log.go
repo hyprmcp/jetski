@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jetski-sh/jetski/internal/lists"
 
 	"github.com/google/uuid"
 	"github.com/jackc/pgerrcode"
@@ -62,23 +63,9 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 	return nil
 }
 
-// Allowed columns for sorting to prevent SQL injection
-var allowedLogSortColumns = map[string]bool{
-	"started_at": true,
-	"duration":   true,
-	// Add more columns as needed
-}
-
-func GetLogsForProject(ctx context.Context, projectId uuid.UUID, count int, page int, sortBy string, sortDesc bool) ([]types.MCPServerLog, error) {
+func GetLogsForProject(ctx context.Context, projectId uuid.UUID, pagination lists.Pagination, sorting lists.Sorting) ([]types.MCPServerLog, error) {
 	db := internalctx.GetDb(ctx)
-	offset := count * page
-	if !allowedLogSortColumns[sortBy] {
-		sortBy = "started_at"
-	}
-	direction := "ASC"
-	if sortDesc {
-		direction = "DESC"
-	}
+	offset := pagination.Count * pagination.Page
 	query := fmt.Sprintf(`
 		SELECT * FROM MCPServerLog
 		WHERE deployment_revision_id IN (
@@ -86,8 +73,8 @@ func GetLogsForProject(ctx context.Context, projectId uuid.UUID, count int, page
 		)
 		ORDER BY %s %s
 		LIMIT @count OFFSET @offset
-	`, sortBy, direction)
-	rows, err := db.Query(ctx, query, pgx.NamedArgs{"projectId": projectId, "count": count, "offset": offset})
+	`, sorting.SortBy, sorting.SortOrder)
+	rows, err := db.Query(ctx, query, pgx.NamedArgs{"projectId": projectId, "count": pagination.Count, "offset": offset})
 	if err != nil {
 		return nil, err
 	}

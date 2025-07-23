@@ -2,14 +2,13 @@ package handlers
 
 import (
 	"github.com/getsentry/sentry-go"
-	"net/http"
-	"strconv"
-
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
+	"github.com/jetski-sh/jetski/internal/lists"
 	"go.uber.org/zap"
+	"net/http"
 )
 
 func ProjectsRouter(r chi.Router) {
@@ -41,42 +40,18 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid projectId", http.StatusBadRequest)
 		return
 	}
+	pagination, err := lists.ParsePaginationOrDefault(r, lists.Pagination{Count: 10})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	sorting := lists.ParseSortingOrDefault(r, lists.SortingOptions{
+		DefaultSortBy:    "started_at",
+		DefaultSortOrder: lists.SortOrderDesc,
+		AllowedSortBy:    []string{"started_at", "duration", "http_status_code"},
+	})
 
-	count := 10
-	page := 0
-	if countStr := r.URL.Query().Get("count"); countStr != "" {
-		if c, err := strconv.Atoi(countStr); err == nil && c >= 0 {
-			count = c
-		} else {
-			http.Error(w, "invalid count parameter", http.StatusBadRequest)
-			return
-		}
-	}
-	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
-		if p, err := strconv.Atoi(pageStr); err == nil && p >= 0 {
-			page = p
-		} else {
-			http.Error(w, "invalid page parameter", http.StatusBadRequest)
-			return
-		}
-	}
-
-	sortBy := r.URL.Query().Get("sortBy")
-	if sortBy == "" {
-		sortBy = "started_at"
-	}
-	sortDesc := false
-	if sortDescStr := r.URL.Query().Get("sortDesc"); sortDescStr != "" {
-		// TODO parse
-		if sortDescStr == "true" {
-			sortDesc = true
-		} else if sortDescStr != "false" {
-			http.Error(w, "invalid sortDesc parameter", http.StatusBadRequest)
-			return
-		}
-	}
-
-	if logs, err := db.GetLogsForProject(ctx, projectId, count, page, sortBy, sortDesc); err != nil {
+	if logs, err := db.GetLogsForProject(ctx, projectId, pagination, sorting); err != nil {
 		log.Error("failed to get logs for project", zap.Error(err))
 		sentry.GetHubFromContext(ctx).CaptureException(err)
 		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
