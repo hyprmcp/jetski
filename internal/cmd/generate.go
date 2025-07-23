@@ -9,8 +9,10 @@ import (
 	"github.com/jetski-sh/jetski/internal/svc"
 	"github.com/jetski-sh/jetski/internal/types"
 	"github.com/jetski-sh/jetski/internal/util"
+	"github.com/sourcegraph/jsonrpc2"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
+	"math/rand"
 	"os"
 	"time"
 )
@@ -53,6 +55,7 @@ type testDeploymentRevision struct {
 	Port   int                 `yaml:"port"`
 	OCIUrl string              `yaml:"ociUrl"`
 	Ago    string              `yaml:"ago"`
+	Logs   int                 `yaml:"logs"`
 	Events []testRevisionEvent `yaml:"events"`
 }
 
@@ -118,6 +121,34 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							return fmt.Errorf("failed to add deployment revision event: %w", err)
 						}
 						fmt.Printf("      Added event: %s\n", eventData.Type)
+					}
+					for i := 0; i < drData.Logs; i++ {
+						log := types.MCPServerLog{
+							UserAccountID:        &user.ID,
+							MCPSessionID:         util.PtrTo("mcp-session-id-xyz lorem ipsum whatever lorem ipsum whatever"),
+							StartedAt:            time.Now().UTC().Add(time.Duration((5 * time.Second).Nanoseconds() * int64(i))),
+							Duration:             time.Duration(rand.Intn(1300)) * time.Millisecond,
+							DeploymentRevisionID: dr.ID,
+							AuthTokenDigest:      nil,
+							MCPRequest: jsonrpc2.Request{
+								Method: fmt.Sprintf("method-%v", i),
+								Params: nil,
+								ID:     jsonrpc2.ID{Num: uint64(i)},
+								Notif:  false,
+							},
+							MCPResponse: jsonrpc2.Response{
+								ID:     jsonrpc2.ID{Num: uint64(i)},
+								Result: nil,
+								Error:  &jsonrpc2.Error{},
+							},
+							UserAgent:      util.PtrTo("some-user-agent 4711 lorem ipsum whatever"),
+							HttpStatusCode: util.PtrTo(200),
+							HttpError:      nil,
+						}
+						err := db.CreateMCPServerLog(ctx, &log)
+						if err != nil {
+							return fmt.Errorf("failed to create mcp server log: %w", err)
+						}
 					}
 				}
 			}

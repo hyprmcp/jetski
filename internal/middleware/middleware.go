@@ -94,7 +94,7 @@ func AuthMiddleware(jwkSet jwk.Set) func(next http.Handler) http.Handler {
 				}
 				logger.Error("failed to get user by email", zap.Error(err), zap.String("email", email))
 				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-				// TODO sentry
+				sentry.GetHubFromContext(ctx).CaptureException(err)
 				return
 			}
 			ctx = internalctx.WithAccessToken(ctx, parsedAccessToken)

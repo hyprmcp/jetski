@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jetski-sh/jetski/internal/lists"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -59,4 +61,26 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 
 	*data = result
 	return nil
+}
+
+func GetLogsForProject(ctx context.Context, projectId uuid.UUID, pagination lists.Pagination, sorting lists.Sorting) ([]types.MCPServerLog, error) {
+	db := internalctx.GetDb(ctx)
+	offset := pagination.Count * pagination.Page
+	query := fmt.Sprintf(`
+		SELECT * FROM MCPServerLog
+		WHERE deployment_revision_id IN (
+			SELECT id FROM DeploymentRevision WHERE project_id = @projectId
+		)
+		ORDER BY %s %s
+		LIMIT @count OFFSET @offset
+	`, sorting.SortBy, sorting.SortOrder)
+	rows, err := db.Query(ctx, query, pgx.NamedArgs{"projectId": projectId, "count": pagination.Count, "offset": offset})
+	if err != nil {
+		return nil, err
+	}
+	logs, err := pgx.CollectRows(rows, pgx.RowToStructByName[types.MCPServerLog])
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
 }
