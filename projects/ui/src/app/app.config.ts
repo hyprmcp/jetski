@@ -10,6 +10,7 @@ import { provideRouter, withRouterConfig } from '@angular/router';
 import {
   provideHttpClient,
   withFetch,
+  withInterceptors,
   withInterceptorsFromDi,
 } from '@angular/common/http';
 import {
@@ -20,10 +21,10 @@ import {
 import { routes } from './app.routes';
 import { environment } from '../env/env';
 import * as Sentry from '@sentry/angular';
+import { authInterceptor } from './auth.interceptor';
 
 async function initializeOAuth() {
   const oauthService = inject(OAuthService);
-  console.log('configure');
   oauthService.configure({
     issuer: environment.oidc.issuer,
     redirectUri: location.origin,
@@ -33,7 +34,6 @@ async function initializeOAuth() {
     showDebugInformation: !environment.production,
   });
   oauthService.setupAutomaticSilentRefresh();
-  console.log('try login');
   return await oauthService.loadDiscoveryDocumentAndLogin();
 }
 
@@ -50,7 +50,11 @@ export const appConfig: ApplicationConfig = {
       routes,
       withRouterConfig({ paramsInheritanceStrategy: 'always' }),
     ),
-    provideHttpClient(withInterceptorsFromDi(), withFetch()),
+    provideHttpClient(
+      withInterceptors([authInterceptor]),
+      withInterceptorsFromDi(),
+      withFetch(),
+    ),
     provideOAuthClient({
       resourceServer: {
         sendAccessToken: true,
