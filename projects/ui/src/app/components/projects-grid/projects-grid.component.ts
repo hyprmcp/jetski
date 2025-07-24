@@ -8,6 +8,7 @@ import { HlmH3Directive } from '@spartan-ng/helm/typography';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 import { getProjectSummaries, ProjectSummary } from '../../../api/dashboard';
 import { Organization } from '../../../api/organization';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-projects-grid',
@@ -18,6 +19,7 @@ import { Organization } from '../../../api/organization';
     HlmCardContentDirective,
     HlmH3Directive,
     RelativeDatePipe,
+    RouterLink,
   ],
   template: `
     <div>
@@ -34,10 +36,28 @@ import { Organization } from '../../../api/organization';
                     <div
                       class="w-10 h-10 bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg flex items-center justify-center text-white font-bold"
                     >
-                      {{ project.name.at(0)?.toUpperCase() }}
+                      <a
+                        [routerLink]="[
+                          '/',
+                          project.organization.name,
+                          'project',
+                          project.name,
+                        ]"
+                        >{{ project.name.at(0)?.toUpperCase() }}</a
+                      >
                     </div>
                     <div>
-                      <h4 class="font-semibold">{{ project.name }}</h4>
+                      <h4 class="font-semibold">
+                        <a
+                          [routerLink]="[
+                            '/',
+                            project.organization.name,
+                            'project',
+                            project.name,
+                          ]"
+                          >{{ project.name }}</a
+                        >
+                      </h4>
                       <p class="text-sm text-muted-foreground">
                         {{ getProjectUrl(project) }}
                       </p>
