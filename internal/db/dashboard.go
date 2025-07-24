@@ -8,7 +8,7 @@ import (
 	"github.com/jetski-sh/jetski/internal/types"
 )
 
-func GetProjectSummaries(ctx context.Context, userID uuid.UUID) ([]types.ProjectSummary, error) {
+func GetProjectSummaries(ctx context.Context, orgID uuid.UUID) ([]types.ProjectSummary, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
     SELECT
@@ -24,12 +24,11 @@ func GetProjectSummaries(ctx context.Context, userID uuid.UUID) ([]types.Project
       END
     FROM Project p
     INNER JOIN Organization o ON p.organization_id = o.id
-    INNER JOIN Organization_UserAccount j ON o.id = j.organization_id
     LEFT JOIN DeploymentRevision dr ON p.latest_deployment_revision_id = dr.id
     LEFT JOIN DeploymentRevisionEvent dre ON p.latest_deployment_revision_event_id = dre.id AND dre.deployment_revision_id = dr.id
-    WHERE j.user_account_id = @id
+    WHERE o.id = @id
     ORDER BY o.name, p.name
-	`, pgx.NamedArgs{"id": userID})
+	`, pgx.NamedArgs{"id": orgID})
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +40,7 @@ func GetProjectSummaries(ctx context.Context, userID uuid.UUID) ([]types.Project
 	}
 }
 
-func GetRecentDeploymentRevisionSummaries(ctx context.Context, userID uuid.UUID) ([]types.DeploymentRevisionSummary, error) {
+func GetRecentDeploymentRevisionSummaries(ctx context.Context, orgID uuid.UUID) ([]types.DeploymentRevisionSummary, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
     SELECT
@@ -54,12 +53,12 @@ func GetRecentDeploymentRevisionSummaries(ctx context.Context, userID uuid.UUID)
       END
     FROM DeploymentRevision dr
     INNER JOIN Project p ON p.id = dr.project_id
-    INNER JOIN Organization_UserAccount j ON j.organization_id = p.organization_id AND j.user_account_id = @id
     INNER JOIN UserAccount author ON author.id = dr.created_by
     LEFT JOIN DeploymentRevisionEvent dre ON dre.id = p.latest_deployment_revision_event_id
+    WHERE p.organization_id = @id
     ORDER BY dr.created_at DESC
     LIMIT 10;
-	`, pgx.NamedArgs{"id": userID})
+	`, pgx.NamedArgs{"id": orgID})
 	if err != nil {
 		return nil, err
 	}

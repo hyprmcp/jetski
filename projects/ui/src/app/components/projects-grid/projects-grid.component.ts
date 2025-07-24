@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   HlmCardContentDirective,
@@ -7,6 +7,7 @@ import {
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 import { getProjectSummaries, ProjectSummary } from '../../../api/dashboard';
+import { Organization } from '../../../api/organization';
 
 @Component({
   selector: 'app-projects-grid',
@@ -127,7 +128,8 @@ import { getProjectSummaries, ProjectSummary } from '../../../api/dashboard';
   `,
 })
 export class ProjectsGridComponent {
-  readonly projectSummaries = getProjectSummaries();
+  readonly organization = input<Organization>();
+  readonly projectSummaries = getProjectSummaries(this.organization);
 
   getProjectUrl(project: ProjectSummary): string {
     return `${project.organization.name}.jetski.cloud/${project.name}/mcp`;

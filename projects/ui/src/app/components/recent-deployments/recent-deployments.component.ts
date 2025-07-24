@@ -141,6 +141,6 @@ import { Organization } from '../../../api/organization';
   `,
 })
 export class RecentDeploymentsComponent {
-  readonly organization = input.required<Organization>();
-  readonly deploymentRevisions = getRecentDeployments(this.organization().id);
+  readonly organization = input<Organization>();
+  readonly deploymentRevisions = getRecentDeployments(this.organization);
 }

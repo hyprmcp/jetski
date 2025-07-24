@@ -59,3 +59,26 @@ func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, erro
 	}
 	return user, nil
 }
+
+func IsUserPartOfOrg(ctx context.Context, userID, orgID uuid.UUID) (bool, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT true
+		WHERE EXISTS (
+			SELECT * FROM Organization_UserAccount
+			WHERE user_account_id = @userID AND organization_id = @orgID
+		)`, pgx.NamedArgs{"userID": userID, "orgID": orgID})
+	if err != nil {
+		return false, err
+	}
+	res, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByPos[struct {
+		Exists bool
+	}])
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return false, nil
+		}
+		return false, err
+	}
+	return res.Exists, nil
+}

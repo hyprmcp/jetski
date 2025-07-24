@@ -1,13 +1,11 @@
 package handlers
 
 import (
-	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
 	"github.com/jetski-sh/jetski/internal/lists"
-	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -20,12 +18,9 @@ func ProjectsRouter(r chi.Router) {
 
 func getProjects(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := internalctx.GetLogger(ctx)
 	user := internalctx.GetUser(ctx)
 	if projects, err := db.GetProjectsForUser(ctx, user.ID); err != nil {
-		log.Error("failed to get projects for user", zap.Error(err))
-		sentry.GetHubFromContext(ctx).CaptureException(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		HandleInternalServerError(w, r, err, "failed to get projects for user")
 	} else {
 		RespondJSON(w, projects)
 	}
@@ -33,7 +28,6 @@ func getProjects(w http.ResponseWriter, r *http.Request) {
 
 func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := internalctx.GetLogger(ctx)
 	projectIdStr := chi.URLParam(r, "projectId")
 	projectId, err := uuid.Parse(projectIdStr)
 	if err != nil {
@@ -52,9 +46,7 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 	})
 
 	if logs, err := db.GetLogsForProject(ctx, projectId, pagination, sorting); err != nil {
-		log.Error("failed to get logs for project", zap.Error(err))
-		sentry.GetHubFromContext(ctx).CaptureException(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		HandleInternalServerError(w, r, err, "failed to get logs for project")
 	} else {
 		RespondJSON(w, logs)
 	}

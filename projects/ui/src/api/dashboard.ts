@@ -7,6 +7,7 @@ import {
 import { Organization } from './organization';
 import { Project } from './project';
 import { UserAccount } from './user-account';
+import { Signal } from '@angular/core';
 
 export interface ProjectSummary extends Base {
   createdBy: string;
@@ -16,10 +17,24 @@ export interface ProjectSummary extends Base {
   organization: Organization;
 }
 
-export function getProjectSummaries() {
-  return httpResource(() => '/api/v1/dashboard/projects', {
-    parse: (value) => value as ProjectSummary[],
-  });
+export function getProjectSummaries(org: Signal<Organization | undefined>) {
+  return httpResource(
+    () => {
+      const organization = org();
+      if (organization) {
+        return {
+          url: '/api/v1/dashboard/projects',
+          params: {
+            organizationId: organization.id,
+          },
+        };
+      }
+      return undefined;
+    },
+    {
+      parse: (value) => value as ProjectSummary[],
+    },
+  );
 }
 
 interface DeploymentRevisionSummary extends DeploymentRevision {
@@ -28,15 +43,19 @@ interface DeploymentRevisionSummary extends DeploymentRevision {
   projectLatestDeploymentRevisionEvent: DeploymentRevisionEvent | undefined;
 }
 
-export function getRecentDeployments(orgId: string) {
+export function getRecentDeployments(org: Signal<Organization | undefined>) {
   return httpResource(
     () => {
-      return {
-        url: `/api/v1/dashboard/deployment-revisions`,
-        params: {
-          organization_id: orgId,
-        },
-      };
+      const organization = org();
+      if (organization) {
+        return {
+          url: `/api/v1/dashboard/deployment-revisions`,
+          params: {
+            organizationId: organization.id,
+          },
+        };
+      }
+      return undefined;
     },
     {
       parse: (value) => value as DeploymentRevisionSummary[],
