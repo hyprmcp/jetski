@@ -37,7 +37,7 @@ export function getProjectSummaries(org: Signal<Organization | undefined>) {
   );
 }
 
-interface DeploymentRevisionSummary extends DeploymentRevision {
+export interface DeploymentRevisionSummary extends DeploymentRevision {
   project: Project;
   author: UserAccount;
   projectLatestDeploymentRevisionEvent: DeploymentRevisionEvent | undefined;
@@ -59,6 +59,31 @@ export function getRecentDeployments(org: Signal<Organization | undefined>) {
     },
     {
       parse: (value) => value as DeploymentRevisionSummary[],
+    },
+  );
+}
+
+export interface Usage {
+  sessionCount: number;
+  requestCount: number;
+}
+
+export function getUsage(org: Signal<Organization | undefined>) {
+  return httpResource(
+    () => {
+      const organization = org();
+      if (organization) {
+        return {
+          url: '/api/v1/dashboard/usage',
+          params: {
+            organizationId: organization.id,
+          },
+        };
+      }
+      return undefined;
+    },
+    {
+      parse: (value) => value as Usage,
     },
   );
 }

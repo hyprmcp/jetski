@@ -16,7 +16,9 @@ import { ContextService } from '../../services/context.service';
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Left column - Usage and Recent Previews -->
       <div class="lg:col-span-1 space-y-8">
-        <app-usage-card></app-usage-card>
+        <app-usage-card
+          [organization]="contextService.selectedOrg()"
+        ></app-usage-card>
         <div class="mt-4"></div>
         <app-recent-deployments
           [organization]="contextService.selectedOrg()"

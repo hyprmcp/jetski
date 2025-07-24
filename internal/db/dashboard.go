@@ -69,3 +69,25 @@ func GetRecentDeploymentRevisionSummaries(ctx context.Context, orgID uuid.UUID) 
 		return result, nil
 	}
 }
+
+func GetUsage(ctx context.Context, orgID uuid.UUID) (types.Usage, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT
+			COUNT(DISTINCT l.mcp_session_id) as session_count,
+			COUNT(*) as request_count
+		FROM MCPServerLog l
+		INNER JOIN DeploymentRevision dr ON dr.id = l.deployment_revision_id
+		INNER JOIN Project p ON p.id = dr.project_id
+		WHERE p.organization_id = @id
+	`, pgx.NamedArgs{"id": orgID})
+	if err != nil {
+		return types.Usage{}, err
+	}
+	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[types.Usage])
+	if err != nil {
+		return types.Usage{}, err
+	} else {
+		return result, nil
+	}
+}

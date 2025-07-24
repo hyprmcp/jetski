@@ -11,6 +11,7 @@ import (
 func DashboardRouter(r chi.Router) {
 	r.Get("/projects", getProjectsForDashboard)
 	r.Get("/deployment-revisions", getDeploymentRevisionsForDashboard)
+	r.Get("/usage", getUsageForDashboard)
 }
 
 func getProjectsForDashboard(w http.ResponseWriter, r *http.Request) {
@@ -20,7 +21,7 @@ func getProjectsForDashboard(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if summaries, err := db.GetProjectSummaries(ctx, orgID); err != nil {
-		HandleInternalServerError(w, r, err, "failed to get project summaries for user")
+		HandleInternalServerError(w, r, err, "failed to get project summaries for dashboard")
 	} else {
 		RespondJSON(w, summaries)
 	}
@@ -33,9 +34,22 @@ func getDeploymentRevisionsForDashboard(w http.ResponseWriter, r *http.Request) 
 		return
 	}
 	if summaries, err := db.GetRecentDeploymentRevisionSummaries(ctx, orgID); err != nil {
-		HandleInternalServerError(w, r, err, "failed to deployment revision summaries for user")
+		HandleInternalServerError(w, r, err, "failed to deployment revision summaries for dashboard")
 	} else {
 		RespondJSON(w, summaries)
+	}
+}
+
+func getUsageForDashboard(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	orgID := getOrgIDAndCheckAccess(w, r)
+	if orgID == uuid.Nil {
+		return
+	}
+	if usage, err := db.GetUsage(ctx, orgID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to usage for dashboard")
+	} else {
+		RespondJSON(w, usage)
 	}
 }
 
