@@ -20,7 +20,6 @@ export class ContextService {
       filter((e) => e instanceof NavigationEnd),
       startWith(null),
       map(() => this.getFirstPathParam(this.route, 'organizationName')),
-      filter((organizationName) => organizationName !== null),
       map((organizationName) =>
         this.organizations
           .value()
@@ -34,7 +33,6 @@ export class ContextService {
       filter((e) => e instanceof NavigationEnd),
       startWith(null),
       map(() => this.getFirstPathParam(this.route, 'projectName')),
-      filter((projectName) => projectName !== null),
       combineLatestWith(toObservable(this.selectedOrg)),
       map(([projectName, org]) =>
         this.projects

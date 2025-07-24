@@ -1,10 +1,32 @@
-import { Routes } from '@angular/router';
+import { CanActivateFn, Router, Routes } from '@angular/router';
 import { OrganizationDashboardComponent } from './pages/organization-dashboard/organization-dashboard.component';
 import { MonitoringComponent } from './pages/monitoring/monitoring.component';
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
+import { HomeComponent } from './pages/home/home.component';
+import { inject } from '@angular/core';
+import { ContextService } from './services/context.service';
+
+const redirectToOrgDashboardGuard: CanActivateFn = () => {
+  const contextService = inject(ContextService);
+  const router = inject(Router);
+  const orgRes = contextService.organizations;
+  if (orgRes.hasValue()) {
+    const firstOrg = orgRes.value()?.at(0);
+    if (firstOrg) {
+      return router.createUrlTree(['/', firstOrg.name]);
+    }
+  }
+  return true;
+};
 
 export const authenticatedRoutes: Routes = [
-  // other non-org scoped sites go here (e.g. /account/** or something like that
+  // other non-org scoped sites go here (e.g. /account/** or something like that)
+  {
+    path: '',
+    pathMatch: 'full',
+    component: HomeComponent,
+    canActivate: [redirectToOrgDashboardGuard],
+  },
   {
     path: ':organizationName',
     children: [
@@ -27,6 +49,10 @@ export const authenticatedRoutes: Routes = [
                 component: ProjectDashboardComponent,
               },
               {
+                path: 'logs',
+                component: ProjectDashboardComponent,
+              },
+              {
                 path: 'monitoring',
                 component: MonitoringComponent,
               },
@@ -35,10 +61,5 @@ export const authenticatedRoutes: Routes = [
         ],
       },
     ],
-  },
-  {
-    path: '',
-    pathMatch: 'full',
-    redirectTo: '/dashboard', // TODO redirect to first or last selected org overview??
   },
 ];
