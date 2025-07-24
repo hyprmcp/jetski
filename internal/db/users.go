@@ -63,8 +63,7 @@ func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, erro
 func IsUserPartOfOrg(ctx context.Context, userID, orgID uuid.UUID) (bool, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
-		SELECT true
-		WHERE EXISTS (
+		SELECT EXISTS (
 			SELECT * FROM Organization_UserAccount
 			WHERE user_account_id = @userID AND organization_id = @orgID
 		)`, pgx.NamedArgs{"userID": userID, "orgID": orgID})
@@ -75,9 +74,6 @@ func IsUserPartOfOrg(ctx context.Context, userID, orgID uuid.UUID) (bool, error)
 		Exists bool
 	}])
 	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return false, nil
-		}
 		return false, err
 	}
 	return res.Exists, nil
