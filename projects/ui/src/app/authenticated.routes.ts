@@ -10,11 +10,11 @@ const redirectToOrgDashboardGuard: CanActivateFn = () => {
   const contextService = inject(ContextService);
   const router = inject(Router);
   const orgRes = contextService.organizations;
-  if (orgRes.hasValue()) {
-    const firstOrg = orgRes.value()?.at(0);
-    if (firstOrg) {
-      return router.createUrlTree(['/', firstOrg.name]);
-    }
+  const orgName =
+    contextService.selectedOrg()?.name ??
+    (orgRes.hasValue() ? orgRes.value()?.at(0)?.name : undefined);
+  if (orgName) {
+    return router.createUrlTree(['/', orgName]);
   }
   return true;
 };
