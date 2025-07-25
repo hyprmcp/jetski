@@ -5,6 +5,7 @@ import { ProjectDashboardComponent } from './pages/project/dashboard/project-das
 import { HomeComponent } from './pages/home/home.component';
 import { inject } from '@angular/core';
 import { ContextService } from './services/context.service';
+import { LogsComponent } from './pages/project/logs/logs.component';
 
 const redirectToOrgDashboardGuard: CanActivateFn = () => {
   const contextService = inject(ContextService);
@@ -50,7 +51,7 @@ export const authenticatedRoutes: Routes = [
               },
               {
                 path: 'logs',
-                component: ProjectDashboardComponent,
+                component: LogsComponent,
               },
               {
                 path: 'monitoring',

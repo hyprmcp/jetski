@@ -1,4 +1,4 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HlmButtonModule } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -28,6 +28,7 @@ import { LogsActionsComponent } from './table/logs-actions.component';
 import { combineLatestWith, distinctUntilChanged, map, tap } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { TableHeadSortButtonComponent } from './table/sort-header-button.component';
+import { ContextService } from '../../../services/context.service';
 
 @Component({
   selector: 'app-logs-component',
@@ -274,10 +275,11 @@ export class LogsComponent {
     this.defaultPagination,
   );
 
-  projectId = input.required<string>();
+  private readonly contextService = inject(ContextService);
 
   readonly query = toSignal(
-    toObservable(this.projectId).pipe(
+    toObservable(this.contextService.selectedProject).pipe(
+      map((p) => p?.id),
       distinctUntilChanged(),
       tap(() => {
         this._pagination.set(this.defaultPagination);
