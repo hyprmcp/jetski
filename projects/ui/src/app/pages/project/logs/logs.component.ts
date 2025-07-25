@@ -2,7 +2,9 @@ import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HlmButtonModule } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideChevronDown } from '@ng-icons/lucide';
+import { lucideChevronDown, lucideRotateCcw } from '@ng-icons/lucide';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
 import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import { HlmIconDirective } from '@spartan-ng/helm/icon';
@@ -44,7 +46,7 @@ import { ContextService } from '../../../services/context.service';
     HlmSelectModule,
     ...HlmTableImports,
   ],
-  providers: [provideIcons({ lucideChevronDown })],
+  providers: [provideIcons({ lucideChevronDown, lucideRotateCcw })],
   host: {
     class: 'w-full',
   },
@@ -57,10 +59,20 @@ import { ContextService } from '../../../services/context.service';
             Details about calls to your MCP servers
           </p>
         </div>
-        <button hlmBtn variant="outline" align="end" [brnMenuTriggerFor]="menu">
-          Columns
-          <ng-icon hlm name="lucideChevronDown" class="ml-2" size="sm" />
-        </button>
+        <div class="flex gap-2">
+          <button hlmBtn variant="outline" (click)="refresh()">
+            <ng-icon hlm name="lucideRotateCcw" size="sm" />
+          </button>
+          <button
+            hlmBtn
+            variant="outline"
+            align="end"
+            [brnMenuTriggerFor]="menu"
+          >
+            Columns
+            <ng-icon hlm name="lucideChevronDown" class="ml-2" size="sm" />
+          </button>
+        </div>
       </div>
 
       <ng-template #menu>
@@ -198,6 +210,10 @@ import { ContextService } from '../../../services/context.service';
   `,
 })
 export class LogsComponent {
+  constructor() {
+    dayjs.extend(duration);
+  }
+
   protected readonly _availablePageSizes = [10, 20, 50, 100];
 
   protected readonly _columns: ColumnDef<MCPServerLog>[] = [
@@ -223,16 +239,31 @@ export class LogsComponent {
       id: 'duration',
       header: () => flexRenderComponent(TableHeadSortButtonComponent),
       // header: 'Duration (ms)',
-      cell: (info) =>
-        `<span class="capitalize">${info.getValue<number>() / 1000 / 1000}</span>`,
+      cell: (info) => {
+        const durationMs = info.getValue<number>() / 1000 / 1000; // Convert from nanoseconds to milliseconds
+        const dur = dayjs.duration(durationMs, 'milliseconds');
+        return `<span>${dur.asMilliseconds()} ms</span>`;
+      },
       enableSorting: true,
     },
     {
       accessorKey: 'mcpRequest',
       id: 'mcpRequest',
-      header: 'Tool Call',
+      header: 'MCP Method',
       cell: (info) =>
         `<span class="capitalize">${info.getValue<JsonRpcRequest>().method}</span>`,
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'mcpRequest',
+      id: 'toolName',
+      header: 'Tool Name',
+      cell: (info) => {
+        const request = info.getValue<JsonRpcRequest>();
+        const toolName =
+          request.method !== 'tools/call' ? '-' : request.params['name'];
+        return `<span>${toolName || '-'}</span>`;
+      },
       enableSorting: false,
     },
     {
@@ -352,4 +383,8 @@ export class LogsComponent {
   protected readonly hidableColumns = this._table
     .getAllColumns()
     .filter((column) => column.getCanHide());
+
+  refresh() {
+    this.data.reload();
+  }
 }

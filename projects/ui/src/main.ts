@@ -1,11 +1,17 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { appConfig } from './app/app.config';
+import dayjs from 'dayjs';
+import duration from 'dayjs/plugin/duration';
+import relativeTime from 'dayjs/plugin/relativeTime';
 import { App } from './app/app';
 import { getRemoteEnvironment } from './env/remote';
 import * as Sentry from '@sentry/angular';
 import { environment } from './env/env';
 import { buildConfig } from './buildconfig';
 import posthog from 'posthog-js';
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 bootstrapApplication(App, appConfig).catch((err) => console.error(err));
 
