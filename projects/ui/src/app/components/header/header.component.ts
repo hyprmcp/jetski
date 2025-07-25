@@ -66,16 +66,15 @@ import { ContextService } from '../../services/context.service';
             class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
             [brnMenuTriggerFor]="projectMenu"
           >
+            <span
+              class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
+              >{{ contextService.selectedOrg()?.name }}</span
+            >
             @if (contextService.selectedProject(); as proj) {
-              <span class="font-semibold text-lg">{{ proj.name }}</span>
+              <span class="font-semibold text-lg"> / {{ proj.name }}</span>
               <span
                 class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
                 >Hobby</span
-              >
-            } @else {
-              <span
-                class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
-                >{{ contextService.selectedOrg()?.name }}</span
               >
             }
             <div
