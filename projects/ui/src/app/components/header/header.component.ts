@@ -158,7 +158,6 @@ import { ContextService } from '../../services/context.service';
                 </p>
                 <hlm-menu-separator />
                 <hlm-menu-group>
-                  <a routerLink="/dashboard" hlmMenuItem>Dashboard</a>
                   <a routerLink="/settings" hlmMenuItem>Account Settings</a>
                   <hlm-menu-separator />
                   <a href="#" hlmMenuItem>Home Page (TODO)</a>
