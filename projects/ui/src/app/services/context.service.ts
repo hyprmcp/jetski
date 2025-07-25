@@ -2,7 +2,7 @@ import { inject, Injectable, Signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { combineLatestWith, filter, map, startWith } from 'rxjs';
-import { getProjects } from '../../api/project';
+import { getProjects, Project } from '../../api/project';
 import { getOrganizations, Organization } from '../../api/organization';
 
 @Injectable({
@@ -23,12 +23,12 @@ export class ContextService {
       map((organizationName) =>
         this.organizations
           .value()
-          ?.find((org) => org.name === organizationName),
+          ?.find((org: Organization) => org.name === organizationName),
       ),
     ),
   );
 
-  readonly selectedProject = toSignal(
+  readonly selectedProject: Signal<Project | undefined> = toSignal(
     this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
       startWith(null),
@@ -38,7 +38,7 @@ export class ContextService {
         this.projects
           .value()
           ?.find(
-            (project) =>
+            (project: Project) =>
               project.name === projectName &&
               project.organizationId === org?.id,
           ),
