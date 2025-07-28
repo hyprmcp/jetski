@@ -3,8 +3,7 @@ import { FormsModule } from '@angular/forms';
 import { HlmButtonModule } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideRotateCcw } from '@ng-icons/lucide';
-import dayjs from 'dayjs';
-import duration from 'dayjs/plugin/duration';
+import { formatDuration, intervalToDuration } from 'date-fns';
 import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import { HlmIconDirective } from '@spartan-ng/helm/icon';
@@ -210,10 +209,6 @@ import { ContextService } from '../../../services/context.service';
   `,
 })
 export class LogsComponent {
-  constructor() {
-    dayjs.extend(duration);
-  }
-
   protected readonly _availablePageSizes = [10, 20, 50, 100];
 
   protected readonly _columns: ColumnDef<MCPServerLog>[] = [
@@ -241,8 +236,12 @@ export class LogsComponent {
       // header: 'Duration (ms)',
       cell: (info) => {
         const durationMs = info.getValue<number>() / 1000 / 1000; // Convert from nanoseconds to milliseconds
-        const dur = dayjs.duration(durationMs, 'milliseconds');
-        return `<span>${dur.asMilliseconds()} ms</span>`;
+        const duration = intervalToDuration({ start: 0, end: durationMs });
+        const formatted = formatDuration(duration, {
+          format: ['minutes', 'seconds'],
+        });
+        const rawMs = Math.round(durationMs) + ' ms';
+        return `<span title="${rawMs}">${formatted || rawMs}</span>`;
       },
       enableSorting: true,
     },
@@ -261,7 +260,7 @@ export class LogsComponent {
       cell: (info) => {
         const request = info.getValue<JsonRpcRequest>();
         const toolName =
-          request.method !== 'tools/call' ? '-' : request.params['name'];
+          request.method === 'tools/call' ? request.params?.name : '-';
         return `<span>${toolName || '-'}</span>`;
       },
       enableSorting: false,
