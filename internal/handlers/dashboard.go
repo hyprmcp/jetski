@@ -1,27 +1,27 @@
 package handlers
 
 import (
-	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
+	"github.com/google/uuid"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
-	"go.uber.org/zap"
 	"net/http"
 )
 
 func DashboardRouter(r chi.Router) {
 	r.Get("/projects", getProjectsForDashboard)
 	r.Get("/deployment-revisions", getDeploymentRevisionsForDashboard)
+	r.Get("/usage", getUsageForDashboard)
 }
 
 func getProjectsForDashboard(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := internalctx.GetLogger(ctx)
-	user := internalctx.GetUser(ctx)
-	if summaries, err := db.GetProjectSummaries(ctx, user.ID); err != nil {
-		log.Error("failed to get projects for user", zap.Error(err))
-		sentry.GetHubFromContext(ctx).CaptureException(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	orgID := getOrgIDAndCheckAccess(w, r)
+	if orgID == uuid.Nil {
+		return
+	}
+	if summaries, err := db.GetProjectSummaries(ctx, orgID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get project summaries for dashboard")
 	} else {
 		RespondJSON(w, summaries)
 	}
@@ -29,13 +29,45 @@ func getProjectsForDashboard(w http.ResponseWriter, r *http.Request) {
 
 func getDeploymentRevisionsForDashboard(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := internalctx.GetLogger(ctx)
-	user := internalctx.GetUser(ctx)
-	if summaries, err := db.GetRecentDeploymentRevisionSummaries(ctx, user.ID); err != nil {
-		log.Error("failed to deployment revisions for user", zap.Error(err))
-		sentry.GetHubFromContext(ctx).CaptureException(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	orgID := getOrgIDAndCheckAccess(w, r)
+	if orgID == uuid.Nil {
+		return
+	}
+	if summaries, err := db.GetRecentDeploymentRevisionSummaries(ctx, orgID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to deployment revision summaries for dashboard")
 	} else {
 		RespondJSON(w, summaries)
+	}
+}
+
+func getUsageForDashboard(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	orgID := getOrgIDAndCheckAccess(w, r)
+	if orgID == uuid.Nil {
+		return
+	}
+	if usage, err := db.GetUsage(ctx, orgID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to usage for dashboard")
+	} else {
+		RespondJSON(w, usage)
+	}
+}
+
+func getOrgIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUID {
+	ctx := r.Context()
+	user := internalctx.GetUser(ctx)
+	if orgIDStr := r.URL.Query().Get("organizationId"); orgIDStr == "" {
+		return uuid.Nil
+	} else if orgID, err := uuid.Parse(orgIDStr); err != nil {
+		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid organizationId")
+		return uuid.Nil
+	} else if ok, err := db.IsUserPartOfOrg(ctx, user.ID, orgID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to check if user is in org")
+		return uuid.Nil
+	} else if !ok {
+		Handle4XXError(w, http.StatusNotFound)
+		return uuid.Nil
+	} else {
+		return orgID
 	}
 }

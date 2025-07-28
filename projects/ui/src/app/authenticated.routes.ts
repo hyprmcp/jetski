@@ -1,26 +1,66 @@
-import { Routes } from '@angular/router';
-import { DashboardComponent } from './pages/dashboard/dashboard.component';
+import { CanActivateFn, Router, Routes } from '@angular/router';
+import { OrganizationDashboardComponent } from './pages/organization-dashboard/organization-dashboard.component';
 import { MonitoringComponent } from './pages/monitoring/monitoring.component';
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
+import { HomeComponent } from './pages/home/home.component';
+import { inject } from '@angular/core';
+import { ContextService } from './services/context.service';
+import { LogsComponent } from './pages/project/logs/logs.component';
+
+const redirectToOrgDashboardGuard: CanActivateFn = () => {
+  const contextService = inject(ContextService);
+  const router = inject(Router);
+  const orgRes = contextService.organizations;
+  const orgName =
+    contextService.selectedOrg()?.name ??
+    (orgRes.hasValue() ? orgRes.value()?.at(0)?.name : undefined);
+  if (orgName) {
+    return router.createUrlTree(['/', orgName]);
+  }
+  return true;
+};
 
 export const authenticatedRoutes: Routes = [
-  {
-    path: 'dashboard',
-    component: DashboardComponent,
-  },
-  {
-    path: 'monitoring',
-    component: MonitoringComponent,
-  },
-  {
-    path: 'project/:projectId',
-    children: [
-      { path: '', pathMatch: 'full', component: ProjectDashboardComponent },
-    ],
-  },
+  // other non-org scoped sites go here (e.g. /account/** or something like that)
   {
     path: '',
     pathMatch: 'full',
-    redirectTo: '/dashboard',
+    component: HomeComponent,
+    canActivate: [redirectToOrgDashboardGuard],
+  },
+  {
+    path: ':organizationName',
+    children: [
+      {
+        path: '',
+        component: OrganizationDashboardComponent,
+      },
+      {
+        path: 'monitoring',
+        component: MonitoringComponent,
+      },
+      {
+        path: 'project',
+        children: [
+          {
+            path: ':projectName',
+            children: [
+              {
+                path: '',
+                component: ProjectDashboardComponent,
+              },
+              {
+                path: 'logs',
+                component: LogsComponent,
+              },
+              {
+                path: 'monitoring',
+                component: MonitoringComponent,
+              },
+            ],
+          },
+        ],
+      },
+    ],
   },
 ];

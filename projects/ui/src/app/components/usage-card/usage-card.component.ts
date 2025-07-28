@@ -1,10 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   HlmCardContentDirective,
   HlmCardDirective,
 } from '@spartan-ng/helm/card';
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { Organization } from '../../../api/organization';
+import { getUsage, Usage } from '../../../api/dashboard';
+import { ContextService } from '../../services/context.service';
+import { HttpResourceRef } from '@angular/common/http';
 
 @Component({
   selector: 'app-usage-card',
@@ -26,7 +30,7 @@ import { HlmH3Directive } from '@spartan-ng/helm/typography';
           </div>
 
           <div class="space-y-3">
-            @for (metric of usageMetrics; track metric.label) {
+            @for (metric of metrics(); track metric.label) {
               <div class="flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                   <div
@@ -45,9 +49,45 @@ import { HlmH3Directive } from '@spartan-ng/helm/typography';
   `,
 })
 export class UsageCardComponent {
-  usageMetrics = [
-    { label: 'Deployed Servers', value: '2 / 5', color: 'bg-yellow-400' },
-    { label: 'Clients', value: '20 / 10K', color: 'bg-blue-500' },
-    { label: 'Tool Requests', value: '42K / 1M', color: 'bg-gray-400' },
-  ];
+  readonly contextService = inject(ContextService);
+  readonly organization = input<Organization>();
+  readonly usage = getUsage(this.organization);
+
+  readonly metrics = computed(() => {
+    const projects =
+      this.contextService.projects
+        .value()
+        ?.filter((p) => p.organizationId === this.organization()?.id) ?? [];
+    return [
+      {
+        label: 'Projects',
+        value: `${projects.length} / 5`,
+        color: 'bg-yellow-400',
+      },
+      this.getSessionUsage(this.usage),
+      this.getRequestUsage(this.usage),
+    ];
+  });
+
+  private getSessionUsage(usage: HttpResourceRef<Usage | undefined>) {
+    const count = usage.hasValue() ? (usage.value()?.sessionCount ?? 0) : 0;
+    const formattedCount =
+      count > 1000 ? (count / 1000).toFixed(1) + 'K' : count;
+    return {
+      label: 'Sessions',
+      value: `${usage.hasValue() ? formattedCount : 'n.a.'} / 10K`,
+      color: 'bg-yellow-400',
+    };
+  }
+
+  private getRequestUsage(usage: HttpResourceRef<Usage | undefined>) {
+    const count = usage.hasValue() ? (usage.value()?.requestCount ?? 0) : 0;
+    const formattedCount =
+      count > 1000 ? (count / 1000).toFixed(1) + 'K' : count;
+    return {
+      label: 'Requests',
+      value: `${usage.hasValue() ? formattedCount : 'n.a.'} / 1M`,
+      color: 'bg-yellow-400',
+    };
+  }
 }

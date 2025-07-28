@@ -1,13 +1,11 @@
 package handlers
 
 import (
-	"github.com/getsentry/sentry-go"
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
 	"github.com/jetski-sh/jetski/internal/lists"
-	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -15,17 +13,15 @@ func ProjectsRouter(r chi.Router) {
 	r.Get("/", getProjects)
 	r.Route("/{projectId}", func(r chi.Router) {
 		r.Get("/logs", getLogsForProject)
+		r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
 	})
 }
 
 func getProjects(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := internalctx.GetLogger(ctx)
 	user := internalctx.GetUser(ctx)
 	if projects, err := db.GetProjectsForUser(ctx, user.ID); err != nil {
-		log.Error("failed to get projects for user", zap.Error(err))
-		sentry.GetHubFromContext(ctx).CaptureException(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		HandleInternalServerError(w, r, err, "failed to get projects for user")
 	} else {
 		RespondJSON(w, projects)
 	}
@@ -33,11 +29,8 @@ func getProjects(w http.ResponseWriter, r *http.Request) {
 
 func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	log := internalctx.GetLogger(ctx)
-	projectIdStr := chi.URLParam(r, "projectId")
-	projectId, err := uuid.Parse(projectIdStr)
-	if err != nil {
-		http.Error(w, "invalid projectId", http.StatusBadRequest)
+	projectID := getProjectIDAndCheckAccess(w, r)
+	if projectID == uuid.Nil {
 		return
 	}
 	pagination, err := lists.ParsePaginationOrDefault(r, lists.Pagination{Count: 10})
@@ -51,11 +44,41 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 		AllowedSortBy:    []string{"started_at", "duration", "http_status_code"},
 	})
 
-	if logs, err := db.GetLogsForProject(ctx, projectId, pagination, sorting); err != nil {
-		log.Error("failed to get logs for project", zap.Error(err))
-		sentry.GetHubFromContext(ctx).CaptureException(err)
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	if logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get logs for project")
 	} else {
 		RespondJSON(w, logs)
+	}
+}
+
+func getDeploymentRevisionsForProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	projectID := getProjectIDAndCheckAccess(w, r)
+	if projectID == uuid.Nil {
+		return
+	}
+	if logs, err := db.GetDeploymentRevisionsForProject(ctx, projectID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get deployment revisions for project")
+	} else {
+		RespondJSON(w, logs)
+	}
+}
+
+func getProjectIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUID {
+	ctx := r.Context()
+	user := internalctx.GetUser(ctx)
+	if projectIDStr := r.PathValue("projectId"); projectIDStr == "" {
+		return uuid.Nil
+	} else if projectID, err := uuid.Parse(projectIDStr); err != nil {
+		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid projectId")
+		return uuid.Nil
+	} else if ok, err := db.CanUserAccessProject(ctx, user.ID, projectID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to check if user can access project")
+		return uuid.Nil
+	} else if !ok {
+		Handle4XXError(w, http.StatusNotFound)
+		return uuid.Nil
+	} else {
+		return projectID
 	}
 }

@@ -1,13 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
-import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import {
-  ActivatedRoute,
-  NavigationEnd,
-  Router,
-  RouterLink,
-} from '@angular/router';
+import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideChevronsUpDown,
@@ -27,10 +21,8 @@ import {
   HlmSubMenuComponent,
 } from '@spartan-ng/helm/menu';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { EMPTY, filter, map, startWith, switchMap } from 'rxjs';
-import { getOrganizations } from '../../../api/organization';
-import { getProjects } from '../../../api/project';
 import { ThemeService } from '../../services/theme.service';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-header',
@@ -74,16 +66,15 @@ import { ThemeService } from '../../services/theme.service';
             class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
             [brnMenuTriggerFor]="projectMenu"
           >
-            @if (selectedProject(); as proj) {
-              <span class="font-semibold text-lg">{{ proj.name }}</span>
+            <span
+              class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
+              >{{ contextService.selectedOrg()?.name }}</span
+            >
+            @if (contextService.selectedProject(); as proj) {
+              <span class="font-semibold text-lg"> / {{ proj.name }}</span>
               <span
                 class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
                 >Hobby</span
-              >
-            } @else {
-              <span
-                class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
-                >Select a project…</span
               >
             }
             <div
@@ -100,7 +91,7 @@ import { ThemeService } from '../../services/theme.service';
             <hlm-menu-group>
               @for (org of projectDropdownData(); track org.id) {
                 <a
-                  [routerLink]="['/organization', org.id]"
+                  [routerLink]="['/', org.name]"
                   class="cursor-pointer"
                   hlmMenuItem
                   [brnMenuTriggerFor]="projects"
@@ -114,7 +105,7 @@ import { ThemeService } from '../../services/theme.service';
                     <hlm-menu-label>Projects</hlm-menu-label>
                     @for (proj of org.projects; track proj.id) {
                       <a
-                        [routerLink]="['/project', proj.id]"
+                        [routerLink]="[org.name, 'project', proj.name]"
                         class="cursor-pointer"
                         hlmMenuItem
                       >
@@ -166,7 +157,6 @@ import { ThemeService } from '../../services/theme.service';
                 </p>
                 <hlm-menu-separator />
                 <hlm-menu-group>
-                  <a routerLink="/dashboard" hlmMenuItem>Dashboard</a>
                   <a routerLink="/settings" hlmMenuItem>Account Settings</a>
                   <hlm-menu-separator />
                   <a href="#" hlmMenuItem>Home Page (TODO)</a>
@@ -189,26 +179,11 @@ import { ThemeService } from '../../services/theme.service';
 export class HeaderComponent {
   public themeService = inject(ThemeService);
   private oauthService = inject(OAuthService);
-  private readonly route = inject(ActivatedRoute);
-  private readonly router = inject(Router);
-
-  protected readonly projectId = toSignal(
-    this.router.events.pipe(
-      filter((e) => e instanceof NavigationEnd),
-      startWith(null),
-      switchMap(
-        () => this.route.firstChild?.firstChild?.firstChild?.params ?? EMPTY,
-      ),
-      map((params) => params['projectId'] as string | undefined),
-    ),
-  );
-
-  private readonly projects = getProjects();
-  private readonly organizations = getOrganizations();
+  protected readonly contextService = inject(ContextService);
 
   protected readonly projectDropdownData = computed(() => {
-    const projects = this.projects.value();
-    const organizations = this.organizations.value();
+    const projects = this.contextService.projects.value();
+    const organizations = this.contextService.organizations.value();
     if (!projects || !organizations) {
       return [];
     } else {
@@ -217,12 +192,6 @@ export class HeaderComponent {
         projects: projects.filter((proj) => proj.organizationId === org.id),
       }));
     }
-  });
-
-  protected readonly selectedProject = computed(() => {
-    const projects = this.projects.value();
-    const id = this.projectId();
-    return projects?.find((it) => it.id === id);
   });
 
   protected readonly themeIcon = computed(() => {

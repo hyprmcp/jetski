@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterLink } from '@angular/router';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-navigation',
@@ -12,7 +13,7 @@ import { RouterLink } from '@angular/router';
     >
       <div class="flex items-center px-6 py-3">
         <div class="flex space-x-8">
-          @for (item of navItems; track item.label) {
+          @for (item of navItems(); track item.label) {
             <a
               [routerLink]="item.href"
               class="text-sm font-medium transition-colors"
@@ -29,8 +30,44 @@ import { RouterLink } from '@angular/router';
   `,
 })
 export class NavigationComponent {
-  navItems = [
-    { label: 'Overview', href: '/dashboard', active: true },
-    { label: 'Monitoring', href: '/monitoring', active: false },
-  ];
+  readonly contextService = inject(ContextService);
+  navItems = computed(() => {
+    const organization = this.contextService.selectedOrg();
+    if (!organization) {
+      return [];
+    }
+    const project = this.contextService.selectedProject();
+    if (project) {
+      return [
+        {
+          label: 'Overview',
+          href: ['/', organization.name, 'project', project.name],
+          active: false,
+        },
+        {
+          label: 'Logs',
+          href: ['/', organization.name, 'project', project.name, 'logs'],
+          active: false,
+        },
+        {
+          label: 'Monitoring',
+          href: ['/', organization.name, 'project', project.name, 'monitoring'],
+          active: false,
+        },
+      ];
+    } else {
+      return [
+        {
+          label: 'Overview',
+          href: ['/', organization.name],
+          active: false,
+        },
+        {
+          label: 'Monitoring',
+          href: ['/', organization.name, 'monitoring'],
+          active: false,
+        },
+      ];
+    }
+  });
 }
