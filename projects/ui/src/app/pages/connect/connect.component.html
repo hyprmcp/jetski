@@ -1,0 +1,90 @@
+<div class="min-h-screen bg-background text-foreground">
+  <app-header [showProjectSwitcher]="false" />
+  <main class="pt-32 max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
+    <div
+      class="flex flex-col rounded-xl border divide-y-1 divide-solid border-border"
+    >
+      @if (selectedOrg(); as org) {
+        <h2 class="flex items-center gap-4 text-xl p-6">
+          <span class="text-green-600">
+            <ng-icon name="lucideCheck" size="16" />
+          </span>
+
+          Selected organization: {{ org.name }}
+
+          <span class="grow text-end">
+            <button
+              class="hover:bg-muted cursor-pointer px-4 py-2 -mx-4 -my-2 rounded"
+              (click)="
+                selectedProject.set(undefined); selectedOrg.set(undefined)
+              "
+            >
+              <ng-icon name="lucideUndo" size="16" />
+            </button>
+          </span>
+        </h2>
+      } @else {
+        <h2 class="text-xl p-6">Select an organization</h2>
+
+        @for (org of orgs.value(); track org.id) {
+          <button
+            (click)="selectedOrg.set(org)"
+            class="flex items-center justify-between py-4 px-6 hover:bg-muted cursor-pointer"
+          >
+            {{ org.name }}
+            <ng-icon name="lucideArrowRight" size="16" />
+          </button>
+        }
+        <button
+          class="flex items-center justify-between py-4 px-6 hover:bg-muted cursor-pointer"
+        >
+          New organization
+          <ng-icon name="lucidePlus" size="16" />
+        </button>
+      }
+    </div>
+
+    @if (selectedOrg()) {
+      <div
+        class="flex flex-col rounded-xl border divide-y-1 divide-solid border-border"
+      >
+        @if (selectedProject(); as project) {
+          <h2 class="flex items-center gap-4 text-xl p-6">
+            <span class="text-green-600">
+              <ng-icon name="lucideCheck" size="16" />
+            </span>
+
+            Selected project: {{ project.name }}
+
+            <span class="grow text-end">
+              <button
+                class="hover:bg-muted cursor-pointer px-4 py-2 -mx-4 -my-2 rounded"
+                (click)="selectedProject.set(undefined)"
+              >
+                <ng-icon name="lucideUndo" size="16" />
+              </button>
+            </span>
+          </h2>
+        } @else {
+          <h2 class="text-xl p-6">Select a project</h2>
+          <button
+            class="flex items-center justify-between py-4 px-6 hover:bg-muted cursor-pointer"
+          >
+            <input placeholder="New project" />
+
+            <ng-icon name="lucidePlus" size="16" />
+          </button>
+          @for (project of projects(); track project.id) {
+            <button
+              (click)="selectedProject.set(project)"
+              class="flex items-center justify-between py-4 px-6 hover:bg-muted cursor-pointer"
+            >
+              {{ project.name }}
+              <ng-icon name="lucideArrowRight" size="16" />
+            </button>
+          }
+        }
+      </div>
+    }
+  </main>
+</div>

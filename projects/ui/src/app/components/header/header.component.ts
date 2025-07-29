@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, input } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -62,27 +62,29 @@ import { ContextService } from '../../services/context.service';
             aria-label="Home"
           ></a>
 
-          <button
-            class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
-            [brnMenuTriggerFor]="projectMenu"
-          >
-            <span
-              class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
-              >{{ contextService.selectedOrg()?.name }}</span
+          @if (showProjectSwitcher()) {
+            <button
+              class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
+              [brnMenuTriggerFor]="projectMenu"
             >
-            @if (contextService.selectedProject(); as proj) {
-              <span class="font-semibold text-lg"> / {{ proj.name }}</span>
               <span
-                class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
-                >Hobby</span
+                class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
+                >{{ contextService.selectedOrg()?.name }}</span
               >
-            }
-            <div
-              class="text-muted-foreground group-hover:text-foreground transition-colors leading-none"
-            >
-              <ng-icon name="lucideChevronsUpDown" size="16" />
-            </div>
-          </button>
+              @if (contextService.selectedProject(); as proj) {
+                <span class="font-semibold text-lg"> / {{ proj.name }}</span>
+                <span
+                  class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
+                  >Hobby</span
+                >
+              }
+              <div
+                class="text-muted-foreground group-hover:text-foreground transition-colors leading-none"
+              >
+                <ng-icon name="lucideChevronsUpDown" size="16" />
+              </div>
+            </button>
+          }
         </div>
 
         <ng-template #projectMenu>
@@ -174,6 +176,8 @@ import { ContextService } from '../../services/context.service';
   `,
 })
 export class HeaderComponent {
+  public readonly showProjectSwitcher = input(true);
+
   public themeService = inject(ThemeService);
   private readonly oauthService = inject(OAuthService);
   protected readonly contextService = inject(ContextService);

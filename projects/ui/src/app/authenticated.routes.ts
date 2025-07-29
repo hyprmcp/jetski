@@ -15,6 +15,7 @@ import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
+import { ConnectComponent } from './pages/connect/connect.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -49,6 +50,10 @@ function resourceDone(sig: Signal<ResourceStatus>) {
 }
 
 export const authenticatedRoutes: Routes = [
+  {
+    path: 'connect',
+    component: ConnectComponent,
+  },
   {
     path: '',
     component: AppShellComponent,
