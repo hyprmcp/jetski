@@ -8,6 +8,10 @@ services:
     configs:
       - source: config.yaml
         target: /config.yaml
+    environment:
+      - DEX_FRONTEND_DIR=/opt/jetski/dex/web
+    volumes:
+      - ./dex/web:/opt/jetski/dex/web
 
   postgres:
     image: "postgres:17.5-alpine3.20"
