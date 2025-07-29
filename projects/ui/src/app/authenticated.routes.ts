@@ -6,11 +6,19 @@ import { HomeComponent } from './pages/home/home.component';
 import { inject } from '@angular/core';
 import { ContextService } from './services/context.service';
 import { LogsComponent } from './pages/project/logs/logs.component';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { filter, firstValueFrom } from 'rxjs';
+import { AppShellComponent } from './app-shell.component';
 
-const redirectToOrgDashboardGuard: CanActivateFn = () => {
+const redirectToOrgDashboardGuard: CanActivateFn = async () => {
   const contextService = inject(ContextService);
   const router = inject(Router);
   const orgRes = contextService.organizations;
+  await firstValueFrom(
+    toObservable(orgRes.status).pipe(
+      filter((v) => v === 'resolved' || v === 'error'),
+    ),
+  );
   const orgName =
     contextService.selectedOrg()?.name ??
     (orgRes.hasValue() ? orgRes.value()?.at(0)?.name : undefined);
@@ -21,41 +29,46 @@ const redirectToOrgDashboardGuard: CanActivateFn = () => {
 };
 
 export const authenticatedRoutes: Routes = [
-  // other non-org scoped sites go here (e.g. /account/** or something like that)
   {
     path: '',
-    pathMatch: 'full',
-    component: HomeComponent,
-    canActivate: [redirectToOrgDashboardGuard],
-  },
-  {
-    path: ':organizationName',
+    component: AppShellComponent,
     children: [
       {
         path: '',
-        component: OrganizationDashboardComponent,
+        component: HomeComponent,
+        canActivate: [redirectToOrgDashboardGuard],
       },
+      // other non-org scoped sites go here (e.g. /account/** or something like that)
       {
-        path: 'monitoring',
-        component: MonitoringComponent,
-      },
-      {
-        path: 'project',
+        path: ':organizationName',
         children: [
           {
-            path: ':projectName',
+            path: '',
+            component: OrganizationDashboardComponent,
+          },
+          {
+            path: 'monitoring',
+            component: MonitoringComponent,
+          },
+          {
+            path: 'project',
             children: [
               {
-                path: '',
-                component: ProjectDashboardComponent,
-              },
-              {
-                path: 'logs',
-                component: LogsComponent,
-              },
-              {
-                path: 'monitoring',
-                component: MonitoringComponent,
+                path: ':projectName',
+                children: [
+                  {
+                    path: '',
+                    component: ProjectDashboardComponent,
+                  },
+                  {
+                    path: 'logs',
+                    component: LogsComponent,
+                  },
+                  {
+                    path: 'monitoring',
+                    component: MonitoringComponent,
+                  },
+                ],
               },
             ],
           },
