@@ -3,30 +3,50 @@ import { OrganizationDashboardComponent } from './pages/organization-dashboard/o
 import { MonitoringComponent } from './pages/monitoring/monitoring.component';
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
-import { inject } from '@angular/core';
+import {
+  inject,
+  Injector,
+  ResourceStatus,
+  runInInjectionContext,
+  Signal,
+} from '@angular/core';
 import { ContextService } from './services/context.service';
 import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
 
-const redirectToOrgDashboardGuard: CanActivateFn = async () => {
+const redirectToDashboardGuard: CanActivateFn = async () => {
   const contextService = inject(ContextService);
   const router = inject(Router);
   const orgRes = contextService.organizations;
-  await firstValueFrom(
-    toObservable(orgRes.status).pipe(
-      filter((v) => v === 'resolved' || v === 'error'),
-    ),
-  );
+  const injector = inject(Injector);
+  await runInInjectionContext(injector, () => resourceDone(orgRes.status));
   const orgName =
     contextService.selectedOrg()?.name ??
     (orgRes.hasValue() ? orgRes.value()?.at(0)?.name : undefined);
   if (orgName) {
-    return router.createUrlTree(['/', orgName]);
+    const urlParts = ['/', orgName];
+    if (orgRes.hasValue() && orgRes.value()?.length === 1) {
+      const projectRes = contextService.projects;
+      await runInInjectionContext(injector, () =>
+        resourceDone(projectRes.status),
+      );
+      if (projectRes.hasValue() && projectRes.value()?.length === 1) {
+        urlParts.push('project', projectRes.value()?.at(0)!.name);
+      }
+    }
+
+    return router.createUrlTree(urlParts);
   }
   return true;
 };
+
+function resourceDone(sig: Signal<ResourceStatus>) {
+  return firstValueFrom(
+    toObservable(sig).pipe(filter((v) => v === 'resolved' || v === 'error')),
+  );
+}
 
 export const authenticatedRoutes: Routes = [
   {
@@ -36,7 +56,7 @@ export const authenticatedRoutes: Routes = [
       {
         path: '',
         component: HomeComponent,
-        canActivate: [redirectToOrgDashboardGuard],
+        canActivate: [redirectToDashboardGuard],
       },
       // other non-org scoped sites go here (e.g. /account/** or something like that)
       {
