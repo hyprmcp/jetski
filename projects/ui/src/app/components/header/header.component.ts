@@ -151,15 +151,12 @@ import { ContextService } from '../../services/context.service';
             <!-- User dropdown -->
             <ng-template #userMenu>
               <hlm-menu>
-                <hlm-menu-label>pmig</hlm-menu-label>
+                <hlm-menu-label>{{ userData['name'] }}</hlm-menu-label>
                 <p class="text-sm text-muted-foreground px-2 py-1">
-                  pmig&#64;glasskube.com
+                  {{ userData['email'] }}
                 </p>
                 <hlm-menu-separator />
                 <hlm-menu-group>
-                  <a routerLink="/settings" hlmMenuItem>Account Settings</a>
-                  <hlm-menu-separator />
-                  <a href="#" hlmMenuItem>Home Page (TODO)</a>
                   <button (click)="logout()" hlmMenuItem class="w-full">
                     Log Out
                   </button>
@@ -178,8 +175,9 @@ import { ContextService } from '../../services/context.service';
 })
 export class HeaderComponent {
   public themeService = inject(ThemeService);
-  private oauthService = inject(OAuthService);
+  private readonly oauthService = inject(OAuthService);
   protected readonly contextService = inject(ContextService);
+  protected readonly userData = this.oauthService.getIdentityClaims();
 
   protected readonly projectDropdownData = computed(() => {
     const projects = this.contextService.projects.value();
