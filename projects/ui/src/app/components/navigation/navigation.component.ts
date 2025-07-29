@@ -50,6 +50,17 @@ export class NavigationComponent {
           active: false,
         },
         {
+          label: 'Deployments',
+          href: [
+            '/',
+            organization.name,
+            'project',
+            project.name,
+            'deployments',
+          ],
+          active: false,
+        },
+        {
           label: 'Monitoring',
           href: ['/', organization.name, 'project', project.name, 'monitoring'],
           active: false,
