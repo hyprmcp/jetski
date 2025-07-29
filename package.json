@@ -7,15 +7,16 @@
     "start": "ng serve",
     "buildconfig": "node hack/update-frontend-version.js",
     "sentry-upload": "hack/sentry-release.sh",
-    "prestart": "npm run buildconfig",
-    "prebuild": "npm run buildconfig",
+    "prestart": "pnpm run buildconfig",
+    "prebuild": "pnpm run buildconfig",
     "build": "ng build",
-    "build:prod": "npm run build -- --configuration=production",
-    "build:dev": "npm run build -- --configuration=development",
+    "build:prod": "pnpm run build -- --configuration=production",
+    "build:dev": "pnpm run build -- --configuration=development",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "format": "ng lint --fix"
+    "format": "ng lint --fix",
+    "dex:build": "pnpx @tailwindcss/cli -o ./dex/web/static/dist/tailwind.css --minify"
   },
   "prettier": {
     "overrides": [
@@ -58,6 +59,7 @@
     "@angular/compiler-cli": "^20.0.0",
     "@eslint/js": "^9.31.0",
     "@spartan-ng/cli": "^0.0.1-alpha.486",
+    "@tailwindcss/cli": "^4.1.11",
     "@types/jasmine": "~5.1.0",
     "angular-eslint": "20.1.1",
     "eslint-config-prettier": "^10.1.5",
