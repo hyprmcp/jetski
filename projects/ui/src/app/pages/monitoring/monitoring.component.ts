@@ -11,6 +11,29 @@ import { lucideActivity, lucideCircleCheck } from '@ng-icons/lucide';
   viewProviders: [provideIcons({ lucideActivity, lucideCircleCheck })],
   template: `
     <div class="space-y-6">
+      <!-- Pro Feature Banner -->
+      <div
+        class="bg-blue-900 border border-blue-800 text-white px-4 py-3 rounded-lg flex items-center space-x-3"
+      >
+        <svg
+          class="w-5 h-5 text-blue-200"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z"
+          />
+        </svg>
+        <span class="font-medium"
+          >Monitoring is a Pro feature. Upgrade to Pro to access real-time
+          metrics and alerts.</span
+        >
+      </div>
+
       <!-- Header -->
       <div class="flex items-center justify-between">
         <div>
