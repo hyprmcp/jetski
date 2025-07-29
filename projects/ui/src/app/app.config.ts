@@ -32,6 +32,7 @@ async function initializeOAuth() {
     scope: 'openid profile email offline_access',
     responseType: 'code',
     showDebugInformation: !environment.production,
+    clockSkewInSec: 0,
   });
   oauthService.setupAutomaticSilentRefresh();
   return await oauthService.loadDiscoveryDocumentAndLogin();

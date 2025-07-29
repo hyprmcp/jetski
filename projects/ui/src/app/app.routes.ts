@@ -4,7 +4,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 
 const authGuard: CanActivateFn = () => {
   const oauth = inject(OAuthService);
-  return oauth.hasValidIdToken();
+  return oauth.hasValidIdToken() && oauth.hasValidAccessToken();
 };
 
 export const routes: Routes = [
