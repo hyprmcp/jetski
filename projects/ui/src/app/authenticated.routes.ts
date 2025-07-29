@@ -16,7 +16,7 @@ import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
 
-const redirectToDashboardGuard: CanActivateFn = async () => {
+const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
   const router = inject(Router);
   const orgRes = contextService.organizations;
@@ -56,7 +56,7 @@ export const authenticatedRoutes: Routes = [
       {
         path: '',
         component: HomeComponent,
-        canActivate: [redirectToDashboardGuard],
+        canActivate: [redirectToDefaultPage],
       },
       // other non-org scoped sites go here (e.g. /account/** or something like that)
       {
