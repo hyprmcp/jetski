@@ -8,28 +8,27 @@ import (
 	"github.com/jetski-sh/jetski/internal/types"
 )
 
-func GetProjectSummaries(ctx context.Context, userID uuid.UUID) ([]types.ProjectSummary, error) {
+func GetProjectSummaries(ctx context.Context, orgID uuid.UUID) ([]types.ProjectSummary, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
     SELECT
-      p.id, p.created_at, p.created_by, p.organization_id, p.name, p.latest_deployment_revision_id, p.latest_deployment_revision_event_id,
-      (o.id, o.created_at, o.name),
+      `+projectOutExpr+`,
+      (`+organizationOutputExpr+`),
       CASE
         WHEN dr.id IS NOT NULL
-          THEN (dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url, '#11') -- TODO build number
+          THEN (`+deploymentRevisionOutExpr+`) -- TODO build number
       END,
       CASE
         WHEN dre.id IS NOT NULL
-          THEN (dre.id, dre.created_at, dre.deployment_revision_id, dre.type)
+          THEN (`+deploymentRevisionEventOutExpr+`)
       END
     FROM Project p
     INNER JOIN Organization o ON p.organization_id = o.id
-    INNER JOIN Organization_UserAccount j ON o.id = j.organization_id
     LEFT JOIN DeploymentRevision dr ON p.latest_deployment_revision_id = dr.id
     LEFT JOIN DeploymentRevisionEvent dre ON p.latest_deployment_revision_event_id = dre.id AND dre.deployment_revision_id = dr.id
-    WHERE j.user_account_id = @id
+    WHERE o.id = @id
     ORDER BY o.name, p.name
-	`, pgx.NamedArgs{"id": userID})
+	`, pgx.NamedArgs{"id": orgID})
 	if err != nil {
 		return nil, err
 	}
@@ -41,31 +40,53 @@ func GetProjectSummaries(ctx context.Context, userID uuid.UUID) ([]types.Project
 	}
 }
 
-func GetRecentDeploymentRevisionSummaries(ctx context.Context, userID uuid.UUID) ([]types.DeploymentRevisionSummary, error) {
+func GetRecentDeploymentRevisionSummaries(ctx context.Context, orgID uuid.UUID) ([]types.DeploymentRevisionSummary, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
     SELECT
-      dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url, '#11', -- TODO build number
-      (p.id, p.created_at, p.created_by, p.organization_id, p.name, p.latest_deployment_revision_id, p.latest_deployment_revision_event_id),
-      (author.id, author.created_at, author.email),
+      `+deploymentRevisionOutExpr+`, -- TODO build number
+      ( `+projectOutExpr+`),
+      (`+userOutExpr+`),
       CASE
         WHEN dre.id IS NOT NULL
-          THEN (dre.id, dre.created_at, dre.deployment_revision_id, dre.type)
+          THEN (`+deploymentRevisionEventOutExpr+`)
       END
     FROM DeploymentRevision dr
     INNER JOIN Project p ON p.id = dr.project_id
-    INNER JOIN Organization_UserAccount j ON j.organization_id = p.organization_id AND j.user_account_id = @id
-    INNER JOIN UserAccount author ON author.id = dr.created_by
+    INNER JOIN UserAccount u ON u.id = dr.created_by
     LEFT JOIN DeploymentRevisionEvent dre ON dre.id = p.latest_deployment_revision_event_id
+    WHERE p.organization_id = @id
     ORDER BY dr.created_at DESC
     LIMIT 10;
-	`, pgx.NamedArgs{"id": userID})
+	`, pgx.NamedArgs{"id": orgID})
 	if err != nil {
 		return nil, err
 	}
 	result, err := pgx.CollectRows(rows, pgx.RowToStructByPos[types.DeploymentRevisionSummary])
 	if err != nil {
 		return nil, err
+	} else {
+		return result, nil
+	}
+}
+
+func GetUsage(ctx context.Context, orgID uuid.UUID) (types.Usage, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT
+			COUNT(DISTINCT l.mcp_session_id) as session_count,
+			COUNT(*) as request_count
+		FROM MCPServerLog l
+		INNER JOIN DeploymentRevision dr ON dr.id = l.deployment_revision_id
+		INNER JOIN Project p ON p.id = dr.project_id
+		WHERE p.organization_id = @id
+	`, pgx.NamedArgs{"id": orgID})
+	if err != nil {
+		return types.Usage{}, err
+	}
+	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[types.Usage])
+	if err != nil {
+		return types.Usage{}, err
 	} else {
 		return result, nil
 	}

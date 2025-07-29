@@ -1,8 +1,9 @@
-import { Component, input, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { HlmButtonModule } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideChevronDown } from '@ng-icons/lucide';
+import { lucideChevronDown, lucideRotateCcw } from '@ng-icons/lucide';
+import { formatDuration, intervalToDuration } from 'date-fns';
 import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import { HlmIconDirective } from '@spartan-ng/helm/icon';
@@ -28,6 +29,7 @@ import { LogsActionsComponent } from './table/logs-actions.component';
 import { combineLatestWith, distinctUntilChanged, map, tap } from 'rxjs';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { TableHeadSortButtonComponent } from './table/sort-header-button.component';
+import { ContextService } from '../../../services/context.service';
 
 @Component({
   selector: 'app-logs-component',
@@ -43,7 +45,7 @@ import { TableHeadSortButtonComponent } from './table/sort-header-button.compone
     HlmSelectModule,
     ...HlmTableImports,
   ],
-  providers: [provideIcons({ lucideChevronDown })],
+  providers: [provideIcons({ lucideChevronDown, lucideRotateCcw })],
   host: {
     class: 'w-full',
   },
@@ -56,10 +58,20 @@ import { TableHeadSortButtonComponent } from './table/sort-header-button.compone
             Details about calls to your MCP servers
           </p>
         </div>
-        <button hlmBtn variant="outline" align="end" [brnMenuTriggerFor]="menu">
-          Columns
-          <ng-icon hlm name="lucideChevronDown" class="ml-2" size="sm" />
-        </button>
+        <div class="flex gap-2">
+          <button hlmBtn variant="outline" (click)="refresh()">
+            <ng-icon hlm name="lucideRotateCcw" size="sm" />
+          </button>
+          <button
+            hlmBtn
+            variant="outline"
+            align="end"
+            [brnMenuTriggerFor]="menu"
+          >
+            Columns
+            <ng-icon hlm name="lucideChevronDown" class="ml-2" size="sm" />
+          </button>
+        </div>
       </div>
 
       <ng-template #menu>
@@ -222,16 +234,35 @@ export class LogsComponent {
       id: 'duration',
       header: () => flexRenderComponent(TableHeadSortButtonComponent),
       // header: 'Duration (ms)',
-      cell: (info) =>
-        `<span class="capitalize">${info.getValue<number>() / 1000 / 1000}</span>`,
+      cell: (info) => {
+        const durationMs = info.getValue<number>() / 1000 / 1000; // Convert from nanoseconds to milliseconds
+        const duration = intervalToDuration({ start: 0, end: durationMs });
+        const formatted = formatDuration(duration, {
+          format: ['minutes', 'seconds'],
+        });
+        const rawMs = Math.round(durationMs) + ' ms';
+        return `<span title="${rawMs}">${formatted || rawMs}</span>`;
+      },
       enableSorting: true,
     },
     {
       accessorKey: 'mcpRequest',
       id: 'mcpRequest',
-      header: 'Tool Call',
+      header: 'MCP Method',
       cell: (info) =>
         `<span class="capitalize">${info.getValue<JsonRpcRequest>().method}</span>`,
+      enableSorting: false,
+    },
+    {
+      accessorKey: 'mcpRequest',
+      id: 'toolName',
+      header: 'Tool Name',
+      cell: (info) => {
+        const request = info.getValue<JsonRpcRequest>();
+        const toolName =
+          request.method === 'tools/call' ? request.params?.name : '-';
+        return `<span>${toolName || '-'}</span>`;
+      },
       enableSorting: false,
     },
     {
@@ -274,10 +305,11 @@ export class LogsComponent {
     this.defaultPagination,
   );
 
-  projectId = input.required<string>();
+  private readonly contextService = inject(ContextService);
 
-  readonly data$ = toSignal(
-    toObservable(this.projectId).pipe(
+  readonly query = toSignal(
+    toObservable(this.contextService.selectedProject).pipe(
+      map((p) => p?.id),
       distinctUntilChanged(),
       tap(() => {
         this._pagination.set(this.defaultPagination);
@@ -294,9 +326,9 @@ export class LogsComponent {
 
   readonly data = httpResource(
     () => {
-      const data = this.data$();
-      if (data?.projectId) {
-        const { projectId, pagination, sorting } = data;
+      const query = this.query();
+      if (query?.projectId) {
+        const { projectId, pagination, sorting } = query;
         return {
           url: `/api/v1/projects/${projectId}/logs`,
           method: 'GET',
@@ -350,4 +382,8 @@ export class LogsComponent {
   protected readonly hidableColumns = this._table
     .getAllColumns()
     .filter((column) => column.getCanHide());
+
+  refresh() {
+    this.data.reload();
+  }
 }

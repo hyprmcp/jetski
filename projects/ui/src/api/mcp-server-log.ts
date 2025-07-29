@@ -15,11 +15,15 @@ export interface MCPServerLog {
 
 export interface JsonRpcRequest {
   method: string;
-  params: object;
+  params: JsonRpcParams;
   id: number;
 }
 
 export interface JsonRcpResponse {
   result: object;
   error: object;
+}
+
+export interface JsonRpcParams {
+  name?: string;
 }

@@ -1,6 +1,6 @@
-user: admin@example.com
 organizations:
   - name: jetski
+    user: admin@example.com
     projects:
       - name: v0-jetski
         deploymentRevisions:
@@ -71,6 +71,50 @@ organizations:
             events:
               - type: progressing
                 ago: 15m
+  - name: glasskube
+    user: pmig@glasskube.com
+    projects:
+      - name: distr
+        deploymentRevisions:
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            ago: 25h
+            logs: 1500
+            events:
+              - type: progressing
+                ago: 25h
+              - type: ok
+                ago: 24h55m
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            ago: 24h
+            logs: 1000
+            events:
+              - type: progressing
+                ago: 24h
+              - type: ok
+                ago: 23h57m
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            ago: 20h
+            logs: 100
+            events:
+              - type: progressing
+                ago: 20h
+              - type: error
+                ago: 19h
+          - port: 8080
+            ociUrl: some-oci-url-fixed
+            ago: 18h
+            logs: 10000
+            events:
+              - type: progressing
+                ago: 18h
+              - type: ok
+                ago: 17h57m
+              - type: error
+                ago: 12h
   - name: test
+    user: admin@example.com
     projects:
       - name: empty-project

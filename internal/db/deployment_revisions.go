@@ -9,6 +9,11 @@ import (
 	"time"
 )
 
+const (
+	deploymentRevisionOutExpr      = " dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url, '#11' " // TODO build number
+	deploymentRevisionEventOutExpr = " dre.id, dre.created_at, dre.deployment_revision_id, dre.type "
+)
+
 func CreateDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, port int, ociUrl string, timestamp *time.Time) (*types.DeploymentRevision, error) {
 	db := internalctx.GetDb(ctx)
 	createdAt := time.Now()
@@ -59,4 +64,33 @@ func AddDeploymentRevisionEvent(ctx context.Context, deploymentRevisionID uuid.U
 		)
 	`, pgx.NamedArgs{"eventID": eventID, "drid": deploymentRevisionID})
 	return err
+}
+
+func GetDeploymentRevisionsForProject(ctx context.Context, projectID uuid.UUID) ([]types.DeploymentRevisionSummary, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+    SELECT
+      `+deploymentRevisionOutExpr+`, -- TODO build number
+      ( `+projectOutExpr+`),
+      (`+userOutExpr+`),
+      CASE
+        WHEN dre.id IS NOT NULL
+          THEN (`+deploymentRevisionEventOutExpr+`)
+      END
+    FROM DeploymentRevision dr
+    INNER JOIN Project p ON p.id = dr.project_id
+    INNER JOIN UserAccount u ON u.id = dr.created_by
+    LEFT JOIN DeploymentRevisionEvent dre ON dre.id = p.latest_deployment_revision_event_id
+    WHERE p.id = @id
+    ORDER BY dr.created_at DESC;
+	`, pgx.NamedArgs{"id": projectID})
+	if err != nil {
+		return nil, err
+	}
+	result, err := pgx.CollectRows(rows, pgx.RowToStructByPos[types.DeploymentRevisionSummary])
+	if err != nil {
+		return nil, err
+	} else {
+		return result, nil
+	}
 }
