@@ -37,12 +37,12 @@ func NewGenerateCommand() *cobra.Command {
 // Test data structs
 
 type testData struct {
-	User          string             `yaml:"user"`
 	Organizations []testOrganization `yaml:"organizations"`
 }
 
 type testOrganization struct {
 	Name     string        `yaml:"name"`
+	User     string        `yaml:"user"`
 	Projects []testProject `yaml:"projects"`
 }
 
@@ -81,11 +81,21 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 	ctx = internalctx.WithDb(ctx, registry.GetDbPool())
 
 	util.Must(db.RunTx(ctx, func(ctx context.Context) error {
-		user, err := db.CreateUser(ctx, data.User)
-		if err != nil {
-			return fmt.Errorf("failed to create user: %w", err)
-		}
+		// Local user cache to avoid repeated database queries
+		userCache := make(map[string]*types.UserAccount)
+
 		for _, orgData := range data.Organizations {
+			var user *types.UserAccount
+			var err error
+			if cachedUser, exists := userCache[orgData.User]; exists {
+				user = cachedUser
+			} else {
+				user, err = db.CreateUser(ctx, orgData.User)
+				if err != nil {
+					return fmt.Errorf("failed to create user: %w", err)
+				}
+				userCache[orgData.User] = user
+			}
 			org, err := db.CreateOrganization(ctx, orgData.Name)
 			if err != nil {
 				return fmt.Errorf("failed to create org: %w", err)
@@ -151,6 +161,7 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 						}
 					}
 				}
+
 			}
 		}
 		return nil
