@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -50,6 +51,31 @@ func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, erro
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
 		SELECT `+userOutExpr+` FROM UserAccount u WHERE u.email = @email
+	`, pgx.NamedArgs{"email": email})
+	if err != nil {
+		return nil, err
+	}
+	user, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[types.UserAccount])
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apierrors.ErrNotFound
+		}
+		return nil, err
+	}
+	return user, nil
+}
+func GetUserByEmailOrCreate(ctx context.Context, email string) (*types.UserAccount, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		WITH inserted AS (
+			INSERT INTO UserAccount (email)
+			VALUES (@email)
+			ON CONFLICT (email) DO NOTHING
+			RETURNING *
+		)
+		SELECT `+userOutExpr+` FROM UserAccount u WHERE u.email = @email
+		UNION
+		SELECT `+userOutExpr+` FROM inserted u
 	`, pgx.NamedArgs{"email": email})
 	if err != nil {
 		return nil, err
