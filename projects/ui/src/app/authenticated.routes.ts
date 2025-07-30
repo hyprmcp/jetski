@@ -9,7 +9,6 @@ import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
-import { HttpErrorResponse } from '@angular/common/http';
 import { AccountNewComponent } from './pages/account-new/account-new.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
@@ -48,25 +47,23 @@ export const contextGuard: CanActivateFn = async (route, state) => {
   const contextRes = contextService.context;
   await resourceDone(contextRes.status);
   if (contextRes.hasValue()) {
-    return true;
-  } else {
-    const err = contextRes.error();
-    if (err instanceof HttpErrorResponse && err.status === 404) {
-      if (state.url === '/account/new') {
+    if ((contextRes.value()?.organizations ?? []).length === 0) {
+      if (state.url === '/organization/new') {
         return true;
       }
-      return router.createUrlTree(['/account/new']);
+      return router.createUrlTree(['/organization/new']);
     }
-    return false;
+    return true;
   }
+  return false;
 };
 
-// Guard for /account/new: only allow if context 404
-export const accountNewGuard: CanActivateFn = () => {
+export const newOrganizationGuard: CanActivateFn = () => {
   const contextService = inject(ContextService);
   const contextRes = contextService.context;
-  const err = contextRes.error();
-  return err instanceof HttpErrorResponse && err.status === 404;
+  return contextRes.hasValue()
+    ? (contextRes.value()?.organizations ?? []).length === 0
+    : false;
 };
 
 export const authenticatedRoutes: Routes = [
@@ -81,9 +78,9 @@ export const authenticatedRoutes: Routes = [
         canActivate: [redirectToDefaultPage],
       },
       {
-        path: 'account/new',
+        path: 'organization/new',
         component: AccountNewComponent,
-        canActivate: [accountNewGuard],
+        canActivate: [newOrganizationGuard],
       },
       {
         path: ':organizationName',

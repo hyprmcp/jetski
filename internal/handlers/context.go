@@ -15,12 +15,7 @@ func ContextRouter(r chi.Router) {
 func getContextHandler() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		user := context.GetUserOrNil(ctx)
-		if user == nil {
-			w.WriteHeader(http.StatusNotFound)
-			return
-		}
-
+		user := context.GetUser(ctx)
 		orgs, err := db.GetOrganizationsOfUser(ctx, user.ID)
 		if err != nil {
 			HandleInternalServerError(w, r, err, "failed to get orgs of user")
