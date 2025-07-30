@@ -10,8 +10,8 @@ import (
 )
 
 const (
-	deploymentRevisionOutExpr      = " dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url, '#11' " // TODO build number
-	deploymentRevisionEventOutExpr = " dre.id, dre.created_at, dre.deployment_revision_id, dre.type "
+	deploymentRevisionWithoutBuildNrOutExpr = " dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url "
+	deploymentRevisionEventOutExpr          = " dre.id, dre.created_at, dre.deployment_revision_id, dre.type "
 )
 
 func CreateDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, port int, ociUrl string, timestamp *time.Time) (*types.DeploymentRevision, error) {
@@ -20,26 +20,29 @@ func CreateDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUI
 	if timestamp != nil {
 		createdAt = *timestamp
 	}
-	// TODO maybe tx
-	rows, err := db.Query(ctx, `
-		INSERT INTO DeploymentRevision (project_id, created_by, port, oci_url, created_at)
-		VALUES (@projectID, @createdBy, @port, @ociUrl, @createdAt)
-		RETURNING id, created_at, created_by, project_id, port, oci_url, '#11' as build_number -- TODO build number
-	`, pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "port": port, "ociUrl": ociUrl, "createdAt": createdAt})
-	if err != nil {
-		return nil, err
-	}
-	dr, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[types.DeploymentRevision])
-	if err != nil {
-		return nil, err
-	}
-	_, err = db.Exec(ctx, `
-		UPDATE Project SET latest_deployment_revision_id = @drid WHERE id = @projectID
-	`, pgx.NamedArgs{"drid": dr.ID, "projectID": projectID})
-	if err != nil {
-		return nil, err
-	}
-	return dr, nil
+	var res *types.DeploymentRevision
+	err := RunTx(ctx, func(ctx context.Context) error {
+		rows, err := db.Query(ctx, `
+			INSERT INTO DeploymentRevision as dr (project_id, created_by, port, oci_url, created_at)
+			VALUES (@projectID, @createdBy, @port, @ociUrl, @createdAt)
+			RETURNING `+deploymentRevisionWithoutBuildNrOutExpr,
+			pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "port": port, "ociUrl": ociUrl, "createdAt": createdAt})
+		if err != nil {
+			return err
+		}
+		dr, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByNameLax[types.DeploymentRevision])
+		if err != nil {
+			return err
+		}
+		_, err = db.Exec(ctx, "UPDATE Project SET latest_deployment_revision_id = @drid WHERE id = @projectID",
+			pgx.NamedArgs{"drid": dr.ID, "projectID": projectID})
+		if err != nil {
+			return err
+		}
+		res = dr
+		return nil
+	})
+	return res, err
 }
 
 func AddDeploymentRevisionEvent(ctx context.Context, deploymentRevisionID uuid.UUID, eventType types.DeploymentRevisionEventType, timestamp *time.Time) error {
@@ -70,7 +73,7 @@ func GetDeploymentRevisionsForProject(ctx context.Context, projectID uuid.UUID) 
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
     SELECT
-      `+deploymentRevisionOutExpr+`, -- TODO build number
+      `+deploymentRevisionWithoutBuildNrOutExpr+`, row_number() OVER (PARTITION BY dr.project_id ORDER BY dr.created_at),
       ( `+projectOutExpr+`),
       (`+userOutExpr+`),
       CASE

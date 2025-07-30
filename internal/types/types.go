@@ -41,7 +41,7 @@ type DeploymentRevision struct {
 	ProjectID   uuid.UUID `db:"project_id" json:"projectId"`
 	Port        int       `db:"port" json:"port"`
 	OCIURL      string    `db:"oci_url" json:"ociUrl"`
-	BuildNumber string    `db:"build_number" json:"buildNumber"`
+	BuildNumber int       `db:"build_number" json:"buildNumber"`
 }
 
 type DeploymentRevisionEventType string

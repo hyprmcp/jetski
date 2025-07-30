@@ -29,8 +29,6 @@ CREATE TABLE Project (
 );
 CREATE INDEX fk_Project_organization_id ON Project (organization_id);
 
--- TODO build number where?
-
 CREATE TABLE DeploymentRevision (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
