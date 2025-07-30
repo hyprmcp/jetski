@@ -8,6 +8,8 @@ services:
     configs:
       - source: config.yaml
         target: /config.yaml
+    env_file:
+      - .dex.secret.env
 
   postgres:
     image: "postgres:17.5-alpine3.20"
@@ -56,6 +58,14 @@ configs:
           hash: "$2a$10$.t87twHmZDYCBSPxfnxfWu4tsS/6XfYFZ0El0ppBl2DeTgXqJ53/6"
           username: "pmig"
           userID: "576e6e3f-89f6-4821-abbb-7da2a22f9e38"
+      connectors:
+      - type: github
+        id: github
+        name: GitHub
+        config:
+          clientID: {{ .Env.GITHUB_CLIENT_ID }}
+          clientSecret: {{ .Env.GITHUB_CLIENT_SECRET }}
+          redirectURI: http://localhost:5556/callback
       expiry:
         idTokens: "5m"
 
