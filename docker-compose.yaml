@@ -11,7 +11,7 @@ services:
     environment:
       - DEX_FRONTEND_DIR=/opt/jetski/dex/web
     volumes:
-      - ./dex/web:/opt/jetski/dex/web
+      - ./dex/web:/opt/jetski/dex/web:ro
 
   postgres:
     image: "postgres:17.5-alpine3.20"
