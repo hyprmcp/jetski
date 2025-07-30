@@ -1,12 +1,12 @@
-import { Component, computed, inject, signal, effect } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink, Router, NavigationEnd } from '@angular/router';
+import { RouterLink, RouterLinkActive } from '@angular/router';
 import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-navigation',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
     <nav
       class="fixed top-16 left-0 right-0 z-40 bg-background border-b border-border"
@@ -16,10 +16,11 @@ import { ContextService } from '../../services/context.service';
           @for (item of navItems(); track item.label) {
             <a
               [routerLink]="item.href"
-              class="text-sm font-medium transition-colors"
-              [class.text-foreground]="item.active"
-              [class.text-muted-foreground]="!item.active"
-              [class.hover:text-foreground]="!item.active"
+              routerLinkActive="text-foreground"
+              #rla="routerLinkActive"
+              [routerLinkActiveOptions]="{ exact: true }"
+              [class.text-muted-foreground]="!rla.isActive"
+              class="text-sm font-medium transition-colors hover:text-foreground"
             >
               {{ item.label }}
             </a>
@@ -31,59 +32,44 @@ import { ContextService } from '../../services/context.service';
 })
 export class NavigationComponent {
   readonly contextService = inject(ContextService);
-  readonly router = inject(Router);
-
-  readonly currentUrl = signal<string>(this.router.url);
-
-  constructor() {
-    // Subscribe to router events and update the signal
-    effect(() => {
-      const sub = this.router.events.subscribe((event) => {
-        if (event instanceof NavigationEnd) {
-          this.currentUrl.set(event.urlAfterRedirects);
-        }
-      });
-      return () => sub.unsubscribe();
-    });
-  }
 
   navItems = computed(() => {
     const organization = this.contextService.selectedOrg();
     if (!organization) {
       return [];
     }
+    const orgBase = ['/', organization.name];
     const project = this.contextService.selectedProject();
-    const url = this.currentUrl();
-    const lastPart = url.split('/').filter(Boolean).pop();
     if (project) {
+      const projectBase = [...orgBase, 'project', project.name];
       return [
         {
           label: 'Overview',
-          href: ['/', organization.name, 'project', project.name],
-          active: lastPart === project.name,
+          href: [...projectBase],
+          // active: lastPart === project.name,
         },
         {
           label: 'Logs',
-          href: ['/', organization.name, 'project', project.name, 'logs'],
-          active: lastPart === 'logs',
+          href: [...projectBase, 'logs'],
+          // active: lastPart === 'logs',
         },
         {
           label: 'Monitoring',
-          href: ['/', organization.name, 'project', project.name, 'monitoring'],
-          active: lastPart === 'monitoring',
+          href: [...projectBase, 'monitoring'],
+          // active: lastPart === 'monitoring',
         },
       ];
     } else {
       return [
         {
           label: 'Overview',
-          href: ['/', organization.name],
-          active: lastPart === organization.name,
+          href: [...orgBase],
+          // active: lastPart === organization.name,
         },
         {
           label: 'Monitoring',
-          href: ['/', organization.name, 'monitoring'],
-          active: lastPart === 'monitoring',
+          href: [...orgBase, 'monitoring'],
+          // active: lastPart === 'monitoring',
         },
       ];
     }
