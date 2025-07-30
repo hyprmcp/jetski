@@ -46,17 +46,14 @@ export class NavigationComponent {
         {
           label: 'Overview',
           href: [...projectBase],
-          // active: lastPart === project.name,
         },
         {
           label: 'Logs',
           href: [...projectBase, 'logs'],
-          // active: lastPart === 'logs',
         },
         {
           label: 'Monitoring',
           href: [...projectBase, 'monitoring'],
-          // active: lastPart === 'monitoring',
         },
       ];
     } else {
@@ -64,12 +61,10 @@ export class NavigationComponent {
         {
           label: 'Overview',
           href: [...orgBase],
-          // active: lastPart === organization.name,
         },
         {
           label: 'Monitoring',
           href: [...orgBase, 'monitoring'],
-          // active: lastPart === 'monitoring',
         },
       ];
     }
