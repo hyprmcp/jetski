@@ -55,6 +55,10 @@ export class NavigationComponent {
           label: 'Monitoring',
           href: [...projectBase, 'monitoring'],
         },
+        {
+          label: 'Settings',
+          href: [...projectBase, 'settings'],
+        },
       ];
     } else {
       return [

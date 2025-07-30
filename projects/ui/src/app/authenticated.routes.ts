@@ -15,6 +15,7 @@ import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
+import { SettingsComponent } from './pages/settings/settings.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -87,6 +88,10 @@ export const authenticatedRoutes: Routes = [
                   {
                     path: 'monitoring',
                     component: MonitoringComponent,
+                  },
+                  {
+                    path: 'settings',
+                    component: SettingsComponent,
                   },
                 ],
               },
