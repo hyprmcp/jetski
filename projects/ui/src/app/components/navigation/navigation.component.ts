@@ -1,6 +1,6 @@
-import { Component, computed, inject } from '@angular/core';
+import { Component, computed, inject, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router, NavigationEnd } from '@angular/router';
 import { ContextService } from '../../services/context.service';
 
 @Component({
@@ -31,28 +31,46 @@ import { ContextService } from '../../services/context.service';
 })
 export class NavigationComponent {
   readonly contextService = inject(ContextService);
+  readonly router = inject(Router);
+
+  readonly currentUrl = signal<string>(this.router.url);
+
+  constructor() {
+    // Subscribe to router events and update the signal
+    effect(() => {
+      const sub = this.router.events.subscribe((event) => {
+        if (event instanceof NavigationEnd) {
+          this.currentUrl.set(event.urlAfterRedirects);
+        }
+      });
+      return () => sub.unsubscribe();
+    });
+  }
+
   navItems = computed(() => {
     const organization = this.contextService.selectedOrg();
     if (!organization) {
       return [];
     }
     const project = this.contextService.selectedProject();
+    const url = this.currentUrl();
+    const lastPart = url.split('/').filter(Boolean).pop();
     if (project) {
       return [
         {
           label: 'Overview',
           href: ['/', organization.name, 'project', project.name],
-          active: false,
+          active: lastPart === project.name,
         },
         {
           label: 'Logs',
           href: ['/', organization.name, 'project', project.name, 'logs'],
-          active: false,
+          active: lastPart === 'logs',
         },
         {
           label: 'Monitoring',
           href: ['/', organization.name, 'project', project.name, 'monitoring'],
-          active: false,
+          active: lastPart === 'monitoring',
         },
       ];
     } else {
@@ -60,12 +78,12 @@ export class NavigationComponent {
         {
           label: 'Overview',
           href: ['/', organization.name],
-          active: false,
+          active: lastPart === organization.name,
         },
         {
           label: 'Monitoring',
           href: ['/', organization.name, 'monitoring'],
-          active: false,
+          active: lastPart === 'monitoring',
         },
       ];
     }
