@@ -55,7 +55,7 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
           <option value="30d">Last 30 days</option>
           <option value="90d">Last 90 days</option>
         </select>
-        
+
         <!-- Deployment Version Filter -->
         <div class="relative">
           <brn-select
@@ -66,7 +66,11 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
             <hlm-select-trigger>
               <div class="flex items-center gap-2">
                 <span class="text-sm font-medium">
-                  {{ selectedDeploymentVersion ? 'v' + selectedDeploymentVersion : 'All Versions' }}
+                  {{
+                    selectedDeploymentVersion
+                      ? 'v' + selectedDeploymentVersion
+                      : 'All Versions'
+                  }}
                 </span>
                 <ng-icon hlm name="lucideChevronDown" size="sm" />
               </div>
@@ -122,7 +126,9 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 export class OrganizationDashboardComponent {
   protected readonly contextService = inject(ContextService);
   selectedDeploymentVersion: string | null = null;
-  readonly recentDeployments = getRecentDeployments(this.contextService.selectedOrg);
+  readonly recentDeployments = getRecentDeployments(
+    this.contextService.selectedOrg,
+  );
 
   onDeploymentVersionChange(version: string) {
     this.selectedDeploymentVersion = version;

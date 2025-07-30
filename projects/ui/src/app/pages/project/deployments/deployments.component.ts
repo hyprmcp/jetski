@@ -27,7 +27,7 @@ import { RelativeDatePipe } from '../../../pipes/relative-date-pipe';
               @for (
                 revision of deploymentRevisions.value();
                 track revision.id
-                ) {
+              ) {
                 <div
                   class="flex items-start space-x-3 p-3 hover:bg-muted rounded-lg transition-colors"
                 >
@@ -54,22 +54,22 @@ import { RelativeDatePipe } from '../../../pipes/relative-date-pipe';
                         @if (
                           revision.project.latestDeploymentRevisionId &&
                           revision.project.latestDeploymentRevisionId !==
-                          revision.id
-                          ) {
+                            revision.id
+                        ) {
                           <div class="w-2 h-2 rounded-full bg-yellow-500"></div>
                           <span class="text-yellow-600">superseded</span>
                         } @else {
                           @if (
                             revision.projectLatestDeploymentRevisionEvent;
                             as ev
-                            ) {
+                          ) {
                             @switch (ev.type) {
                               @case ('ok') {
                                 <div
                                   class="w-2 h-2 rounded-full bg-green-500"
                                 ></div>
                                 <span class="text-xs text-green-600"
-                                >deployed</span
+                                  >deployed</span
                                 >
                               }
                               @case ('progressing') {
@@ -77,7 +77,7 @@ import { RelativeDatePipe } from '../../../pipes/relative-date-pipe';
                                   class="w-2 h-2 rounded-full bg-blue-500"
                                 ></div>
                                 <span class="text-xs text-blue-600"
-                                >progressing</span
+                                  >progressing</span
                                 >
                               }
                               @case ('error') {
@@ -140,7 +140,7 @@ import { RelativeDatePipe } from '../../../pipes/relative-date-pipe';
   `,
   imports: [HlmH3Directive, RelativeDatePipe],
 })
-export class ProjectDashboardComponent {
+export class DeploymentsComponent {
   readonly contextService = inject(ContextService);
   readonly deploymentRevisions = getDeploymentsForProject(
     this.contextService.selectedProject,

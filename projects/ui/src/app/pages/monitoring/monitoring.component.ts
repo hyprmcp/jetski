@@ -2,7 +2,11 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideActivity, lucideCircleCheck, lucideChevronDown } from '@ng-icons/lucide';
+import {
+  lucideActivity,
+  lucideCircleCheck,
+  lucideChevronDown,
+} from '@ng-icons/lucide';
 import { ContextService } from '../../services/context.service';
 import { getDeploymentsForProject } from '../../../api/project';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
@@ -20,8 +24,8 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
   selector: 'app-monitoring',
   standalone: true,
   imports: [
-    CommonModule, 
-    HlmButtonDirective, 
+    CommonModule,
+    HlmButtonDirective,
     NgIcon,
     BrnSelectModule,
     HlmSelectDirective,
@@ -32,7 +36,9 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
     FormsModule,
     RelativeDatePipe,
   ],
-  viewProviders: [provideIcons({ lucideActivity, lucideCircleCheck, lucideChevronDown })],
+  viewProviders: [
+    provideIcons({ lucideActivity, lucideCircleCheck, lucideChevronDown }),
+  ],
   template: `
     <div class="space-y-6">
       <!-- Header -->
@@ -55,7 +61,11 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
                 <hlm-select-trigger>
                   <div class="flex items-center gap-2">
                     <span class="text-sm font-medium">
-                      {{ selectedDeploymentVersion ? 'v' + selectedDeploymentVersion : 'All Versions' }}
+                      {{
+                        selectedDeploymentVersion
+                          ? 'v' + selectedDeploymentVersion
+                          : 'All Versions'
+                      }}
                     </span>
                     <ng-icon hlm name="lucideChevronDown" size="sm" />
                   </div>
@@ -66,7 +76,10 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
                       <span>All Versions</span>
                     </div>
                   </hlm-option>
-                  @for (revision of deploymentRevisions.value(); track revision.id) {
+                  @for (
+                    revision of deploymentRevisions.value();
+                    track revision.id
+                  ) {
                     <hlm-option [value]="revision.buildNumber">
                       <div class="flex items-center justify-between w-full">
                         <span>Version {{ revision.buildNumber }}</span>
@@ -80,7 +93,7 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
               </brn-select>
             </div>
           }
-          
+
           <button hlmBtn variant="outline">
             <ng-icon name="lucideActivity" class="h-4 w-4 mr-2"></ng-icon>
             Refresh
@@ -237,7 +250,9 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 export class MonitoringComponent {
   contextService = inject(ContextService);
   selectedDeploymentVersion: string | null = null;
-  readonly deploymentRevisions = getDeploymentsForProject(this.contextService.selectedProject);
+  readonly deploymentRevisions = getDeploymentsForProject(
+    this.contextService.selectedProject,
+  );
 
   onDeploymentVersionChange(version: string) {
     this.selectedDeploymentVersion = version;
