@@ -16,7 +16,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "format": "ng lint --fix",
-    "dex:build": "pnpx @tailwindcss/cli -i ./dex/web/style.css -o ./dex/web/static/dist/tailwind.css --minify"
+    "dex:build": "pnpm dlx @tailwindcss/cli -i ./dex/web/style.css -o ./dex/web/static/dist/tailwind.css --minify"
   },
   "prettier": {
     "overrides": [
