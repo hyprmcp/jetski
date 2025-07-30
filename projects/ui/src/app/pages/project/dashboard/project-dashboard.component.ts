@@ -49,7 +49,7 @@ import { registerables } from 'chart.js';
               <option value="30d">Last 30 days</option>
               <option value="90d">Last 90 days</option>
             </select>
-            
+
             <!-- Deployment Version Filter -->
             <div class="relative">
               <brn-select
@@ -493,7 +493,7 @@ import { registerables } from 'chart.js';
                         @for (value of parameter.values; track value.name) {
                           <div class="flex items-center justify-between">
                             <div class="flex items-center space-x-3 min-w-0 flex-1">
-                              <div 
+                              <div
                                 class="w-3 h-3 rounded-full flex-shrink-0"
                                 [style.background-color]="value.color"
                               ></div>
@@ -501,8 +501,8 @@ import { registerables } from 'chart.js';
                             </div>
                             <div class="flex items-center space-x-3 flex-shrink-0">
                               <div class="w-24 bg-gray-200 rounded-full h-2.5">
-                                <div 
-                                  class="h-2.5 rounded-full" 
+                                <div
+                                  class="h-2.5 rounded-full"
                                   [style.background-color]="value.color"
                                   [style.width]="value.percentage + '%'"
                                 ></div>
@@ -519,9 +519,9 @@ import { registerables } from 'chart.js';
                 <!-- Navigation Controls -->
                 <div class="flex items-center justify-center">
                   <div class="flex items-center space-x-3">
-                    <button 
-                      hlmButton 
-                      variant="outline" 
+                    <button
+                      hlmButton
+                      variant="outline"
                       size="sm"
                       [disabled]="currentParameterIndex === 0"
                       (click)="previousParameter()"
@@ -531,9 +531,9 @@ import { registerables } from 'chart.js';
                     <span class="text-sm text-muted-foreground min-w-[60px] text-center">
                       {{ currentParameterIndex + 1 }} of {{ parameters.length }}
                     </span>
-                    <button 
-                      hlmButton 
-                      variant="outline" 
+                    <button
+                      hlmButton
+                      variant="outline"
                       size="sm"
                       [disabled]="currentParameterIndex === parameters.length - 1"
                       (click)="nextParameter()"
@@ -713,14 +713,14 @@ import { registerables } from 'chart.js';
 })
 export class ProjectDashboardComponent implements AfterViewInit, OnDestroy {
   @ViewChild('pieChart', { static: false }) pieChartCanvas!: any;
-  
+
   readonly contextService = inject(ContextService);
   selectedDeploymentVersion: string | null = null;
   readonly deploymentRevisions = getDeploymentsForProject(this.contextService.selectedProject);
-  
+
   currentParameterIndex = 0;
   private pieChart: Chart | null = null;
-  
+
   // Available tools for selection
   availableTools = [
     { name: 'get_weather', calls: 1053 },
@@ -732,9 +732,9 @@ export class ProjectDashboardComponent implements AfterViewInit, OnDestroy {
     { name: 'text_analysis', calls: 1891 },
     { name: 'data_visualization', calls: 445 }
   ];
-  
+
   selectedTool = this.availableTools[0]; // Default to first tool
-  
+
   // Tool-specific parameter data - in a real app, this would come from an API
   toolParameters: { [key: string]: any[] } = {
     'get_weather': [
@@ -1063,7 +1063,7 @@ export class ProjectDashboardComponent implements AfterViewInit, OnDestroy {
       Chart.register(...registerables);
 
       const ctx = this.pieChartCanvas.nativeElement.getContext('2d');
-      
+
       if (!ctx) {
         console.error('Could not get 2D context from canvas');
         return;
@@ -1073,7 +1073,7 @@ export class ProjectDashboardComponent implements AfterViewInit, OnDestroy {
       if (this.pieChart) {
         this.pieChart.destroy();
       }
-      
+
       this.pieChart = new Chart(ctx, {
         type: 'pie',
         data: {

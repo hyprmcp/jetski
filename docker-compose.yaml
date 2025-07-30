@@ -8,6 +8,10 @@ services:
     configs:
       - source: config.yaml
         target: /config.yaml
+    environment:
+      - DEX_FRONTEND_DIR=/opt/jetski/dex/web
+    volumes:
+      - ./dex/web:/opt/jetski/dex/web:ro
 
   postgres:
     image: "postgres:17.5-alpine3.20"
@@ -23,7 +27,7 @@ services:
 configs:
   config.yaml:
     content: |
-      issuer: http://localhost:5556/
+      issuer: http://localhost:5556
       web:
         http: 0.0.0.0:5556
         allowedOrigins: ['*']
@@ -40,6 +44,11 @@ configs:
           redirectURIs:
           - 'http://localhost:4200'
           - 'http://localhost:8080'
+        - id: cli
+          name: 'Jetski CLI'
+          public: true
+          redirectURIs:
+          - '/device/callback'
       enablePasswordDB: true
       staticPasswords:
         - email: "admin@example.com"
