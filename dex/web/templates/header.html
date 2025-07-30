@@ -15,11 +15,12 @@
     </script>
   </head>
 
-  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
+  <body class="bg-white dark:bg-black text-black dark:text-white">
     <div class="grid min-h-screen lg:grid-cols-2 ">
       <!-- Left Column: Login Form -->
       <div class="flex items-center justify-center py-12">
         <div class="mx-auto grid w-[350px] gap-6">
           <div class="grid gap-2 text-center">
-            <img class="mx-auto h-12 w-auto mb-4" src="{{ url .ReqPath "static/jetski-black.svg" }}" alt="{{ issuer }}">
+            <img class="mx-auto h-12 w-auto mb-4 dark:hidden" src="{{ url .ReqPath "static/jetski-black.svg" }}" alt="{{ issuer }}">
+            <img class="mx-auto h-12 w-auto mb-4 hidden dark:block" src="{{ url .ReqPath "static/jetski-white.svg" }}" alt="{{ issuer }}">
           </div>
