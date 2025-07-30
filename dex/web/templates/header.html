@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -7,12 +7,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="{{ url .ReqPath "static/dist/tailwind.css" }}" rel="stylesheet">
     <link rel="icon shortcut" type="image/svg+xml" href="{{ url .ReqPath "static/favicon.svg" }}" />
-    <script>
-      // Dark mode detection matching the Angular app
-      if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-        document.documentElement.classList.add('dark')
-      }
-    </script>
   </head>
 
   <body class="bg-white dark:bg-black text-black dark:text-white">
