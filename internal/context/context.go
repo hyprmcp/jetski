@@ -74,12 +74,18 @@ func WithAccessToken(ctx context.Context, token jwt.Token) context.Context {
 }
 
 func GetUser(ctx context.Context) *types.UserAccount {
-	if val, ok := ctx.Value(ctxKeyUser).(*types.UserAccount); ok {
-		if val != nil {
-			return val
-		}
+	if val := GetUserOrNil(ctx); val == nil {
+		panic("no user in context")
+	} else {
+		return val
 	}
-	panic("no user in context")
+}
+
+func GetUserOrNil(ctx context.Context) *types.UserAccount {
+	if val, ok := ctx.Value(ctxKeyUser).(*types.UserAccount); ok {
+		return val
+	}
+	return nil
 }
 
 func WithUser(ctx context.Context, user *types.UserAccount) context.Context {

@@ -180,8 +180,8 @@ export class HeaderComponent {
   protected readonly userData = this.oauthService.getIdentityClaims();
 
   protected readonly projectDropdownData = computed(() => {
-    const projects = this.contextService.projects.value();
-    const organizations = this.contextService.organizations.value();
+    const projects = this.contextService.projects();
+    const organizations = this.contextService.organizations();
     if (!projects || !organizations) {
       return [];
     } else {
