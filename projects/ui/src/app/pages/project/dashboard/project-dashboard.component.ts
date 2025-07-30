@@ -54,14 +54,28 @@ interface ToolCallParameter {
           </div>
           <div class="flex items-center gap-2">
             <!-- Time Filter -->
-            <select
-              class="w-32 px-3 py-2 border border-border rounded-md bg-background"
-            >
-              <option value="24h">Last 24h</option>
-              <option value="7d">Last 7 days</option>
-              <option value="30d">Last 30 days</option>
-              <option value="90d">Last 90 days</option>
-            </select>
+            <div class="relative">
+              <brn-select
+                [ngModel]="selectedTimeFilter"
+                (ngModelChange)="onTimeFilterChange($event)"
+                class="w-32"
+              >
+                <hlm-select-trigger>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium">
+                      {{ getTimeFilterLabel(selectedTimeFilter) }}
+                    </span>
+                    <ng-icon hlm name="lucideChevronDown" size="sm" />
+                  </div>
+                </hlm-select-trigger>
+                <hlm-select-content>
+                  <hlm-option value="24h">Last 24h</hlm-option>
+                  <hlm-option value="7d">Last 7 days</hlm-option>
+                  <hlm-option value="30d">Last 30 days</hlm-option>
+                  <hlm-option value="90d">Last 90 days</hlm-option>
+                </hlm-select-content>
+              </brn-select>
+            </div>
 
             <!-- Deployment Version Filter -->
             <div class="relative">
@@ -790,6 +804,7 @@ export class ProjectDashboardComponent implements AfterViewInit, OnDestroy {
 
   readonly contextService = inject(ContextService);
   selectedDeploymentVersion: string | null = null;
+  selectedTimeFilter = '24h';
   readonly deploymentRevisions = getDeploymentsForProject(
     this.contextService.selectedProject,
   );
@@ -1114,6 +1129,26 @@ export class ProjectDashboardComponent implements AfterViewInit, OnDestroy {
   onDeploymentVersionChange(version: string) {
     this.selectedDeploymentVersion = version;
     // TODO: Implement logic to filter data based on selected version
+  }
+
+  onTimeFilterChange(timeFilter: string) {
+    this.selectedTimeFilter = timeFilter;
+    // TODO: Implement logic to filter data based on selected time range
+  }
+
+  getTimeFilterLabel(timeFilter: string): string {
+    switch (timeFilter) {
+      case '24h':
+        return 'Last 24h';
+      case '7d':
+        return 'Last 7 days';
+      case '30d':
+        return 'Last 30 days';
+      case '90d':
+        return 'Last 90 days';
+      default:
+        return 'Last 24h';
+    }
   }
 
   ngAfterViewInit() {
