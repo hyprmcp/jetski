@@ -5,7 +5,7 @@ export interface DeploymentRevision extends Base {
   projectId: string;
   port: number;
   ociUrl: string;
-  buildNumber: string;
+  buildNumber: number;
 }
 
 type DeploymentRevisionEventType = 'ok' | 'progressing' | 'error';
