@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
+	"github.com/google/uuid"
 	"github.com/jetski-sh/jetski/internal/apierrors"
 	"net/http"
 	"regexp"
@@ -16,6 +17,9 @@ import (
 func OrganizationsRouter(r chi.Router) {
 	r.Get("/", getOrganizations)
 	r.Post("/", postOrganizationHandler())
+	r.Route("/{organizationId}", func(r chi.Router) {
+		r.Get("/members", getOrganizationMembers)
+	})
 }
 
 func getOrganizations(w http.ResponseWriter, r *http.Request) {
@@ -73,4 +77,38 @@ func validateOrgName(w http.ResponseWriter, name string) bool {
 		return false
 	}
 	return true
+}
+
+func getOrganizationMembers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	orgID := getOrganizationIDAndCheckAccess(w, r)
+	if orgID == uuid.Nil {
+		return
+	}
+	users, err := db.GetOrganizationMembers(ctx, orgID)
+	if err != nil {
+		HandleInternalServerError(w, r, err, "could not get users of org")
+		return
+	}
+
+	RespondJSON(w, users)
+}
+
+func getOrganizationIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUID {
+	ctx := r.Context()
+	user := internalctx.GetUser(ctx)
+	if orgIDStr := r.PathValue("organizationId"); orgIDStr == "" {
+		return uuid.Nil
+	} else if orgID, err := uuid.Parse(orgIDStr); err != nil {
+		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid organizationId")
+		return uuid.Nil
+	} else if ok, err := db.IsUserPartOfOrg(ctx, user.ID, orgID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to check if user can access project")
+		return uuid.Nil
+	} else if !ok {
+		Handle4XXError(w, http.StatusNotFound)
+		return uuid.Nil
+	} else {
+		return orgID
+	}
 }
