@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
@@ -52,16 +53,34 @@ type testProject struct {
 }
 
 type testDeploymentRevision struct {
-	Port   int                 `yaml:"port"`
-	OCIUrl string              `yaml:"ociUrl"`
-	Ago    string              `yaml:"ago"`
-	Logs   int                 `yaml:"logs"`
-	Events []testRevisionEvent `yaml:"events"`
+	Port       int                 `yaml:"port"`
+	OCIUrl     string              `yaml:"ociUrl"`
+	Ago        string              `yaml:"ago"`
+	RandomLogs int                 `yaml:"randomLogs"`
+	Logs       []testMCPServerLog  `yaml:"logs"`
+	Events     []testRevisionEvent `yaml:"events"`
 }
 
 type testRevisionEvent struct {
 	Type string `yaml:"type"`
 	Ago  string `yaml:"ago"`
+}
+
+type testMCPServerLog struct {
+	Method     string                 `yaml:"method"`
+	UserAgent  string                 `yaml:"userAgent"`
+	HttpStatus int                    `yaml:"httpStatus"`
+	Parameters []testMCPToolParameter `yaml:"parameters"`
+}
+
+type testMCPToolParameter struct {
+	Name      string                `yaml:"name"`
+	Arguments []testMCPToolArgument `yaml:"arguments"`
+}
+
+type testMCPToolArgument struct {
+	Name  string `yaml:"name"`
+	Value string `yaml:"value"`
 }
 
 func runGenerate(ctx context.Context, opts generateOptions) {
@@ -132,7 +151,7 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 						}
 						fmt.Printf("      Added event: %s\n", eventData.Type)
 					}
-					for i := 0; i < drData.Logs; i++ {
+					for i := 0; i < drData.RandomLogs; i++ {
 						log := types.MCPServerLog{
 							UserAccountID:        &user.ID,
 							MCPSessionID:         util.PtrTo("mcp-session-id-xyz lorem ipsum whatever lorem ipsum whatever"),
@@ -160,6 +179,68 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							return fmt.Errorf("failed to create mcp server log: %w", err)
 						}
 					}
+
+					// Create actual logs based on testMCPServerLog array
+					for j, logData := range drData.Logs {
+						// Build the JSON params based on the YAML structure
+						var params interface{}
+						if len(logData.Parameters) > 0 {
+							// For Tools/Call method with parameters
+							param := logData.Parameters[0] // Take the first parameter
+							arguments := make(map[string]interface{})
+							for _, arg := range param.Arguments {
+								arguments[arg.Name] = arg.Value
+							}
+							params = map[string]interface{}{
+								"_meta": map[string]interface{}{
+									"progressToken": 4,
+								},
+								"arguments": arguments,
+								"name":      param.Name,
+							}
+						} else {
+							// For Tools/List method with no parameters
+							params = map[string]interface{}{
+								"_meta": map[string]interface{}{
+									"progressToken": 4,
+								},
+							}
+						}
+
+						paramsBytes, err := json.Marshal(params)
+						if err != nil {
+							return fmt.Errorf("failed to marshal params: %w", err)
+						}
+
+						log := types.MCPServerLog{
+							UserAccountID:        &user.ID,
+							MCPSessionID:         util.PtrTo("mcp-session-id-" + fmt.Sprintf("%d", j)),
+							StartedAt:            time.Now().UTC().Add(time.Duration((10 * time.Second).Nanoseconds() * int64(j))),
+							Duration:             time.Duration(rand.Intn(500)+100) * time.Millisecond,
+							DeploymentRevisionID: dr.ID,
+							AuthTokenDigest:      nil,
+							MCPRequest: jsonrpc2.Request{
+								Method: logData.Method,
+								Params: (*json.RawMessage)(&paramsBytes),
+								ID:     jsonrpc2.ID{Num: uint64(j + 1000)},
+								Notif:  false,
+							},
+							MCPResponse: jsonrpc2.Response{
+								ID:     jsonrpc2.ID{Num: uint64(j + 1000)},
+								Result: nil,
+								Error:  &jsonrpc2.Error{},
+							},
+							UserAgent:      util.PtrTo(logData.UserAgent),
+							HttpStatusCode: util.PtrTo(logData.HttpStatus),
+							HttpError:      nil,
+						}
+						err = db.CreateMCPServerLog(ctx, &log)
+						if err != nil {
+							return fmt.Errorf("failed to create mcp server log from yaml: %w", err)
+						}
+						fmt.Printf("      Created log: %s\n", logData.Method)
+					}
+
 				}
 
 			}

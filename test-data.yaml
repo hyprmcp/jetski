@@ -7,7 +7,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url
             ago: 23h
-            logs: 10
+            randomLogs: 10
             events:
               - type: progressing
                 ago: 23h
@@ -16,7 +16,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 22h30m
-            logs: 10000
+            randomLogs: 10000
             events:
               - type: progressing
                 ago: 22h30m
@@ -27,7 +27,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 25h
-            logs: 1500
+            randomLogs: 1500
             events:
               - type: progressing
                 ago: 25h
@@ -36,7 +36,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 24h
-            logs: 1000
+            randomLogs: 1000
             events:
               - type: progressing
                 ago: 24h
@@ -45,7 +45,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 20h
-            logs: 100
+            randomLogs: 100
             events:
               - type: progressing
                 ago: 20h
@@ -54,7 +54,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 18h
-            logs: 10000
+            randomLogs: 10000
             events:
               - type: progressing
                 ago: 18h
@@ -67,7 +67,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 15m
-            logs: 8
+            randomLogs: 8
             events:
               - type: progressing
                 ago: 15m
@@ -79,7 +79,32 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 25h
-            logs: 1500
+            randomLogs: 0
+            logs:
+              - method: Tools/List
+                userAgent: node
+                httpStatus: 200
+                parameters: []
+              - method: Tools/Call
+                userAgent: node
+                httpStatus: 200
+                parameters:
+                  - name: get_current_weather
+                    arguments:
+                      - name: city
+                        value: Vienna
+              - method: Tools/Call
+                userAgent: node
+                httpStatus: 200
+                parameters:
+                  - name: get_weather_by_datetime_range
+                    arguments:
+                      - name: city
+                        value: Tarvis
+                      - name: start_date
+                        value: 2025-08-02
+                      - name: end_date
+                        value: 2025-08-03
             events:
               - type: progressing
                 ago: 25h
@@ -88,7 +113,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 24h
-            logs: 1000
+            randomLogs: 0
             events:
               - type: progressing
                 ago: 24h
@@ -97,7 +122,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 20h
-            logs: 100
+            randomLogs: 0
             events:
               - type: progressing
                 ago: 20h
@@ -106,7 +131,7 @@ organizations:
           - port: 8080
             ociUrl: some-oci-url-fixed
             ago: 18h
-            logs: 10000
+            randomLogs: 0
             events:
               - type: progressing
                 ago: 18h

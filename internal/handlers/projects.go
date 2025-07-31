@@ -17,6 +17,7 @@ func ProjectsRouter(r chi.Router) {
 	r.Route("/{projectId}", func(r chi.Router) {
 		r.Get("/logs", getLogsForProject)
 		r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
+		r.Get("/analytics", getAnalytics)
 	})
 }
 
@@ -114,5 +115,19 @@ func getProjectIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUI
 		return uuid.Nil
 	} else {
 		return projectID
+	}
+}
+
+func getAnalytics(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	projectID := getProjectIDAndCheckAccess(w, r)
+	if projectID == uuid.Nil {
+		return
+	}
+
+	if logs, err := db.GetDeploymentRevisionsForProject(ctx, projectID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get deployment revisions for project")
+	} else {
+		RespondJSON(w, logs)
 	}
 }
