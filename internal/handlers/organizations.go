@@ -2,6 +2,8 @@ package handlers
 
 import (
 	"encoding/json"
+	"errors"
+	"github.com/jetski-sh/jetski/internal/apierrors"
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
@@ -41,7 +43,10 @@ func postOrganizationHandler() http.HandlerFunc {
 			return
 		}
 
-		if org, err := db.CreateOrganization(ctx, orgReq.Name); err != nil {
+		if org, err := db.CreateOrganization(ctx, orgReq.Name); errors.Is(err, apierrors.ErrAlreadyExists) {
+			Handle4XXErrorWithStatusText(w, http.StatusBadRequest,
+				"An organization with this name already exists. Please choose another name.")
+		} else if err != nil {
 			HandleInternalServerError(w, r, err, "create organization error")
 		} else if err := db.AddUserToOrganization(ctx, user.ID, org.ID); err != nil {
 			HandleInternalServerError(w, r, err, "create organization error")

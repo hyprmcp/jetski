@@ -9,7 +9,7 @@ import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
-import { AccountNewComponent } from './pages/account-new/account-new.component';
+import { OnboardingComponent } from './pages/new-organization/onboarding.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -48,22 +48,26 @@ export const contextGuard: CanActivateFn = async (route, state) => {
   await resourceDone(contextRes.status);
   if (contextRes.hasValue()) {
     if ((contextRes.value()?.organizations ?? []).length === 0) {
-      if (state.url === '/organization/new') {
+      if (state.url === '/onboarding') {
         return true;
       }
-      return router.createUrlTree(['/organization/new']);
+      return router.createUrlTree(['/onboarding']);
     }
     return true;
   }
   return false;
 };
 
-export const newOrganizationGuard: CanActivateFn = () => {
+export const onboardingGuard: CanActivateFn = () => {
   const contextService = inject(ContextService);
+  const router = inject(Router);
   const contextRes = contextService.context;
-  return contextRes.hasValue()
-    ? (contextRes.value()?.organizations ?? []).length === 0
-    : false;
+  if (contextRes.hasValue()) {
+    if ((contextRes.value()?.organizations ?? []).length === 0) {
+      return true;
+    }
+  }
+  return router.createUrlTree(['/']);
 };
 
 export const authenticatedRoutes: Routes = [
@@ -78,9 +82,9 @@ export const authenticatedRoutes: Routes = [
         canActivate: [redirectToDefaultPage],
       },
       {
-        path: 'organization/new',
-        component: AccountNewComponent,
-        canActivate: [newOrganizationGuard],
+        path: 'onboarding',
+        component: OnboardingComponent,
+        canActivate: [onboardingGuard],
       },
       {
         path: ':organizationName',
