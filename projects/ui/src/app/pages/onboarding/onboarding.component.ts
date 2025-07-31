@@ -7,7 +7,7 @@ import {
 } from '@angular/forms';
 import { ContextService } from '../../services/context.service';
 import { HttpClient } from '@angular/common/http';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { map, startWith } from 'rxjs';
@@ -20,7 +20,11 @@ import { AsyncPipe } from '@angular/common';
       <div class="w-full max-w-2xl md:w-1/2 space-y-6">
         <div>
           <h1 class="text-2xl font-semibold text-foreground">
-            Welcome to Jetski{{ usernamePostfix }}!
+            @if (isOnboarding) {
+              Welcome to Jetski{{ usernamePostfix }}!
+            } @else {
+              Create New Organization
+            }
           </h1>
           <p class="text-muted-foreground">
             Please set a name for your organization to proceed.
@@ -86,6 +90,8 @@ export class OnboardingComponent {
   readonly contextService = inject(ContextService);
   readonly http = inject(HttpClient);
   readonly router = inject(Router);
+  readonly route = inject(ActivatedRoute);
+  readonly isOnboarding = this.route.snapshot.data['flow'] === 'onboarding';
   readonly oauthService = inject(OAuthService);
   readonly nameFromToken = this.oauthService.getIdentityClaims()['name'] as
     | string
@@ -114,16 +120,13 @@ export class OnboardingComponent {
     if (this.form.invalid) return;
     this.loading.set(true);
     this.error.set(undefined);
+    const name = this.form.value.name;
     this.http
-      .post(
-        '/api/v1/organizations',
-        { name: this.form.value.name },
-        { responseType: 'text' },
-      )
+      .post('/api/v1/organizations', { name }, { responseType: 'text' })
       .subscribe({
         next: () => {
           this.contextService.context.reload();
-          this.router.navigateByUrl('/');
+          this.router.navigateByUrl(`/${name}`);
         },
         error: (err) => {
           console.log(err);
