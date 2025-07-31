@@ -4,9 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/lestrrat-go/jwx/v3/jwk"
 	"net/http"
 	"syscall"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+	"github.com/lestrrat-go/jwx/v3/jwk"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jetski-sh/jetski/internal/buildconfig"
@@ -23,6 +26,7 @@ type Registry struct {
 	execDbMigrations bool
 	tracers          *tracers.Tracers
 	jwkSet           jwk.Set
+	awsConfig        aws.Config
 }
 
 func NewDefault(ctx context.Context) (*Registry, error) {
@@ -70,6 +74,12 @@ func newRegistry(ctx context.Context, reg *Registry) (*Registry, error) {
 		reg.jwkSet = oidcProvider
 	}
 
+	if cfg, err := config.LoadDefaultConfig(ctx); err != nil {
+		return nil, err
+	} else {
+		reg.awsConfig = cfg
+	}
+
 	return reg, nil
 }
 
@@ -95,6 +105,7 @@ func (r *Registry) GetRouter() http.Handler {
 		r.GetDbPool(),
 		r.GetTracers(),
 		r.GetJwkSet(),
+		r.awsConfig,
 	)
 }
 

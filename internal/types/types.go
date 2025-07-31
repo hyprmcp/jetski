@@ -99,3 +99,13 @@ type Context struct {
 	ContextPropertyID    uuid.UUID `db:"context_property_id" json:"contextPropertyId"`
 	ContextPropertyValue any       `db:"context_property_value" json:"contextPropertyValue"`
 }
+
+type ProjectRepositoryConfiguration struct {
+	ID                 uuid.UUID `db:"id"`
+	CreatedAt          time.Time `db:"created_at"`
+	ProjectID          uuid.UUID `db:"project_id"`
+	AWSECRRepostoryARN *string   `db:"aws_ecr_repository_arn"`
+	AWSECRRepostoryURI *string   `db:"aws_ecr_repository_uri"`
+	AWSIAMPolicyARN    *string   `db:"aws_iam_policy_arn"`
+	AWSIAMRoleARN      *string   `db:"aws_iam_role_arn"`
+}

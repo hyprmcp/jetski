@@ -1,9 +1,11 @@
 package routing
 
 import (
-	"github.com/lestrrat-go/jwx/v3/jwk"
 	"net/http"
 	"time"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/lestrrat-go/jwx/v3/jwk"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -17,7 +19,11 @@ import (
 )
 
 func NewRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set,
+	logger *zap.Logger,
+	db *pgxpool.Pool,
+	tracers *tracers.Tracers,
+	jwkSet jwk.Set,
+	awsConfig aws.Config,
 ) http.Handler {
 	router := chi.NewRouter()
 	router.Use(
@@ -26,7 +32,7 @@ func NewRouter(
 		// Reject bodies larger than 1MiB
 		chimiddleware.RequestSize(1048576),
 	)
-	router.Mount("/api", ApiRouter(logger, db, tracers, jwkSet))
+	router.Mount("/api", ApiRouter(logger, db, tracers, jwkSet, awsConfig))
 	router.Mount("/internal", InternalRouter())
 	router.Mount("/webhook", WebhookRouter(logger, db))
 	router.Mount("/", FrontendRouter())
@@ -34,7 +40,11 @@ func NewRouter(
 }
 
 func ApiRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set,
+	logger *zap.Logger,
+	db *pgxpool.Pool,
+	tracers *tracers.Tracers,
+	jwkSet jwk.Set,
+	awsConfig aws.Config,
 ) http.Handler {
 	r := chi.NewRouter()
 	r.Use(
@@ -57,7 +67,7 @@ func ApiRouter(
 		)
 
 		r.Route("/organizations", handlers.OrganizationsRouter)
-		r.Route("/projects", handlers.ProjectsRouter)
+		r.Route("/projects", handlers.ProjectsRouter(awsConfig))
 		r.Route("/dashboard", handlers.DashboardRouter)
 	})
 
