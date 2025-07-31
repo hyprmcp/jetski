@@ -91,12 +91,11 @@ func AuthMiddleware(jwkSet jwk.Set) func(next http.Handler) http.Handler {
 					logger.Info("no user found for email", zap.Error(err), zap.String("email", email))
 					http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)
 					return
-				} else {
-					logger.Error("failed to get user by email", zap.Error(err), zap.String("email", email))
-					http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-					sentry.GetHubFromContext(ctx).CaptureException(err)
-					return
 				}
+				logger.Error("failed to get user by email", zap.Error(err), zap.String("email", email))
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				sentry.GetHubFromContext(ctx).CaptureException(err)
+				return
 			}
 			ctx = internalctx.WithAccessToken(ctx, parsedAccessToken)
 			ctx = internalctx.WithUser(ctx, user)
