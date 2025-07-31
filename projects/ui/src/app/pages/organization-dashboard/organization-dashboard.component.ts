@@ -6,7 +6,6 @@ import { ContextService } from '../../services/context.service';
 import { getRecentDeployments } from '../../../api/dashboard';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
-  HlmSelectDirective,
   HlmSelectContentDirective,
   HlmSelectTriggerComponent,
   HlmSelectOptionComponent,
@@ -24,7 +23,6 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
     ProjectsGridComponent,
     RecentDeploymentsComponent,
     BrnSelectModule,
-    HlmSelectDirective,
     HlmSelectContentDirective,
     HlmSelectTriggerComponent,
     HlmSelectOptionComponent,

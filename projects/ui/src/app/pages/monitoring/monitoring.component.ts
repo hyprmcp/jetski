@@ -11,7 +11,6 @@ import { ContextService } from '../../services/context.service';
 import { getDeploymentsForProject } from '../../../api/project';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
-  HlmSelectDirective,
   HlmSelectContentDirective,
   HlmSelectTriggerComponent,
   HlmSelectOptionComponent,
@@ -28,7 +27,6 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
     HlmButtonDirective,
     NgIcon,
     BrnSelectModule,
-    HlmSelectDirective,
     HlmSelectContentDirective,
     HlmSelectTriggerComponent,
     HlmSelectOptionComponent,

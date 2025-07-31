@@ -8,8 +8,7 @@ import posthog from 'posthog-js';
 @Component({
   selector: 'app-root',
   imports: [RouterOutlet],
-  template: ` <router-outlet></router-outlet>`,
-  styleUrl: './app.css',
+  template: '<router-outlet></router-outlet>',
 })
 export class App implements OnInit {
   private oauthService = inject(OAuthService);
