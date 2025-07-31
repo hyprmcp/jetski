@@ -128,9 +128,7 @@ export class OnboardingComponent {
         error: (err) => {
           console.log(err);
           this.form.markAsPristine();
-          this.error.set(
-            err?.error || 'Failed to create organization.',
-          );
+          this.error.set(err?.error || 'Failed to create organization.');
           this.loading.set(false);
         },
       });
