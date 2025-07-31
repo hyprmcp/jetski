@@ -9,7 +9,7 @@ import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
-import { OnboardingComponent } from './pages/new-organization/onboarding.component';
+import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
