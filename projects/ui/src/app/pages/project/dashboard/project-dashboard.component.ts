@@ -1,6 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { ContextService } from '../../../services/context.service';
-import { getDeploymentsForProject } from '../../../../api/project';
+import {
+  getAnalyticsForProject,
+  getDeploymentsForProject,
+} from '../../../../api/project';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
   HlmSelectContentDirective,
@@ -47,6 +50,7 @@ import {
   type RecentSessions,
 } from './analytics/recent-sessions';
 import { RecentSessionsComponent } from './analytics/recent-sessions.component';
+import { JsonPipe } from '@angular/common';
 
 @Component({
   template: `
@@ -135,38 +139,40 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
           </div>
         </div>
 
-        <!-- Overview Cards -->
-        <div>
-          <app-project-analytics-overview
-            [data]="projectAnalyticsOverviewDemoData"
-          ></app-project-analytics-overview>
-        </div>
+        @if (projectAnalytics.value(); as analytics) {
+          <!-- Overview Cards -->
+          <div>
+            <app-project-analytics-overview
+              [data]="analytics.overview"
+            ></app-project-analytics-overview>
+          </div>
 
-        <!-- Tools Performance Chart -->
-        <div>
-          <app-tools-performance
-            [data]="toolsPerformanceDemoData"
-          ></app-tools-performance>
-        </div>
+          <!-- Tools Performance Chart -->
+          <div>
+            <app-tools-performance
+              [data]="analytics.toolsPerformance"
+            ></app-tools-performance>
+          </div>
 
-        <!-- Tool Analytics -->
-        <div>
-          <app-tool-analytics
-            [data]="toolAnalyticsDemoData"
-          ></app-tool-analytics>
-        </div>
+          <!-- Tool Analytics -->
+          <div>
+            <app-tool-analytics
+              [data]="analytics.toolAnalytics"
+            ></app-tool-analytics>
+          </div>
 
-        <!-- Client Usage -->
-        <div>
-          <app-client-usage [data]="clientUsageDemoData"></app-client-usage>
-        </div>
+          <!-- Client Usage -->
+          <div>
+            <app-client-usage [data]="analytics.clientUsage"></app-client-usage>
+          </div>
 
-        <!-- Recent Sessions Table -->
-        <div>
-          <app-recent-sessions
-            [data]="recentSessionsDemoData"
-          ></app-recent-sessions>
-        </div>
+          <!-- Recent Sessions Table -->
+          <div>
+            <app-recent-sessions
+              [data]="analytics.recentSessions"
+            ></app-recent-sessions>
+          </div>
+        }
       </div>
     }
   `,
@@ -184,6 +190,7 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
     ToolAnalyticsComponent,
     ClientUsageComponent,
     RecentSessionsComponent,
+    JsonPipe,
   ],
   providers: [
     provideIcons({
@@ -207,9 +214,12 @@ export class ProjectDashboardComponent {
     this.contextService.selectedProject,
   );
 
+  readonly projectAnalytics = getAnalyticsForProject(
+    this.contextService.selectedProject,
+  );
+
   // Overview cards data
-  projectAnalyticsOverviewDemoData: Overview =
-    projectAnalyticsOverviewDemoData;
+  projectAnalyticsOverviewDemoData: Overview = projectAnalyticsOverviewDemoData;
 
   // Tools performance data
   toolsPerformanceDemoData: ToolsPerformance = toolsPerformanceDemoData;
@@ -247,4 +257,12 @@ export class ProjectDashboardComponent {
         return 'Last 24h';
     }
   }
+}
+
+export interface ProjectAnalytics {
+  overview: Overview;
+  toolsPerformance: ToolsPerformance;
+  toolAnalytics: ToolAnalytics;
+  clientUsage: ClientUsage;
+  recentSessions: RecentSessions;
 }

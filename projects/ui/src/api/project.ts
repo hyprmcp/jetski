@@ -2,6 +2,7 @@ import { httpResource } from '@angular/common/http';
 import { Base } from './base';
 import { Signal } from '@angular/core';
 import { DeploymentRevisionSummary } from './dashboard';
+import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
 
 export interface Project extends Base {
   name: string;
@@ -30,6 +31,23 @@ export function getDeploymentsForProject(project: Signal<Project | undefined>) {
     },
     {
       parse: (value) => value as DeploymentRevisionSummary[],
+    },
+  );
+}
+
+export function getAnalyticsForProject(project: Signal<Project | undefined>) {
+  return httpResource(
+    () => {
+      const p = project();
+      if (p) {
+        return {
+          url: `/api/v1/projects/${p.id}/analytics`,
+        };
+      }
+      return undefined;
+    },
+    {
+      parse: (value) => value as ProjectAnalytics,
     },
   );
 }

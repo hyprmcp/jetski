@@ -260,7 +260,9 @@ export class LogsComponent {
       cell: (info) => {
         const request = info.getValue<JsonRpcRequest>();
         const toolName =
-          request.method === 'tools/call' ? request.params?.name : '-';
+          request.method.toLowerCase() === 'tools/call'
+            ? request.params?.name
+            : '-';
         return `<span>${toolName || '-'}</span>`;
       },
       enableSorting: false,

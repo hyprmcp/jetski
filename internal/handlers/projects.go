@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/jetski-sh/jetski/internal/analytics"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
 	"github.com/jetski-sh/jetski/internal/lists"
@@ -125,9 +126,9 @@ func getAnalytics(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if logs, err := db.GetDeploymentRevisionsForProject(ctx, projectID); err != nil {
-		HandleInternalServerError(w, r, err, "failed to get deployment revisions for project")
+	if analyticsData, err := analytics.GetProjectAnalytics(ctx, projectID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get analytics for project")
 	} else {
-		RespondJSON(w, logs)
+		RespondJSON(w, analyticsData)
 	}
 }
