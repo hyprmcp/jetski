@@ -48,7 +48,7 @@ import { AsyncPipe } from '@angular/common';
                   <p
                     class="mt-3 mb-3 text-sm font-normal text-gray-500 dark:text-gray-400"
                   >
-                    Your MCP servers' URL will look like this:
+                    Your MCP server's URL will look like this:
                     {{ mcpUrl | async }}
                   </p>
                   @if (
