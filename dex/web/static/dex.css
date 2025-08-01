@@ -1,0 +1,84 @@
+/* based on https://github.com/dexidp/dex/blob/master/web/static/main.css */
+
+.dex-btn-icon {
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 24px;
+  border-radius: 4px 0 0 4px;
+  float: left;
+  height: 36px;
+  margin-right: 5px;
+  width: 36px;
+}
+
+.dex-btn-icon--google {
+  background-color: #FFFFFF;
+  background-image: url(../static/img/google-icon.svg);;
+}
+
+.dex-btn-icon--local {
+  // background-color: #84B6EF;
+  background-color: black;
+  border-radius: 0;
+  mask-image: url(../static/img/email-icon.svg);
+  width: 27px;
+  height: 21px;
+  margin-left: 5px;
+}
+
+.dex-btn-icon--gitea {
+  background-color: #F5F5F5;
+  background-image: url(../static/img/gitea-icon.svg);
+}
+
+.dex-btn-icon--github {
+  // background-color: #F5F5F5;
+  background-image: url(../static/img/github-icon.svg);
+}
+
+.dex-btn-icon--gitlab {
+  background-color: #F5F5F5;
+  background-image: url(../static/img/gitlab-icon.svg);
+  background-size: contain;
+}
+
+.dex-btn-icon--keystone {
+  background-color: #F5F5F5;
+  background-image: url(../static/img/keystone-icon.svg);
+  background-size: contain;
+}
+
+.dex-btn-icon--oidc {
+  background-color: #EBEBEE;
+  background-image: url(../static/img/oidc-icon.svg);
+  background-size: contain;
+}
+
+.dex-btn-icon--bitbucket-cloud {
+  background-color: #205081;
+  background-image: url(../static/img/bitbucket-icon.svg);
+}
+
+.dex-btn-icon--atlassian-crowd {
+  background-color: #CFDCEA;
+  background-image: url(../static/img/atlassian-crowd-icon.svg);
+}
+
+.dex-btn-icon--ldap {
+  background-color: #84B6EF;
+  background-image: url(../static/img/ldap-icon.svg);
+}
+
+.dex-btn-icon--saml {
+  background-color: #84B6EF;
+  background-image: url(../static/img/saml-icon.svg);
+}
+
+.dex-btn-icon--linkedin {
+  background-image: url(../static/img/linkedin-icon.svg);
+  background-size: contain;
+}
+
+.dex-btn-icon--microsoft {
+  background-image: url(../static/img/microsoft-icon.svg);
+}
