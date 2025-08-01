@@ -11,12 +11,6 @@ export interface Project extends Base {
   latestDeploymentRevisionEventId: string | undefined;
 }
 
-export function getProjects() {
-  return httpResource(() => '/api/v1/projects', {
-    parse: (value) => value as Project[],
-  });
-}
-
 export function getDeploymentsForProject(project: Signal<Project | undefined>) {
   return httpResource(
     () => {

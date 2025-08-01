@@ -55,9 +55,9 @@ export class UsageCardComponent {
 
   readonly metrics = computed(() => {
     const projects =
-      this.contextService.projects
-        .value()
-        ?.filter((p) => p.organizationId === this.organization()?.id) ?? [];
+      this.contextService
+        .projects()
+        .filter((p) => p.organizationId === this.organization()?.id) ?? [];
     return [
       {
         label: 'Projects',
