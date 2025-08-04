@@ -44,7 +44,26 @@ func AddUserToOrganization(ctx context.Context, userID, orgID uuid.UUID) error {
 		INSERT INTO Organization_UserAccount (organization_id, user_account_id)
 		VALUES (@orgID, @userID)
 	`, pgx.NamedArgs{"orgID": orgID, "userID": userID})
-	return err
+	if err != nil {
+		if pgerr := (*pgconn.PgError)(nil); errors.As(err, &pgerr) && pgerr.Code == pgerrcode.UniqueViolation {
+			return apierrors.ErrAlreadyExists
+		}
+		return err
+	} else {
+		return nil
+	}
+}
+
+func RemoveUserFromOrganization(ctx context.Context, userID, orgID uuid.UUID) error {
+	db := internalctx.GetDb(ctx)
+	_, err := db.Exec(ctx, `
+		DELETE FROM Organization_UserAccount WHERE user_account_id = @userID AND organization_id = @orgID
+	`, pgx.NamedArgs{"orgID": orgID, "userID": userID})
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
 }
 
 func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, error) {

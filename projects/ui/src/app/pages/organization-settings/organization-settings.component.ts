@@ -1,6 +1,5 @@
 import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBell,
@@ -15,14 +14,7 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 @Component({
   selector: 'app-organization-settings',
   standalone: true,
-  imports: [
-    CommonModule,
-    HlmButtonDirective,
-    NgIcon,
-    RouterOutlet,
-    RouterLink,
-    RouterLinkActive,
-  ],
+  imports: [CommonModule, NgIcon, RouterOutlet, RouterLink, RouterLinkActive],
   viewProviders: [
     provideIcons({
       lucideUser,

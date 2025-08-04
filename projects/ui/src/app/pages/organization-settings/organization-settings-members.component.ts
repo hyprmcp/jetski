@@ -1,187 +1,248 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBell,
   lucidePalette,
+  lucidePlus,
   lucideShield,
+  lucideTrash,
   lucideUser,
 } from '@ng-icons/lucide';
-import { BrnSelectComponent } from '@spartan-ng/brain/select';
 import {
-  HlmTableDirective,
-  HlmTableImports,
-  HlmTHeadDirective,
-} from '@spartan-ng/helm/table';
-import {
-  ColumnDef,
-  createAngularTable,
-  flexRenderComponent, FlexRenderDirective,
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel
-} from '@tanstack/angular-table';
-import { JsonRpcRequest, MCPServerLog } from '../../../api/mcp-server-log';
-import { TimestampCellComponent } from '../project/logs/timestamp-cell.component';
-import { TableHeadSortButtonComponent } from '../project/logs/table/sort-header-button.component';
-import { formatDuration, intervalToDuration } from 'date-fns';
-import { LogsActionsComponent } from '../project/logs/table/logs-actions.component';
-import { UserAccount } from '../../../api/user-account';
-import { OrganizationMembersTableActionComponent } from './organization-members-table-action.component';
-import { FormsModule } from '@angular/forms';
+  FormControl,
+  FormGroup,
+  FormsModule,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ContextService } from '../../services/context.service';
 import { getOrganizationMembers } from '../../../api/organization';
+import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import {
+  HlmDialogComponent,
+  HlmDialogImports,
+} from '../../../../libs/ui/ui-dialog-helm/src';
+import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
+import { HttpClient } from '@angular/common/http';
+import { UserAccount } from '../../../api/user-account';
 
 @Component({
   selector: 'app-organization-settings-members',
   standalone: true,
   imports: [
-    FlexRenderDirective,
     CommonModule,
+    FormsModule,
+    HlmH3Directive,
     HlmButtonDirective,
     NgIcon,
-    BrnSelectComponent,
-    HlmTHeadDirective,
-    HlmTableDirective,
-    HlmTableImports,
-    FormsModule,
+    HlmDialogImports,
+    HlmIconDirective,
+    BrnDialogImports,
+    ReactiveFormsModule,
   ],
   viewProviders: [
-    provideIcons({ lucideUser, lucideBell, lucideShield, lucidePalette }),
+    provideIcons({
+      lucideUser,
+      lucideBell,
+      lucideShield,
+      lucidePalette,
+      lucidePlus,
+      lucideTrash,
+    }),
   ],
 
   template: `
-    <h2 class="text-lg font-semibold text-foreground mb-6">
-      Organization Members
-    </h2>
-
-    <div class="flex flex-col justify-between gap-4 sm:flex-row">
-      <div class="flex items-center justify-between grow">
-      </div>
-    </div>
-    <div
-      class="border-border mt-4 block w-full overflow-auto rounded-md border"
-    >
-      <!-- we defer the loading of the table, because tanstack manipulates the DOM with flexRender which can cause errors during SSR -->
-      @defer {
-        <table hlmTable class="w-full">
-          <thead hlmTHead>
-            @for (
-              headerGroup of _table.getHeaderGroups();
-              track headerGroup.id
-            ) {
-              <tr hlmTr>
-                @for (header of headerGroup.headers; track header.id) {
-                  <th hlmTh [attr.colSpan]="header.colSpan">
-                    @if (!header.isPlaceholder) {
-                      <ng-container
-                        *flexRender="
-                          header.column.columnDef.header;
-                          props: header.getContext();
-                          let headerText
-                        "
-                      >
-                        <div [innerHTML]="headerText"></div>
-                      </ng-container>
-                    }
-                  </th>
-                }
-              </tr>
-            }
-          </thead>
-          <tbody hlmTBody class="w-full">
-            @for (row of _table.getRowModel().rows; track row.id) {
-              <tr
-                hlmTr
-                [attr.key]="row.id"
-                [attr.data-state]="row.getIsSelected() && 'selected'"
-              >
-                @for (cell of row.getVisibleCells(); track $index) {
-                  <td hlmTd>
-                    <ng-container
-                      *flexRender="
-                        cell.column.columnDef.cell;
-                        props: cell.getContext();
-                        let cell
-                      "
+    <div>
+      <div class="flex">
+        <h3 hlmH3 class="grow">Organization Members</h3>
+        <hlm-dialog #inviteDialogRef>
+          <button hlmBtn brnDialogTrigger variant="outline">
+            <ng-icon name="lucidePlus" hlm size="sm"></ng-icon>
+            Invite
+          </button>
+          <hlm-dialog-content *brnDialogContent="let ctx">
+            <hlm-dialog-header>
+              <h3 brnDialogTitle>Invite New Member</h3>
+            </hlm-dialog-header>
+            <div>
+              <form [formGroup]="form" (ngSubmit)="onSubmit()">
+                <div class="gap-4">
+                  <div>
+                    <label
+                      for="email"
+                      class="block  font-medium text-foreground mb-2"
+                      >Email Address</label
                     >
-                      <div [innerHTML]="cell"></div>
-                    </ng-container>
-                  </td>
-                }
-              </tr>
-            } @empty {
-              <tr hlmTr>
-                <td
-                  hlmTd
-                  class="h-24 text-center"
-                  [attr.colspan]="_columns.length"
-                >
-                  No results.
-                </td>
-              </tr>
-            }
-          </tbody>
-        </table>
-      }
-    </div>
+                    <input
+                      id="email"
+                      type="email"
+                      [formControl]="form.controls.email"
+                      class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground placeholder:italic"
+                    />
+                    @if (
+                      form.controls.email.invalid && form.controls.email.touched
+                    ) {
+                      <div class="text-sm text-red-600 my-2">
+                        Please enter a valid email address.
+                      </div>
+                    }
+                    @if (error() && form.pristine) {
+                      <div class="text-sm text-red-600 my-2">{{ error() }}</div>
+                    }
+                  </div>
 
-    <div class="mt-4 flex flex-col justify-end sm:flex-row sm:items-center">
-      @if (_table.getRowCount() === 0) {
-        <div class="flex h-full w-full items-center justify-center">
-          <div class="text-muted-foreground text-sm">No Data</div>
+                  <!-- Actions -->
+                  <div class="flex items-center justify-end pt-4 ">
+                    <button
+                      hlmBtn
+                      type="submit"
+                      [disabled]="form.invalid || loading()"
+                    >
+                      Send Invite
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </hlm-dialog-content>
+        </hlm-dialog>
+      </div>
+      @if (members.error(); as err) {
+        <div class="text-red-600 text-sm">failed to load members</div>
+      } @else {
+        <div class="">
+          @for (member of members.value(); track member.id) {
+            <div
+              class="flex items-center space-x-3 p-3 hover:bg-muted rounded-lg transition-colors"
+            >
+              <div
+                class="w-8 h-8 bg-gradient-to-r from-gray-800 to-gray-900 rounded-lg flex items-center justify-center text-white font-bold text-lg flex-shrink-0"
+              >
+                {{ member.email.charAt(0) }}
+              </div>
+
+              <div class="text-sm font-medium grow">
+                {{ member.email }}
+              </div>
+
+              <hlm-dialog #removeDialogRef>
+                <button hlmBtn brnDialogTrigger variant="destructive" size="sm">
+                  <ng-icon name="lucideTrash" size="16"></ng-icon>
+                </button>
+                <hlm-dialog-content *brnDialogContent="let ctx">
+                  <hlm-dialog-header>
+                    <h3 brnDialogTitle>Please Confirm</h3>
+                  </hlm-dialog-header>
+                  <div>
+                    User <b>{{ member.email }}</b> will be removed from the
+                    organization <b>{{ contextService.selectedOrg()?.name }}</b
+                    >. Are you sure?
+                  </div>
+                  @if (error()) {
+                    <div class="text-sm text-red-600 my-2">{{ error() }}</div>
+                  }
+                  <div class="flex justify-end space-x-2">
+                    <button
+                      hlmBtn
+                      brnDialogTrigger
+                      variant="outline"
+                      size="sm"
+                      (click)="closeRemoveDialog(removeDialogRef)"
+                    >
+                      Canel
+                    </button>
+                    <button
+                      hlmBtn
+                      brnDialogTrigger
+                      variant="destructive"
+                      size="sm"
+                      [disabled]="removeLoading()"
+                      (click)="removeUser(member, removeDialogRef)"
+                    >
+                      Yes, Delete.
+                    </button>
+                  </div>
+                </hlm-dialog-content>
+              </hlm-dialog>
+            </div>
+          } @empty {
+            <div class="text-muted-foreground text-sm">no members</div>
+          }
         </div>
       }
     </div>
   `,
 })
 export class OrganizationSettingsMembersComponent {
+  readonly http = inject(HttpClient);
   readonly contextService = inject(ContextService);
   readonly members = getOrganizationMembers(this.contextService.selectedOrg);
+  loading = signal<boolean>(false);
+  removeLoading = signal<boolean>(false);
+  error = signal<string | undefined>(undefined);
+  inviteDialogRef = viewChild<HlmDialogComponent>('inviteDialogRef');
+  readonly form = new FormGroup({
+    email: new FormControl<string>('', [Validators.required, Validators.email]),
+  });
 
-  protected readonly _columns: ColumnDef<UserAccount>[] = [
-    {
-      accessorKey: 'email',
-      id: 'email',
-      header: 'Email',
-    },
-    /*{
-      accessorKey: 'createdAt',
-      id: 'created_at',
-      cell: (info) =>
-        flexRenderComponent(TimestampCellComponent, {
-          inputs: {
-            timestamp: info.getValue<string>(),
-          },
-        }),
-      enableSorting: true,
-      header: () =>
-        flexRenderComponent(TableHeadSortButtonComponent, {
-          inputs: {
-            header: 'Timestamp',
-          },
-        }),
-    },*/
-    {
-      id: 'action',
-      cell: (info) =>
-        flexRenderComponent(OrganizationMembersTableActionComponent, {
-          inputs: {
-            userAccount: info.row.original,
-          },
-        }),
-    },
-  ];
+  onSubmit() {
+    if (this.form.invalid || this.loading()) {
+      return;
+    }
+    this.loading.set(true);
+    this.error.set(undefined);
+    const email = this.form.value.email;
+    this.http
+      .put(
+        `/api/v1/organizations/${this.contextService.selectedOrg()!.id}/members`,
+        { email },
+        { responseType: 'text' },
+      )
+      .subscribe({
+        next: () => {
+          this.members.reload();
+          this.loading.set(false);
+          this.inviteDialogRef()?.close();
+          this.form.reset();
+        },
+        error: (err) => {
+          this.form.markAsPristine();
+          this.error.set(err?.error || 'Failed to invite member.');
+          this.loading.set(false);
+        },
+      });
+  }
 
-  protected readonly _table = createAngularTable(() => ({
-    data: this.members.value() ?? [],
-    columns: this._columns,
-    enableSorting: false,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
-  }));
+  closeRemoveDialog(ref: HlmDialogComponent) {
+    this.error.set(undefined);
+    ref.close();
+  }
+
+  removeUser(user: UserAccount, ref: HlmDialogComponent) {
+    if (this.removeLoading()) {
+      return;
+    }
+
+    this.removeLoading.set(true);
+    this.error.set(undefined);
+    this.http
+      .delete(
+        `/api/v1/organizations/${this.contextService.selectedOrg()!.id}/members/${user.id}`,
+        { responseType: 'text' },
+      )
+      .subscribe({
+        next: () => {
+          this.members.reload();
+          this.removeLoading.set(false);
+          this.closeRemoveDialog(ref);
+        },
+        error: (err) => {
+          this.error.set(err?.error || 'Failed to remove member.');
+          this.removeLoading.set(false);
+        },
+      });
+  }
 }
