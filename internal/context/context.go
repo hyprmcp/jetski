@@ -3,6 +3,7 @@ package context
 import (
 	"context"
 	"github.com/jetski-sh/jetski/internal/db/queryable"
+	"github.com/jetski-sh/jetski/internal/mail"
 	"github.com/jetski-sh/jetski/internal/types"
 	"github.com/lestrrat-go/jwx/v3/jwt"
 
@@ -17,6 +18,7 @@ const (
 	ctxKeyIPAddress
 	ctxKeyAccessToken
 	ctxKeyUser
+	ctxKeyMailer
 )
 
 func GetDb(ctx context.Context) queryable.Queryable {
@@ -84,4 +86,17 @@ func GetUser(ctx context.Context) *types.UserAccount {
 
 func WithUser(ctx context.Context, user *types.UserAccount) context.Context {
 	return context.WithValue(ctx, ctxKeyUser, user)
+}
+
+func GetMailer(ctx context.Context) mail.Mailer {
+	if mailer, ok := ctx.Value(ctxKeyMailer).(mail.Mailer); ok {
+		if mailer != nil {
+			return mailer
+		}
+	}
+	panic("mailer not contained in context")
+}
+
+func WithMailer(ctx context.Context, mailer mail.Mailer) context.Context {
+	return context.WithValue(ctx, ctxKeyMailer, mailer)
 }

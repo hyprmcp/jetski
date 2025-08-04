@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"errors"
+	"github.com/jetski-sh/jetski/internal/mail"
 	"net/http"
 	"strings"
 	"time"
@@ -24,12 +25,14 @@ import (
 
 func ContextInjectorMiddleware(
 	db *pgxpool.Pool,
+	mailer mail.Mailer,
 ) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			ctx := r.Context()
 			ctx = internalctx.WithDb(ctx, db)
 			ctx = internalctx.WithRequestIPAddress(ctx, r.RemoteAddr)
+			ctx = internalctx.WithMailer(ctx, mailer)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

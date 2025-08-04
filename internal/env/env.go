@@ -15,6 +15,7 @@ var (
 	oidcUrl                       string
 	oidcClientID                  string
 	databaseMaxConns              *int
+	mailerConfig                  MailerConfig
 	sentryDSN                     string
 	sentryDebug                   bool
 	sentryEnvironment             string
@@ -43,6 +44,11 @@ func Initialize() {
 	databaseMaxConns = envutil.GetEnvParsedOrNil("DATABASE_MAX_CONNS", strconv.Atoi)
 	enableQueryLogging = envutil.GetEnvParsedOrDefault("ENABLE_QUERY_LOGGING", strconv.ParseBool, false)
 	serverShutdownDelayDuration = envutil.GetEnvParsedOrNil("SERVER_SHUTDOWN_DELAY_DURATION", envparse.PositiveDuration)
+
+	mailerConfig.Type = envutil.GetEnvParsedOrDefault("MAILER_TYPE", parseMailerType, MailerTypeUnspecified)
+	if mailerConfig.Type != MailerTypeUnspecified {
+		mailerConfig.FromAddress = envutil.RequireEnvParsed("MAILER_FROM_ADDRESS", envparse.MailAddress)
+	}
 
 	sentryDSN = envutil.GetEnv("SENTRY_DSN")
 	sentryDebug = envutil.GetEnvParsedOrDefault("SENTRY_DEBUG", strconv.ParseBool, false)
@@ -75,6 +81,10 @@ func OIDCClientID() string {
 // (like this: postgresql://...?pool_max_conns=10), but it doesn't work for some reason.
 func DatabaseMaxConns() *int {
 	return databaseMaxConns
+}
+
+func GetMailerConfig() MailerConfig {
+	return mailerConfig
 }
 
 func SentryDSN() string {

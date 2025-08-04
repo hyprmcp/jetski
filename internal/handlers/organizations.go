@@ -1,10 +1,15 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 	"github.com/jetski-sh/jetski/internal/apierrors"
+	"github.com/jetski-sh/jetski/internal/mailsending"
+	"github.com/jetski-sh/jetski/internal/types"
+	"go.uber.org/zap"
 	"net/http"
 	"regexp"
 	"strings"
@@ -85,11 +90,11 @@ func validateOrgName(w http.ResponseWriter, name string) bool {
 
 func getOrganizationMembers(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	orgID := getOrganizationIDAndCheckAccess(w, r)
-	if orgID == uuid.Nil {
+	org := getOrganizationIfAllowed(w, r, pathParam)
+	if org == nil {
 		return
 	}
-	users, err := db.GetOrganizationMembers(ctx, orgID)
+	users, err := db.GetOrganizationMembers(ctx, org.ID)
 	if err != nil {
 		HandleInternalServerError(w, r, err, "could not get users of org")
 		return
@@ -101,8 +106,9 @@ func getOrganizationMembers(w http.ResponseWriter, r *http.Request) {
 func putOrganizationMember() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
-		orgID := getOrganizationIDAndCheckAccess(w, r)
-		if orgID == uuid.Nil {
+		log := internalctx.GetLogger(ctx)
+		org := getOrganizationIfAllowed(w, r, pathParam)
+		if org == nil {
 			return
 		}
 
@@ -114,14 +120,25 @@ func putOrganizationMember() http.HandlerFunc {
 			return
 		}
 		req.Email = strings.TrimSpace(req.Email)
-
-		if u, err := db.GetUserByEmailOrCreate(ctx, req.Email); err != nil {
-			HandleInternalServerError(w, r, err, "failed to add user to org")
-		} else if err := db.AddUserToOrganization(ctx, u.ID, orgID); err != nil && !errors.Is(err, apierrors.ErrAlreadyExists) {
+		var user *types.UserAccount
+		err := db.RunTx(ctx, func(ctx context.Context) error {
+			var err error
+			if user, err = db.GetUserByEmailOrCreate(ctx, req.Email); err != nil {
+				return err
+			} else if err = db.AddUserToOrganization(ctx, user.ID, org.ID); err != nil && !errors.Is(err, apierrors.ErrAlreadyExists) {
+				return err
+			} else {
+				return nil
+			}
+		})
+		if err != nil {
 			HandleInternalServerError(w, r, err, "failed to add user to org")
 		} else {
-			// TODO send notification mail
-			RespondJSON(w, u)
+			if err := mailsending.SendUserInviteMail(ctx, *user, *org); err != nil {
+				log.Error("failed to send invite mail", zap.Error(err))
+				sentry.GetHubFromContext(ctx).CaptureException(err)
+			}
+			RespondJSON(w, user)
 		}
 	}
 }
@@ -130,8 +147,8 @@ func deleteOrganizationMember() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		user := internalctx.GetUser(ctx)
-		orgID := getOrganizationIDAndCheckAccess(w, r)
-		if orgID == uuid.Nil {
+		org := getOrganizationIfAllowed(w, r, pathParam)
+		if org == nil {
 			return
 		}
 		toBeRemovedID := getUserID(w, r)
@@ -142,7 +159,7 @@ func deleteOrganizationMember() http.HandlerFunc {
 			return
 		}
 
-		if err := db.RemoveUserFromOrganization(ctx, toBeRemovedID, orgID); err != nil {
+		if err := db.RemoveUserFromOrganization(ctx, toBeRemovedID, org.ID); err != nil {
 			HandleInternalServerError(w, r, err, "failed to remove user from org")
 		} else {
 			w.WriteHeader(http.StatusAccepted)
@@ -150,22 +167,22 @@ func deleteOrganizationMember() http.HandlerFunc {
 	}
 }
 
-func getOrganizationIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUID {
+func getOrganizationIfAllowed(w http.ResponseWriter, r *http.Request, getter paramGetter) *types.Organization {
 	ctx := r.Context()
 	user := internalctx.GetUser(ctx)
-	if orgIDStr := r.PathValue("organizationId"); orgIDStr == "" {
-		return uuid.Nil
+	if orgIDStr := getter(r, "organizationId"); orgIDStr == "" {
+		return nil
 	} else if orgID, err := uuid.Parse(orgIDStr); err != nil {
 		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid organizationId")
-		return uuid.Nil
-	} else if ok, err := db.IsUserPartOfOrg(ctx, user.ID, orgID); err != nil {
+		return nil
+	} else if ok, org, err := db.IsUserPartOfOrg(ctx, user.ID, orgID); err != nil {
 		HandleInternalServerError(w, r, err, "failed to check if user is part of org")
-		return uuid.Nil
+		return nil
 	} else if !ok {
 		Handle4XXError(w, http.StatusNotFound)
-		return uuid.Nil
+		return nil
 	} else {
-		return orgID
+		return org
 	}
 }
 
