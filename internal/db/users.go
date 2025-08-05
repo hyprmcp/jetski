@@ -43,11 +43,9 @@ func AddUserToOrganization(ctx context.Context, userID, orgID uuid.UUID) error {
 	_, err := db.Exec(ctx, `
 		INSERT INTO Organization_UserAccount (organization_id, user_account_id)
 		VALUES (@orgID, @userID)
+		ON CONFLICT (organization_id, user_account_id) DO NOTHING
 	`, pgx.NamedArgs{"orgID": orgID, "userID": userID})
 	if err != nil {
-		if pgerr := (*pgconn.PgError)(nil); errors.As(err, &pgerr) && pgerr.Code == pgerrcode.UniqueViolation {
-			return apierrors.ErrAlreadyExists
-		}
 		return err
 	} else {
 		return nil
