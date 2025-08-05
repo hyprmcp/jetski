@@ -12,6 +12,7 @@ import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { map, startWith } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-onboarding',
@@ -127,6 +128,7 @@ export class OnboardingComponent {
         next: () => {
           this.contextService.context.reload();
           this.router.navigateByUrl(`/${name}`);
+          toast.success(`Organization ${name} created successfully`);
         },
         error: (err) => {
           console.log(err);

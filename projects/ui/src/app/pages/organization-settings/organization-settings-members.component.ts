@@ -28,6 +28,7 @@ import { HlmIconDirective } from '@spartan-ng/helm/icon';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { HttpClient } from '@angular/common/http';
 import { UserAccount } from '../../../api/user-account';
+import { toast } from 'ngx-sonner';
 
 @Component({
   selector: 'app-organization-settings-members',
@@ -207,6 +208,9 @@ export class OrganizationSettingsMembersComponent {
           this.loading.set(false);
           this.inviteDialogRef()?.close();
           this.form.reset();
+          toast.success('User invited successfully', {
+            description: `${email} is now part of the ${this.contextService.selectedOrg()?.name} organization`,
+          });
         },
         error: (err) => {
           this.form.markAsPristine();
@@ -238,6 +242,9 @@ export class OrganizationSettingsMembersComponent {
           this.members.reload();
           this.removeLoading.set(false);
           this.closeRemoveDialog(ref);
+          toast.success('User removed successfully', {
+            description: `${user.email} has been removed from the ${this.contextService.selectedOrg()?.name} organization`,
+          });
         },
         error: (err) => {
           this.error.set(err?.error || 'Failed to remove member.');
