@@ -4,6 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"math/rand"
+	"os"
+	"time"
+
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
 	"github.com/jetski-sh/jetski/internal/env"
@@ -13,9 +17,6 @@ import (
 	"github.com/sourcegraph/jsonrpc2"
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v3"
-	"math/rand"
-	"os"
-	"time"
 )
 
 type generateOptions struct{}
@@ -103,6 +104,18 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 		// Local user cache to avoid repeated database queries
 		userCache := make(map[string]*types.UserAccount)
 
+		// Pre-populate user cache with all existing users
+		existingUsers, err := db.GetAllUsers(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to get all users: %w", err)
+		}
+		for _, user := range existingUsers {
+			userCopy := user // Create a copy to avoid pointer issues
+			userCache[user.Email] = &userCopy
+		}
+		fmt.Printf("Pre-loaded %d existing users into cache\n", len(existingUsers))
+
+		// organization loop
 		for _, orgData := range data.Organizations {
 			var user *types.UserAccount
 			var err error
@@ -115,19 +128,67 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 				}
 				userCache[orgData.User] = user
 			}
-			org, err := db.CreateOrganization(ctx, orgData.Name)
+
+			// Check if user already has an organization with this name
+			userOrgs, err := db.GetOrganizationsOfUser(ctx, user.ID)
 			if err != nil {
-				return fmt.Errorf("failed to create org: %w", err)
-			} else if err := db.AddUserToOrganization(ctx, user.ID, org.ID); err != nil {
-				return fmt.Errorf("failed to add user to org: %w", err)
+				return fmt.Errorf("failed to get user organizations: %w", err)
 			}
-			fmt.Printf("Created organization: %s\n", org.Name)
-			for _, projData := range orgData.Projects {
-				proj, err := db.CreateProject(ctx, org.ID, user.ID, projData.Name)
-				if err != nil {
-					return fmt.Errorf("failed to create project: %w", err)
+
+			// Look for existing organization with the same name
+			var org *types.Organization
+			for _, userOrg := range userOrgs {
+				if userOrg.Name == orgData.Name {
+					orgCopy := userOrg
+					org = &orgCopy
+					break
 				}
-				fmt.Printf("  Created project: %s\n", proj.Name)
+			}
+
+			if org != nil {
+				// Use existing organization
+				fmt.Printf("Using existing organization: %s\n", org.Name)
+			} else {
+				// Create new organization and add user to it
+				org, err = db.CreateOrganization(ctx, orgData.Name)
+				if err != nil {
+					return fmt.Errorf("failed to create org: %w", err)
+				}
+				if err := db.AddUserToOrganization(ctx, user.ID, org.ID); err != nil {
+					return fmt.Errorf("failed to add user to org: %w", err)
+				}
+				fmt.Printf("Created organization: %s\n", org.Name)
+			}
+
+			// project loop
+			for _, projData := range orgData.Projects {
+				// Check if user already has a project with this name
+				userProjects, err := db.GetProjectsForUser(ctx, user.ID)
+				if err != nil {
+					return fmt.Errorf("failed to get user projects: %w", err)
+				}
+
+				// Look for existing project with the same name in the same organization
+				var proj *types.Project
+				for _, userProject := range userProjects {
+					if userProject.Name == projData.Name && userProject.OrganizationID == org.ID {
+						projCopy := userProject
+						proj = &projCopy
+						break
+					}
+				}
+
+				if proj != nil {
+					// Use existing project
+					fmt.Printf("  Using existing project: %s\n", proj.Name)
+				} else {
+					// Create new project
+					proj, err = db.CreateProject(ctx, org.ID, user.ID, projData.Name)
+					if err != nil {
+						return fmt.Errorf("failed to create project: %w", err)
+					}
+					fmt.Printf("  Created project: %s\n", proj.Name)
+				}
 				for _, drData := range projData.DeploymentRevisions {
 					ago, err := time.ParseDuration(drData.Ago)
 					if err != nil {
@@ -152,10 +213,14 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 						fmt.Printf("      Added event: %s\n", eventData.Type)
 					}
 					for i := 0; i < drData.RandomLogs; i++ {
+						// Generate random timestamp within last 48 hours
+						randomHours := rand.Float64() * 48
+						randomTimestamp := time.Now().UTC().Add(-time.Duration(randomHours * float64(time.Hour)))
+
 						log := types.MCPServerLog{
 							UserAccountID:        &user.ID,
 							MCPSessionID:         util.PtrTo("mcp-session-id-xyz lorem ipsum whatever lorem ipsum whatever"),
-							StartedAt:            time.Now().UTC().Add(time.Duration((5 * time.Second).Nanoseconds() * int64(i))),
+							StartedAt:            randomTimestamp,
 							Duration:             time.Duration(rand.Intn(1300)) * time.Millisecond,
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
@@ -212,10 +277,14 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							return fmt.Errorf("failed to marshal params: %w", err)
 						}
 
+						// Generate random timestamp within last 48 hours
+						randomHours := rand.Float64() * 48
+						randomTimestamp := time.Now().UTC().Add(-time.Duration(randomHours * float64(time.Hour)))
+
 						log := types.MCPServerLog{
 							UserAccountID:        &user.ID,
 							MCPSessionID:         util.PtrTo("mcp-session-id-" + fmt.Sprintf("%d", j)),
-							StartedAt:            time.Now().UTC().Add(time.Duration((10 * time.Second).Nanoseconds() * int64(j))),
+							StartedAt:            randomTimestamp,
 							Duration:             time.Duration(rand.Intn(500)+100) * time.Millisecond,
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,

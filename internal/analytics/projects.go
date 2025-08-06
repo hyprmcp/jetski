@@ -13,20 +13,20 @@ import (
 )
 
 // GetProjectAnalytics retrieves and aggregates analytics data for a project from the database
-func GetProjectAnalytics(ctx context.Context, projectID uuid.UUID) (*types.ProjectAnalytics, error) {
-	// Get all logs for the project using the existing db method
-	logs, err := getAllLogsForProject(ctx, projectID)
+func GetProjectAnalytics(ctx context.Context, projectID uuid.UUID, startAt *time.Time, buildNumber *int) (*types.ProjectAnalytics, error) {
+	// Get current period logs and previous period logs for comparison
+	currentLogs, previousLogs, err := getAllLogsWithComparison(ctx, projectID, startAt, buildNumber)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get logs for project: %w", err)
 	}
 
 	// Aggregate the logs into analytics data
-	analytics := aggregateLogsToAnalytics(logs)
+	analytics := aggregateLogsToAnalyticsWithComparison(currentLogs, previousLogs)
 	return analytics, nil
 }
 
-// getAllLogsForProject gets all MCP server logs for a project using the existing db method
-func getAllLogsForProject(ctx context.Context, projectID uuid.UUID) ([]types.MCPServerLog, error) {
+// getAllLogsWithComparison gets logs for current period and previous period for comparison
+func getAllLogsWithComparison(ctx context.Context, projectID uuid.UUID, startAt *time.Time, buildNumber *int) ([]types.MCPServerLog, []types.MCPServerLog, error) {
 	// Use a high pagination count to get all logs and sort by started_at ASC
 	pagination := lists.Pagination{Count: 1000000}
 
@@ -35,37 +35,100 @@ func getAllLogsForProject(ctx context.Context, projectID uuid.UUID) ([]types.MCP
 		SortOrder: lists.SortOrderAsc,
 	}
 
-	return db.GetLogsForProject(ctx, projectID, pagination, sorting)
+	logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	if startAt == nil {
+		// If no startAt provided, return all logs as current and empty previous
+		return logs, []types.MCPServerLog{}, nil
+	}
+
+	now := time.Now()
+	currentPeriodStart := *startAt
+	periodDuration := now.Sub(currentPeriodStart)
+	previousPeriodStart := currentPeriodStart.Add(-periodDuration) // Double the period backwards
+	previousPeriodEnd := currentPeriodStart
+
+	currentLogs := make([]types.MCPServerLog, 0)
+	previousLogs := make([]types.MCPServerLog, 0)
+
+	for _, log := range logs {
+		if log.StartedAt.After(currentPeriodStart) || log.StartedAt.Equal(currentPeriodStart) {
+			// Current period: from startAt to now
+			currentLogs = append(currentLogs, log)
+		} else if log.StartedAt.After(previousPeriodStart) || log.StartedAt.Equal(previousPeriodStart) {
+			// Previous period: from (startAt - period_duration) to startAt
+			if log.StartedAt.Before(previousPeriodEnd) {
+				previousLogs = append(previousLogs, log)
+			}
+		}
+	}
+
+	return currentLogs, previousLogs, nil
 }
 
-// aggregateLogsToAnalytics converts raw MCP server logs into aggregated analytics data
-func aggregateLogsToAnalytics(logs []types.MCPServerLog) *types.ProjectAnalytics {
+// aggregateLogsToAnalyticsWithComparison converts raw MCP server logs into aggregated analytics data with period comparison
+func aggregateLogsToAnalyticsWithComparison(currentLogs []types.MCPServerLog, previousLogs []types.MCPServerLog) *types.ProjectAnalytics {
 	// Initialize analytics structure
 	analytics := &types.ProjectAnalytics{
-		Overview:         calculateOverview(logs),
-		ToolsPerformance: calculateToolsPerformance(logs),
-		ToolAnalytics:    calculateToolAnalytics(logs),
-		ClientUsage:      calculateClientUsage(logs),
-		RecentSessions:   calculateRecentSessions(logs),
+		Overview:         calculateOverviewWithComparison(currentLogs, previousLogs),
+		ToolsPerformance: calculateToolsPerformance(currentLogs),
+		ToolAnalytics:    calculateToolAnalytics(currentLogs),
+		ClientUsage:      calculateClientUsage(currentLogs),
+		RecentSessions:   calculateRecentSessions(currentLogs),
 	}
 	return analytics
 }
 
-// calculateOverview computes overview metrics from logs
-func calculateOverview(logs []types.MCPServerLog) types.Overview {
-	totalSessions := countUniqueSessions(logs)
-	totalToolCalls := len(logs)
-	uniqueUsers := countUniqueUsers(logs)
+// calculateOverviewWithComparison computes overview metrics from logs with comparison to previous period
+func calculateOverviewWithComparison(currentLogs []types.MCPServerLog, previousLogs []types.MCPServerLog) types.Overview {
+	// Current period metrics
+	currentTotalSessions := countUniqueSessions(currentLogs)
+	currentTotalToolCalls := len(currentLogs)
+	currentUniqueUsers := countUniqueUsers(currentLogs)
+	currentAvgLatency, currentErrorRate := calculateLatencyAndErrorRate(currentLogs)
+
+	// Previous period metrics
+	previousTotalSessions := countUniqueSessions(previousLogs)
+	previousTotalToolCalls := len(previousLogs)
+	previousUniqueUsers := countUniqueUsers(previousLogs)
+	previousAvgLatency, previousErrorRate := calculateLatencyAndErrorRate(previousLogs)
+
+	// Calculate percentage changes
+	sessionChange := calculatePercentageChange(previousTotalSessions, currentTotalSessions)
+	toolCallsChange := calculatePercentageChange(previousTotalToolCalls, currentTotalToolCalls)
+	usersChange := calculatePercentageChange(previousUniqueUsers, currentUniqueUsers)
+	latencyChange := calculatePercentageChange(previousAvgLatency, currentAvgLatency)
+	errorRateChange := calculatePercentageChange(int(previousErrorRate*100), int(currentErrorRate*100))
+
+	return types.Overview{
+		TotalSessionCount:    currentTotalSessions,
+		TotalSessionChange:   sessionChange,
+		TotalToolCallsCount:  currentTotalToolCalls,
+		TotalToolCallsChange: toolCallsChange,
+		UsersCount:           currentUniqueUsers,
+		UsersChange:          usersChange,
+		AvgLatencyValue:      currentAvgLatency,
+		AvgLatencyChange:     latencyChange,
+		ErrorRateValue:       currentErrorRate,
+		ErrorRateChange:      errorRateChange,
+	}
+}
+
+// calculateLatencyAndErrorRate calculates average latency and error rate from logs
+func calculateLatencyAndErrorRate(logs []types.MCPServerLog) (int, float64) {
+	if len(logs) == 0 {
+		return 0, 0.0
+	}
 
 	// Calculate average latency (duration in milliseconds)
 	var totalDuration time.Duration
 	for _, log := range logs {
 		totalDuration += log.Duration
 	}
-	avgLatency := 0
-	if len(logs) > 0 {
-		avgLatency = int(totalDuration.Milliseconds()) / len(logs)
-	}
+	avgLatency := int(totalDuration.Milliseconds()) / len(logs)
 
 	// Calculate error rate
 	errorCount := 0
@@ -74,23 +137,20 @@ func calculateOverview(logs []types.MCPServerLog) types.Overview {
 			errorCount++
 		}
 	}
-	errorRate := 0.0
-	if len(logs) > 0 {
-		errorRate = float64(errorCount) / float64(len(logs)) * 100
-	}
+	errorRate := float64(errorCount) / float64(len(logs)) * 100
 
-	return types.Overview{
-		TotalSessionCount:    totalSessions,
-		TotalSessionChange:   12.5, // Mock change percentage
-		TotalToolCallsCount:  totalToolCalls,
-		TotalToolCallsChange: 8.3, // Mock change percentage
-		UsersCount:           uniqueUsers,
-		UsersChange:          5.2, // Mock change percentage
-		AvgLatencyValue:      avgLatency,
-		AvgLatencyChange:     -2.1, // Mock change percentage
-		ErrorRateValue:       errorRate,
-		ErrorRateChange:      -0.5, // Mock change percentage
+	return avgLatency, errorRate
+}
+
+// calculatePercentageChange calculates percentage change between previous and current values
+func calculatePercentageChange(previous, current int) float64 {
+	if previous == 0 {
+		if current == 0 {
+			return 0.0
+		}
+		return 1 // If previous was 0 and current > 0, show 100% increase
 	}
+	return float64(current-previous) / float64(previous)
 }
 
 // calculateToolsPerformance computes tools performance metrics

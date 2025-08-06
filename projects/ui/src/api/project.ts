@@ -35,13 +35,30 @@ export function getDeploymentsForProject(project: Signal<Project | undefined>) {
   );
 }
 
-export function getAnalyticsForProject(project: Signal<Project | undefined>) {
+export function getAnalyticsForProject(
+  project: Signal<Project | undefined>,
+  startedAt?: Signal<number | undefined>,
+  buildNumber?: Signal<number | undefined>,
+) {
   return httpResource(
     () => {
       const p = project();
       if (p) {
+        const params: Record<string, string> = {};
+
+        const startAtValue = startedAt?.();
+        if (startAtValue !== undefined) {
+          params['startedAt'] = startAtValue.toString();
+        }
+
+        const buildNumberValue = buildNumber?.();
+        if (buildNumberValue !== undefined) {
+          params['buildNumber'] = buildNumberValue.toString();
+        }
+
         return {
           url: `/api/v1/projects/${p.id}/analytics`,
+          params,
         };
       }
       return undefined;

@@ -3,7 +3,6 @@ import { Pipe, PipeTransform } from '@angular/core';
 @Pipe({ name: 'color' })
 export class ColorPipe implements PipeTransform {
   transform(value: number): string {
-    console.log('ColorPipe transform called with value:', value);
     switch (value % 16) {
       case 0:
         return 'bg-blue-500';

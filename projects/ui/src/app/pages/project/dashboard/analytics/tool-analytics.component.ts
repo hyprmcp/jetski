@@ -158,15 +158,13 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
                 <span
                   class="text-sm text-muted-foreground min-w-[60px] text-center"
                 >
-                  page {{ Math.ceil(currentParameterIndex/2) + 1 }} of
+                  page {{ Math.ceil(currentParameterIndex / 2) + 1 }} of
                   {{ Math.ceil(parameters.length / 2) }}
                 </span>
                 <button
                   type="button"
                   class="courser-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                  [disabled]="
-                    currentParameterIndex + 2 >= parameters.length
-                  "
+                  [disabled]="currentParameterIndex + 2 >= parameters.length"
                   (click)="nextParameter()"
                 >
                   <ng-icon hlm name="lucideChevronRight" size="sm" />

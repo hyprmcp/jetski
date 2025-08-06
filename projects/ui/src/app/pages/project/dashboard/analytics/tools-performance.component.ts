@@ -26,7 +26,9 @@ import { ToolsPerformance } from './tools-performance';
         <div class="space-y-6">
           <!-- Top 3 Performing Tools -->
           <div>
-            <h4 hlmH4 class="mb-3 text-green-700">Top Performing Tools</h4>
+            @if (data.topPerformingTools.length) {
+              <h4 hlmH4 class="mb-3 text-green-700">Top Performing Tools</h4>
+            }
             @for (
               tool of data.topPerformingTools;
               track tool.name;
@@ -69,7 +71,9 @@ import { ToolsPerformance } from './tools-performance';
 
           <!-- Tools Requiring Attention -->
           <div class="mt-6">
-            <h4 hlmH4 class="mb-3 text-red-700">Tools Requiring Attention</h4>
+            @if (data.toolsRequiringAttention.length) {
+              <h4 hlmH4 class="mb-3 text-red-700">Tools Requiring Attention</h4>
+            }
             @for (tool of data.toolsRequiringAttention; track tool.name) {
               <div
                 class="flex items-center justify-between p-4 bg-muted/50 rounded-lg mb-3"

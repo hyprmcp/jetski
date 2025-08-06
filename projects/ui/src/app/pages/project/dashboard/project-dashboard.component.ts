@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ContextService } from '../../../services/context.service';
 import {
   getAnalyticsForProject,
@@ -54,23 +54,31 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
             <!-- Time Filter -->
             <div class="relative">
               <brn-select
-                [ngModel]="selectedTimeFilter"
+                [ngModel]="selectedTimeFilter()"
                 (ngModelChange)="onTimeFilterChange($event)"
                 class="w-32"
               >
                 <hlm-select-trigger>
                   <div class="flex items-center gap-2">
                     <span class="text-sm font-medium">
-                      {{ getTimeFilterLabel(selectedTimeFilter) }}
+                      {{ getTimeFilterLabel(selectedTimeFilter()) }}
                     </span>
                     <ng-icon hlm name="lucideChevronDown" size="sm" />
                   </div>
                 </hlm-select-trigger>
                 <hlm-select-content>
-                  <hlm-option value="24h">Last 24h</hlm-option>
-                  <hlm-option value="7d">Last 7 days</hlm-option>
-                  <hlm-option value="30d">Last 30 days</hlm-option>
-                  <hlm-option value="90d">Last 90 days</hlm-option>
+                  <hlm-option [value]="getTimestampFor24h()"
+                    >Last 24h</hlm-option
+                  >
+                  <hlm-option [value]="getTimestampFor7d()"
+                    >Last 7 days</hlm-option
+                  >
+                  <hlm-option [value]="getTimestampFor30d()"
+                    >Last 30 days</hlm-option
+                  >
+                  <hlm-option [value]="getTimestampFor90d()"
+                    >Last 90 days</hlm-option
+                  >
                 </hlm-select-content>
               </brn-select>
             </div>
@@ -78,7 +86,7 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
             <!-- Deployment Version Filter -->
             <div class="relative">
               <brn-select
-                [ngModel]="selectedDeploymentVersion"
+                [ngModel]="selectedDeploymentVersion()"
                 (ngModelChange)="onDeploymentVersionChange($event)"
                 class="w-40"
               >
@@ -86,8 +94,8 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
                   <div class="flex items-center gap-2">
                     <span class="text-sm font-medium">
                       {{
-                        selectedDeploymentVersion
-                          ? 'v' + selectedDeploymentVersion
+                        selectedDeploymentVersion()
+                          ? 'v' + selectedDeploymentVersion()
                           : 'All Versions'
                       }}
                     </span>
@@ -191,39 +199,52 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
 })
 export class ProjectDashboardComponent {
   readonly contextService = inject(ContextService);
-  selectedDeploymentVersion: string | null = null;
-  selectedTimeFilter = '24h';
+  selectedDeploymentVersion = signal<number | undefined>(undefined);
+  selectedTimeFilter = signal<number>(this.getTimestampFor24h());
+
   readonly deploymentRevisions = getDeploymentsForProject(
     this.contextService.selectedProject,
   );
 
   readonly projectAnalytics = getAnalyticsForProject(
     this.contextService.selectedProject,
+    this.selectedTimeFilter,
+    this.selectedDeploymentVersion,
   );
 
   onDeploymentVersionChange(version: string) {
-    this.selectedDeploymentVersion = version;
-    // TODO: Implement logic to filter data based on selected version
+    this.selectedDeploymentVersion.set(version ? parseInt(version) : undefined);
   }
 
   onTimeFilterChange(timeFilter: string) {
-    this.selectedTimeFilter = timeFilter;
-    // TODO: Implement logic to filter data based on selected time range
+    this.selectedTimeFilter.set(parseInt(timeFilter));
   }
 
-  getTimeFilterLabel(timeFilter: string): string {
-    switch (timeFilter) {
-      case '24h':
-        return 'Last 24h';
-      case '7d':
-        return 'Last 7 days';
-      case '30d':
-        return 'Last 30 days';
-      case '90d':
-        return 'Last 90 days';
-      default:
-        return 'Last 24h';
-    }
+  getTimeFilterLabel(timeFilter: number): string {
+    const now = Date.now() / 1000; // Current timestamp in seconds
+    const diff = now - timeFilter;
+    const days = Math.floor(diff / (24 * 60 * 60));
+
+    if (days >= 90) return 'Last 90 days';
+    if (days >= 30) return 'Last 30 days';
+    if (days >= 7) return 'Last 7 days';
+    return 'Last 24h';
+  }
+
+  getTimestampFor24h(): number {
+    return Math.floor((Date.now() - 24 * 60 * 60 * 1000) / 1000);
+  }
+
+  getTimestampFor7d(): number {
+    return Math.floor((Date.now() - 7 * 24 * 60 * 60 * 1000) / 1000);
+  }
+
+  getTimestampFor30d(): number {
+    return Math.floor((Date.now() - 30 * 24 * 60 * 60 * 1000) / 1000);
+  }
+
+  getTimestampFor90d(): number {
+    return Math.floor((Date.now() - 90 * 24 * 60 * 60 * 1000) / 1000);
   }
 }
 
