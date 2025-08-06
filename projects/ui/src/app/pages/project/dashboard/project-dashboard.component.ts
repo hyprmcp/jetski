@@ -12,12 +12,12 @@ import {
 } from '@spartan-ng/helm/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
-  lucideCircleAlert,
-  lucideFileChartColumn,
   lucideChevronDown,
   lucideChevronLeft,
   lucideChevronRight,
+  lucideCircleAlert,
   lucideClock,
+  lucideFileChartColumn,
   lucideTrendingUp,
   lucideUsers,
   lucideZap,
@@ -25,32 +25,16 @@ import {
 import { HlmIconDirective } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
 import { RelativeDatePipe } from '../../../pipes/relative-date-pipe';
-import {
-  projectAnalyticsOverviewDemoData,
-  type Overview,
-} from './analytics/overview';
+import { type Overview } from './analytics/overview';
 import { OverviewComponent } from './analytics/overview.component';
-import {
-  toolsPerformanceDemoData,
-  type ToolsPerformance,
-} from './analytics/tools-performance';
+import { type ToolsPerformance } from './analytics/tools-performance';
 import { ToolsPerformanceComponent } from './analytics/tools-performance.component';
-import {
-  toolAnalyticsDemoData,
-  type ToolAnalytics,
-} from './analytics/tool-analytics';
+import { type ToolAnalytics } from './analytics/tool-analytics';
 import { ToolAnalyticsComponent } from './analytics/tool-analytics.component';
-import {
-  clientUsageDemoData,
-  type ClientUsage,
-} from './analytics/client-usage';
+import { type ClientUsage } from './analytics/client-usage';
 import { ClientUsageComponent } from './analytics/client-usage.component';
-import {
-  recentSessionsDemoData,
-  type RecentSessions,
-} from './analytics/recent-sessions';
+import { type RecentSessions } from './analytics/recent-sessions';
 import { RecentSessionsComponent } from './analytics/recent-sessions.component';
-import { JsonPipe } from '@angular/common';
 
 @Component({
   template: `
@@ -190,7 +174,6 @@ import { JsonPipe } from '@angular/common';
     ToolAnalyticsComponent,
     ClientUsageComponent,
     RecentSessionsComponent,
-    JsonPipe,
   ],
   providers: [
     provideIcons({
@@ -217,21 +200,6 @@ export class ProjectDashboardComponent {
   readonly projectAnalytics = getAnalyticsForProject(
     this.contextService.selectedProject,
   );
-
-  // Overview cards data
-  projectAnalyticsOverviewDemoData: Overview = projectAnalyticsOverviewDemoData;
-
-  // Tools performance data
-  toolsPerformanceDemoData: ToolsPerformance = toolsPerformanceDemoData;
-
-  // Tool analytics data
-  toolAnalyticsDemoData: ToolAnalytics = toolAnalyticsDemoData;
-
-  // Client usage data
-  clientUsageDemoData: ClientUsage = clientUsageDemoData;
-
-  // Recent sessions data
-  recentSessionsDemoData: RecentSessions = recentSessionsDemoData;
 
   onDeploymentVersionChange(version: string) {
     this.selectedDeploymentVersion = version;
