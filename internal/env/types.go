@@ -8,13 +8,14 @@ import (
 type MailerTypeString string
 
 const (
+	MailerTypeSMTP        MailerTypeString = "smtp"
 	MailerTypeSES         MailerTypeString = "ses"
 	MailerTypeUnspecified MailerTypeString = ""
 )
 
 func parseMailerType(value string) (MailerTypeString, error) {
 	switch value {
-	case string(MailerTypeSES), string(MailerTypeUnspecified):
+	case string(MailerTypeSES), string(MailerTypeSMTP), string(MailerTypeUnspecified):
 		return MailerTypeString(value), nil
 	default:
 		return "", fmt.Errorf("invalid MailerTypeString: %v", value)

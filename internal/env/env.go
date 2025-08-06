@@ -49,6 +49,14 @@ func Initialize() {
 	if mailerConfig.Type != MailerTypeUnspecified {
 		mailerConfig.FromAddress = envutil.RequireEnvParsed("MAILER_FROM_ADDRESS", envparse.MailAddress)
 	}
+	if mailerConfig.Type == MailerTypeSMTP {
+		mailerConfig.SmtpConfig = &MailerSMTPConfig{
+			Host:     envutil.GetEnv("MAILER_SMTP_HOST"),
+			Port:     envutil.RequireEnvParsed("MAILER_SMTP_PORT", strconv.Atoi),
+			Username: envutil.GetEnv("MAILER_SMTP_USERNAME"),
+			Password: envutil.GetEnv("MAILER_SMTP_PASSWORD"),
+		}
+	}
 
 	sentryDSN = envutil.GetEnv("SENTRY_DSN")
 	sentryDebug = envutil.GetEnvParsedOrDefault("SENTRY_DEBUG", strconv.ParseBool, false)
