@@ -3,6 +3,17 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Jetski Serve",
+      "type": "go",
+      "request": "launch",
+      "mode": "auto",
+      "program": "${workspaceFolder}",
+      "envFile": "${workspaceFolder}/.env.development.local",
+      "args": [
+        "serve"
+      ]
+    },
+    {
       "name": "ng serve",
       "type": "chrome",
       "request": "launch",
