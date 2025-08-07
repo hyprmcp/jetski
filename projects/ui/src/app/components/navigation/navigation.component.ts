@@ -8,26 +8,28 @@ import { ContextService } from '../../services/context.service';
   standalone: true,
   imports: [CommonModule, RouterLink, RouterLinkActive],
   template: `
-    <nav
-      class="fixed top-16 left-0 right-0 z-40 bg-background border-b border-border"
-    >
-      <div class="flex items-center px-6 py-3">
-        <div class="flex space-x-8">
-          @for (item of navItems(); track item.label) {
-            <a
-              [routerLink]="item.href"
-              routerLinkActive="text-foreground"
-              #rla="routerLinkActive"
-              [routerLinkActiveOptions]="{ exact: true }"
-              [class.text-muted-foreground]="!rla.isActive"
-              class="text-sm font-medium transition-colors hover:text-foreground"
-            >
-              {{ item.label }}
-            </a>
-          }
+    @if (navItems().length > 0) {
+      <nav
+        class="fixed top-16 left-0 right-0 z-40 bg-background border-b border-border"
+      >
+        <div class="flex items-center px-6 py-3">
+          <div class="flex space-x-8">
+            @for (item of navItems(); track item.label) {
+              <a
+                [routerLink]="item.href"
+                routerLinkActive="text-foreground"
+                #rla="routerLinkActive"
+                [routerLinkActiveOptions]="{ exact: true }"
+                [class.text-muted-foreground]="!rla.isActive"
+                class="text-sm font-medium transition-colors hover:text-foreground"
+              >
+                {{ item.label }}
+              </a>
+            }
+          </div>
         </div>
-      </div>
-    </nav>
+      </nav>
+    }
   `,
 })
 export class NavigationComponent {

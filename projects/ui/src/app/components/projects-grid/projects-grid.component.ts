@@ -92,9 +92,11 @@ import { RouterLink } from '@angular/router';
                         <div class="w-2 h-2 rounded-full bg-green-500"></div>
                         <span class="text-sm text-green-600"> deployed </span>
 
-                        <span class="text-xs text-muted-foreground">{{
-                          project.latestDeploymentRevision.buildNumber
-                        }}</span>
+                        <span class="text-xs text-muted-foreground"
+                          >#{{
+                            project.latestDeploymentRevision.buildNumber
+                          }}</span
+                        >
                       } @else {
                         <div
                           class="w-2 h-2 rounded-full bg-muted-foreground"

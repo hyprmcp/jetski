@@ -15,7 +15,8 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
-    "format": "ng lint --fix"
+    "format": "ng lint --fix",
+    "dex:build": "pnpm dlx @tailwindcss/cli -i ./dex/web/style.css -o ./dex/web/static/dist/tailwind.css --minify"
   },
   "prettier": {
     "overrides": [
@@ -49,7 +50,6 @@
     "postcss": "^8.5.6",
     "posthog-js": "^1.257.0",
     "rxjs": "~7.8.0",
-    "tailwindcss": "^4.1.11",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -58,11 +58,12 @@
     "@angular/compiler-cli": "^20.0.0",
     "@eslint/js": "^9.31.0",
     "@spartan-ng/cli": "^0.0.1-alpha.486",
+    "@tailwindcss/cli": "^4.1.11",
     "@types/jasmine": "~5.1.0",
     "angular-eslint": "20.1.1",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
-    "jasmine-core": "~5.7.0",
+    "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
     "karma-coverage": "~2.2.0",
@@ -71,8 +72,9 @@
     "prettier": "^3.6.2",
     "prettier-plugin-organize-imports": "^4.1.0",
     "tailwind-merge": "^2.2.0",
+    "tailwindcss": "^4.1.11",
     "tailwindcss-animate": "^1.0.6",
     "typescript": "~5.8.2",
-    "typescript-eslint": "8.34.1"
+    "typescript-eslint": "8.39.0"
   }
 }

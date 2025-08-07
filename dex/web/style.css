@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+.dex-btn-icon--google {
+  background-image: url(../../static/img/google-icon.svg);
+}
+
+.dex-btn-icon--local {
+  mask-image: url(../../static/img/email-icon.svg);
+  @apply bg-white dark:bg-gray-900 mask-center mask-contain mask-no-repeat;
+}
+
+.dex-btn-icon--gitea {
+  background-image: url(../../static/img/gitea-icon.svg);
+}
+
+.dex-btn-icon--github {
+  background-image: url(../../static/img/github-icon.svg);
+}
+
+.dex-btn-icon--gitlab {
+  background-image: url(../../static/img/gitlab-icon.svg);
+}
+
+.dex-btn-icon--keystone {
+  background-image: url(../../static/img/keystone-icon.svg);
+}
+
+.dex-btn-icon--oidc {
+  background-image: url(../../static/img/oidc-icon.svg);
+}
+
+.dex-btn-icon--bitbucket-cloud {
+  background-image: url(../../static/img/bitbucket-icon.svg);
+}
+
+.dex-btn-icon--atlassian-crowd {
+  background-image: url(../../static/img/atlassian-crowd-icon.svg);
+}
+
+.dex-btn-icon--ldap {
+  background-image: url(../../static/img/ldap-icon.svg);
+}
+
+.dex-btn-icon--saml {
+  background-image: url(../../static/img/saml-icon.svg);
+}
+
+.dex-btn-icon--linkedin {
+  background-image: url(../../static/img/linkedin-icon.svg);
+}
+
+.dex-btn-icon--microsoft {
+  background-image: url(../../static/img/microsoft-icon.svg);
+}

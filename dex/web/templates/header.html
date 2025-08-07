@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>{{ issuer }}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="{{ url .ReqPath "static/dist/tailwind.css" }}" rel="stylesheet">
+    <link href="{{ url .ReqPath "static/dex.css" }}" rel="stylesheet">
+    <link rel="icon shortcut" type="image/svg+xml" href="{{ url .ReqPath "static/favicon.svg" }}" />
+  </head>
+
+  <body class="bg-white dark:bg-black text-black dark:text-white">
+    <div class="grid min-h-screen lg:grid-cols-2 ">
+      <!-- Left Column: Login Form -->
+      <div class="flex items-center justify-center py-12">
+        <div class="mx-auto grid w-[350px] gap-6">
+          <div class="grid gap-2 text-center">
+            <img class="mx-auto h-12 w-auto mb-4 dark:hidden" src="{{ url .ReqPath "static/jetski-black.svg" }}" alt="{{ issuer }}">
+            <img class="mx-auto h-12 w-auto mb-4 hidden dark:block" src="{{ url .ReqPath "static/jetski-white.svg" }}" alt="{{ issuer }}">
+          </div>

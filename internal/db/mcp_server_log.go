@@ -32,7 +32,7 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 		pgx.NamedArgs{
 			"userAccountId":        data.UserAccountID,
 			"mcpSessionId":         data.MCPSessionID,
-			"startedAt":            data.StartedAt,
+			"startedAt":            data.StartedAt.UTC(),
 			"duration":             data.Duration,
 			"deploymentRevisionId": data.DeploymentRevisionID,
 			"authTokenDigest":      data.AuthTokenDigest,

@@ -2,6 +2,11 @@ package db
 
 import (
 	"context"
+	"errors"
+	"github.com/jackc/pgerrcode"
+	"github.com/jackc/pgx/v5/pgconn"
+	"github.com/jetski-sh/jetski/internal/apierrors"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
@@ -45,6 +50,9 @@ func CreateOrganization(ctx context.Context, name string) (*types.Organization, 
 	}
 	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[types.Organization])
 	if err != nil {
+		if pgerr := (*pgconn.PgError)(nil); errors.As(err, &pgerr) && pgerr.Code == pgerrcode.UniqueViolation {
+			return nil, apierrors.ErrAlreadyExists
+		}
 		return nil, err
 	} else {
 		return result, nil

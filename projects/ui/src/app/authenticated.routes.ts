@@ -3,41 +3,34 @@ import { OrganizationDashboardComponent } from './pages/organization-dashboard/o
 import { MonitoringComponent } from './pages/monitoring/monitoring.component';
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
 import { HomeComponent } from './pages/home/home.component';
-import {
-  inject,
-  Injector,
-  ResourceStatus,
-  runInInjectionContext,
-  Signal,
-} from '@angular/core';
+import { inject, ResourceStatus, Signal } from '@angular/core';
 import { ContextService } from './services/context.service';
 import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
 import { SettingsComponent } from './pages/settings/settings.component';
+import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
   const router = inject(Router);
-  const orgRes = contextService.organizations;
-  const injector = inject(Injector);
-  await runInInjectionContext(injector, () => resourceDone(orgRes.status));
+  const contextRes = contextService.context;
+  await resourceDone(contextRes.status);
   const orgName =
     contextService.selectedOrg()?.name ??
-    (orgRes.hasValue() ? orgRes.value()?.at(0)?.name : undefined);
+    (contextRes.hasValue()
+      ? contextRes.value()?.organizations?.at(0)?.name
+      : undefined);
   if (orgName) {
     const urlParts = ['/', orgName];
-    if (orgRes.hasValue() && orgRes.value()?.length === 1) {
-      const projectRes = contextService.projects;
-      await runInInjectionContext(injector, () =>
-        resourceDone(projectRes.status),
-      );
-      if (projectRes.hasValue() && projectRes.value()?.length === 1) {
-        urlParts.push('project', projectRes.value()?.at(0)!.name);
-      }
+    if (
+      contextRes.hasValue() &&
+      contextRes.value()?.organizations?.length === 1 &&
+      contextRes.value()?.projects?.length === 1
+    ) {
+      urlParts.push('project', contextRes.value()!.projects!.at(0)!.name);
     }
-
     return router.createUrlTree(urlParts);
   }
   return true;
@@ -49,17 +42,51 @@ function resourceDone(sig: Signal<ResourceStatus>) {
   );
 }
 
+export const contextGuard: CanActivateFn = async (route, state) => {
+  const contextService = inject(ContextService);
+  const router = inject(Router);
+  const contextRes = contextService.context;
+  await resourceDone(contextRes.status);
+  if (contextRes.hasValue()) {
+    if ((contextRes.value()?.organizations ?? []).length === 0) {
+      if (state.url === '/onboarding') {
+        return true;
+      }
+      return router.createUrlTree(['/onboarding']);
+    }
+    return true;
+  }
+  return false;
+};
+
+export const onboardingGuard: CanActivateFn = () => {
+  const contextService = inject(ContextService);
+  const router = inject(Router);
+  const contextRes = contextService.context;
+  if (contextRes.hasValue()) {
+    if ((contextRes.value()?.organizations ?? []).length === 0) {
+      return true;
+    }
+  }
+  return router.createUrlTree(['/']);
+};
+
 export const authenticatedRoutes: Routes = [
   {
     path: '',
     component: AppShellComponent,
+    canActivateChild: [contextGuard],
     children: [
       {
         path: '',
         component: HomeComponent,
         canActivate: [redirectToDefaultPage],
       },
-      // other non-org scoped sites go here (e.g. /account/** or something like that)
+      {
+        path: 'onboarding',
+        component: OnboardingComponent,
+        canActivate: [onboardingGuard],
+      },
       {
         path: ':organizationName',
         children: [
