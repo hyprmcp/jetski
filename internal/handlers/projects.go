@@ -165,7 +165,11 @@ func putProjectSettings(w http.ResponseWriter, r *http.Request) {
 				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is not allowed if Proxy URL is set")
 				return nil
 			}
-			if _, err := db.CreateProxiedDeploymentRevision(ctx, projectID, user.ID, *req.ProxyURL, req.Authenticated, nil); err != nil {
+			// TODO maybe there should be an extra event type for proxied revisions? for now set it to OK, otherwise it would
+			// have the latest event from an older revision!
+			if dr, err := db.CreateProxiedDeploymentRevision(ctx, projectID, user.ID, *req.ProxyURL, req.Authenticated, nil); err != nil {
+				return err
+			} else if err := db.AddDeploymentRevisionEvent(ctx, dr.ID, types.DeploymentRevisionEventTypeOK, nil); err != nil {
 				return err
 			}
 			w.WriteHeader(http.StatusAccepted)
