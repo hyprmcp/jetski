@@ -129,10 +129,12 @@ When using ng-icons in components, follow this pattern:
 
 ### Code Formatting
 
-**Always run `npm run format` after making changes to ensure code follows the prettier configuration.**
+**Always run `npm run format` after making changes to TypeScript code to ensure code follows the prettier configuration.**
+**Always run `mise run lint` after making changes to Go code to ensure it passes all linting checks.**
 
-- `npm run format` - Format all files with prettier and fix linting issues
-- `npm run lint` - Check formatting and linting without making changes
+- `npm run format` - Format all files with prettier and fix linting issues for frontend
+- `npm run lint` - Check formatting and linting without making changes for frontend
+- `mise run lint` - Run Go linting with golangci-lint to check backend code quality
 - Prettier is configured with Angular HTML parser for proper template formatting
 
 ### Package Manager

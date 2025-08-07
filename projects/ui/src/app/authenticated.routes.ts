@@ -9,6 +9,7 @@ import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
+import { DeploymentsComponent } from './pages/project/deployments/deployments.component';
 import { SettingsComponent } from './pages/settings/settings.component';
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 
@@ -111,6 +112,10 @@ export const authenticatedRoutes: Routes = [
                   {
                     path: 'logs',
                     component: LogsComponent,
+                  },
+                  {
+                    path: 'deployments',
+                    component: DeploymentsComponent,
                   },
                   {
                     path: 'monitoring',
