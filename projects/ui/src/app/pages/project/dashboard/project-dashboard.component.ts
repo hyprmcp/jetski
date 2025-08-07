@@ -56,7 +56,7 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
               <brn-select
                 [ngModel]="selectedTimeFilter()"
                 (ngModelChange)="onTimeFilterChange($event)"
-                class="w-32"
+                class="w-40"
               >
                 <hlm-select-trigger>
                   <div class="flex items-center gap-2">
