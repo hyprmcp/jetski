@@ -123,7 +123,7 @@ func getProjectIDIfAllowed(w http.ResponseWriter, r *http.Request, getter paramG
 
 func getAnalytics(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	projectID := getProjectIDAndCheckAccess(w, r)
+	projectID := getProjectIDIfAllowed(w, r, pathParam)
 	if projectID == uuid.Nil {
 		return
 	}
