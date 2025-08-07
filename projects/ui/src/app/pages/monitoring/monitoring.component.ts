@@ -96,9 +96,7 @@ Chart.register(...registerables);
       <!-- Blurred Content Container -->
       <div class="relative p-2">
         <!-- Blur Overlay -->
-        <div
-          class="absolute inset-0 z-10 backdrop-blur-xs"
-        ></div>
+        <div class="absolute inset-0 z-10 backdrop-blur-xs"></div>
 
         <!-- Content (non-interactive) -->
         <div class="pointer-events-none select-none">
