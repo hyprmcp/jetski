@@ -53,9 +53,7 @@ import { ThemeService } from '../../../../services/theme.service';
           <!-- Modern Legend -->
           <div class="flex flex-col justify-center space-y-4">
             @for (client of data.clients; track client.name; let i = $index) {
-              <div
-                class="group duration-200"
-              >
+              <div class="group duration-200">
                 <div class="flex items-center justify-between">
                   <div class="flex items-center gap-3">
                     <div
