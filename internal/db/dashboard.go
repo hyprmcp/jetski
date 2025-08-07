@@ -71,7 +71,7 @@ func GetRecentDeploymentRevisionSummaries(ctx context.Context, orgID uuid.UUID) 
 	}
 }
 
-func GetUsage(ctx context.Context, orgID uuid.UUID) (types.Usage, error) {
+func GetUsage(ctx context.Context, orgID uuid.UUID) (types.OrganizationDashboardUsage, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
 		SELECT
@@ -83,11 +83,11 @@ func GetUsage(ctx context.Context, orgID uuid.UUID) (types.Usage, error) {
 		WHERE p.organization_id = @id
 	`, pgx.NamedArgs{"id": orgID})
 	if err != nil {
-		return types.Usage{}, err
+		return types.OrganizationDashboardUsage{}, err
 	}
-	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[types.Usage])
+	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[types.OrganizationDashboardUsage])
 	if err != nil {
-		return types.Usage{}, err
+		return types.OrganizationDashboardUsage{}, err
 	} else {
 		return result, nil
 	}

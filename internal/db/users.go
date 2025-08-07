@@ -151,3 +151,17 @@ func CanUserAccessProject(ctx context.Context, userID, projectID uuid.UUID) (boo
 	}
 	return res.Exists, nil
 }
+
+func GetAllUsers(ctx context.Context) ([]types.UserAccount, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT `+userOutExpr+` FROM UserAccount u `)
+	if err != nil {
+		return nil, err
+	}
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[types.UserAccount])
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}

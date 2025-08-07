@@ -74,6 +74,16 @@
         "minor",
         "major"
       ]
+    },
+    {
+      "matchManagers": [
+        "npm"
+      ],
+      "matchPackagePatterns": [
+        "^@spartan-ng/"
+      ],
+      "groupName": "@spartan-ng packages",
+      "description": "Group all @spartan-ng dependencies together"
     }
   ]
 }

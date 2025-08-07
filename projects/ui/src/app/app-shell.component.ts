@@ -22,6 +22,5 @@ import { HlmToasterImports } from '../../libs/ui/ui-sonner-helm/src';
       </main>
     </div>
   `,
-  styleUrl: './app.css',
 })
 export class AppShellComponent {}
