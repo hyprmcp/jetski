@@ -153,7 +153,7 @@ import { toast } from 'ngx-sonner';
                       size="sm"
                       (click)="closeRemoveDialog(removeDialogRef)"
                     >
-                      Canel
+                      Cancel
                     </button>
                     <button
                       hlmBtn
