@@ -57,7 +57,7 @@ import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
                 <hlm-checkbox id="authentication" [checked]="true" />
                 <div class="grid gap-2">
                   <label hlmLabel for="authentication"
-                    >Enforce User authentication</label
+                  >Enforce User authentication</label
                   >
                   <p class="text-muted-foreground text-sm">
                     Users must authenticate via OAuth2 to access the MCP
@@ -66,6 +66,18 @@ import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
                     additional session context.
                   </p>
                 </div>
+              </div>
+
+              <div class="space-y-2">
+                <label for="proxy_url" hlmLabel >Proxy URL</label>
+                <p class="text-muted-foreground text-sm">
+                  If you host the MCP server somewhere other than jetski, enter its URL here.
+                </p>
+                <input
+                  id="proxy_url"
+                  type="text"
+                  class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
+                />
               </div>
 
               <!-- Actions -->

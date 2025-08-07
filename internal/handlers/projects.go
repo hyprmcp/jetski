@@ -1,7 +1,9 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
+	"github.com/jetski-sh/jetski/internal/types"
 	"net/http"
 	"strconv"
 	"time"
@@ -21,6 +23,7 @@ func ProjectsRouter(r chi.Router) {
 		r.Get("/logs", getLogsForProject)
 		r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
 		r.Get("/analytics", getAnalytics)
+		r.Put("/settings", putProjectSettings)
 	})
 }
 
@@ -99,6 +102,63 @@ func getDeploymentRevisionsForProject(w http.ResponseWriter, r *http.Request) {
 		HandleInternalServerError(w, r, err, "failed to get deployment revisions for project")
 	} else {
 		RespondJSON(w, logs)
+	}
+}
+
+func putProjectSettings(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	user := internalctx.GetUser(ctx)
+	var req struct {
+		OciUrl        *string `json:"ociUrl,omitempty"`
+		Port          *int    `json:"port,omitempty"`
+		Authenticated bool    `json:"authenticated"`
+		ProxyURL      *string `json:"proxyUrl,omitempty"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		Handle4XXError(w, http.StatusBadRequest)
+		return
+	}
+
+	err := db.RunTx(ctx, func(ctx context.Context) error {
+		projectID := getProjectIDIfAllowed(w, r, pathParam)
+		if projectID == uuid.Nil {
+			return nil
+		}
+
+		if req.OciUrl != nil {
+			if req.Port == nil {
+				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is required if OCI URL is set")
+				return nil
+			} else if req.ProxyURL != nil {
+				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Proxy URL not allowed if OCI URL is set")
+				return nil
+			}
+			if dr, err := db.CreateHostedDeploymentRevision(ctx, projectID, user.ID, *req.Port, *req.OciUrl, req.Authenticated, nil); err != nil {
+				return err
+			} else if err := db.AddDeploymentRevisionEvent(ctx, dr.ID, types.DeploymentRevisionEventTypeProgressing, nil); err != nil {
+				return err
+			}
+			w.WriteHeader(http.StatusAccepted)
+			return nil
+		} else if req.ProxyURL != nil {
+			if req.Port != nil {
+				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is not allowed if Proxy URL is set")
+				return nil
+			}
+			if _, err := db.CreateProxiedDeploymentRevision(ctx, projectID, user.ID, *req.ProxyURL, req.Authenticated, nil); err != nil {
+				return err
+			}
+			w.WriteHeader(http.StatusAccepted)
+			return nil
+		} else {
+			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "One of Proxy URL and OCI URL is required")
+			return nil
+		}
+	})
+	if err != nil {
+		HandleInternalServerError(w, r, err, "failed to save settings of project")
+		return
 	}
 }
 

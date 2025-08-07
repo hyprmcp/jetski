@@ -10,11 +10,11 @@ import (
 )
 
 const (
-	deploymentRevisionWithoutBuildNrOutExpr = " dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url "
+	deploymentRevisionWithoutBuildNrOutExpr = " dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url, dr.authenticated, dr.proxy_url "
 	deploymentRevisionEventOutExpr          = " dre.id, dre.created_at, dre.deployment_revision_id, dre.type "
 )
 
-func CreateDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, port int, ociUrl string, timestamp *time.Time) (*types.DeploymentRevision, error) {
+func CreateHostedDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, port int, ociUrl string, authenticated bool, timestamp *time.Time) (*types.DeploymentRevision, error) {
 	db := internalctx.GetDb(ctx)
 	createdAt := time.Now()
 	if timestamp != nil {
@@ -23,10 +23,41 @@ func CreateDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUI
 	var res *types.DeploymentRevision
 	err := RunTx(ctx, func(ctx context.Context) error {
 		rows, err := db.Query(ctx, `
-			INSERT INTO DeploymentRevision as dr (project_id, created_by, port, oci_url, created_at)
-			VALUES (@projectID, @createdBy, @port, @ociUrl, @createdAt)
+			INSERT INTO DeploymentRevision as dr (project_id, created_by, port, oci_url, authenticated, created_at)
+			VALUES (@projectID, @createdBy, @port, @ociUrl, @authenticated, @createdAt)
 			RETURNING `+deploymentRevisionWithoutBuildNrOutExpr,
-			pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "port": port, "ociUrl": ociUrl, "createdAt": createdAt})
+			pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "port": port, "ociUrl": ociUrl, "createdAt": createdAt, "authenticated": authenticated})
+		if err != nil {
+			return err
+		}
+		dr, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByNameLax[types.DeploymentRevision])
+		if err != nil {
+			return err
+		}
+		_, err = db.Exec(ctx, "UPDATE Project SET latest_deployment_revision_id = @drid WHERE id = @projectID",
+			pgx.NamedArgs{"drid": dr.ID, "projectID": projectID})
+		if err != nil {
+			return err
+		}
+		res = dr
+		return nil
+	})
+	return res, err
+}
+
+func CreateProxiedDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, proxyUrl string, authenticated bool, timestamp *time.Time) (*types.DeploymentRevision, error) {
+	db := internalctx.GetDb(ctx)
+	createdAt := time.Now()
+	if timestamp != nil {
+		createdAt = *timestamp
+	}
+	var res *types.DeploymentRevision
+	err := RunTx(ctx, func(ctx context.Context) error {
+		rows, err := db.Query(ctx, `
+			INSERT INTO DeploymentRevision as dr (project_id, created_by, proxy_url, authenticated, created_at)
+			VALUES (@projectID, @createdBy, @proxyUrl, @authenticated, @createdAt)
+			RETURNING `+deploymentRevisionWithoutBuildNrOutExpr,
+			pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "proxyUrl": proxyUrl, "createdAt": createdAt, "authenticated": authenticated})
 		if err != nil {
 			return err
 		}
