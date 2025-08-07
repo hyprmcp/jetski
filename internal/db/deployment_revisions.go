@@ -16,7 +16,7 @@ const (
 
 func CreateHostedDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, port int, ociUrl string, authenticated bool, timestamp *time.Time) (*types.DeploymentRevision, error) {
 	db := internalctx.GetDb(ctx)
-	createdAt := time.Now()
+	createdAt := time.Now().UTC()
 	if timestamp != nil {
 		createdAt = *timestamp
 	}
@@ -47,7 +47,7 @@ func CreateHostedDeploymentRevision(ctx context.Context, projectID, createdBy uu
 
 func CreateProxiedDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, proxyUrl string, authenticated bool, timestamp *time.Time) (*types.DeploymentRevision, error) {
 	db := internalctx.GetDb(ctx)
-	createdAt := time.Now()
+	createdAt := time.Now().UTC()
 	if timestamp != nil {
 		createdAt = *timestamp
 	}
@@ -78,7 +78,7 @@ func CreateProxiedDeploymentRevision(ctx context.Context, projectID, createdBy u
 
 func AddDeploymentRevisionEvent(ctx context.Context, deploymentRevisionID uuid.UUID, eventType types.DeploymentRevisionEventType, timestamp *time.Time) error {
 	db := internalctx.GetDb(ctx)
-	createdAt := time.Now()
+	createdAt := time.Now().UTC()
 	if timestamp != nil {
 		createdAt = *timestamp
 	}
