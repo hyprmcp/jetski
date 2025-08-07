@@ -214,8 +214,8 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 		allTools[i].Calls = toolStats[toolName].calls
 	}
 
-	topPerforming := make([]types.PerformingTool, 0)
-	needingAttention := make([]types.PerformingTool, 0)
+	var topPerforming []types.PerformingTool
+	var needingAttention []types.PerformingTool
 
 	totalTools := len(allTools)
 	if totalTools < 50 {
@@ -252,49 +252,49 @@ func calculateToolAnalytics(logs []types.MCPServerLog) types.ToolAnalytics {
 
 		if _, exists := toolData[toolName]; !exists {
 			toolData[toolName] = &toolAnalyticsData{
-				calls:      0,
-				parameters: make(map[string]map[string]int),
+				calls:     0,
+				arguments: make(map[string]map[string]int),
 			}
 		}
 
 		data := toolData[toolName]
 		data.calls++
 
-		// Extract parameters from the MCP request
-		params := extractParameters(log.MCPRequest)
-		for paramName, paramValue := range params {
-			if _, exists := data.parameters[paramName]; !exists {
-				data.parameters[paramName] = make(map[string]int)
+		// Extract arguments from the MCP request
+		args := extractArguments(log.MCPRequest)
+		for argName, argValue := range args {
+			if _, exists := data.arguments[argName]; !exists {
+				data.arguments[argName] = make(map[string]int)
 			}
-			data.parameters[paramName][paramValue]++
+			data.arguments[argName][argValue]++
 		}
 	}
 
 	// Convert to the required structure
 	tools := make([]types.McpTool, 0)
 	for toolName, data := range toolData {
-		parameters := make([]types.ToolParameter, 0)
-		for paramName, values := range data.parameters {
-			paramValues := make([]types.ParameterValue, 0)
+		arguments := make([]types.ToolArgument, 0)
+		for argName, values := range data.arguments {
+			argValues := make([]types.ArgumentValue, 0)
 			totalUsage := 0
 			for valueName, count := range values {
-				paramValues = append(paramValues, types.ParameterValue{
+				argValues = append(argValues, types.ArgumentValue{
 					Name:  valueName,
 					Count: count,
 				})
 				totalUsage += count
 			}
-			parameters = append(parameters, types.ToolParameter{
-				Name:       paramName,
+			arguments = append(arguments, types.ToolArgument{
+				Name:       argName,
 				UsageCount: totalUsage,
-				Values:     paramValues,
+				Values:     argValues,
 			})
 		}
 
 		tools = append(tools, types.McpTool{
-			Name:       toolName,
-			Calls:      data.calls,
-			Parameters: parameters,
+			Name:      toolName,
+			Calls:     data.calls,
+			Arguments: arguments,
 		})
 	}
 
@@ -410,8 +410,8 @@ type toolPerformanceStats struct {
 }
 
 type toolAnalyticsData struct {
-	calls      int
-	parameters map[string]map[string]int
+	calls     int
+	arguments map[string]map[string]int
 }
 
 type sessionInfo struct {
@@ -458,33 +458,33 @@ func extractToolName(mcpRequest any) string {
 	return ""
 }
 
-// extractParameters extracts parameters from an MCP request
-func extractParameters(mcpRequest any) map[string]string {
-	params := make(map[string]string)
+// extractArguments extracts arguments from an MCP request
+func extractArguments(mcpRequest any) map[string]string {
+	args := make(map[string]string)
 
 	if mcpRequest == nil {
-		return params
+		return args
 	}
 
 	requestMap, ok := mcpRequest.(map[string]interface{})
 	if !ok {
-		return params
+		return args
 	}
 
-	// Extract parameters from tools/call request
+	// Extract arguments from tools/call request
 	if paramsField, exists := requestMap["params"]; exists {
 		if paramsMap, ok := paramsField.(map[string]interface{}); ok {
 			if arguments, exists := paramsMap["arguments"]; exists {
 				if argsMap, ok := arguments.(map[string]interface{}); ok {
 					for key, value := range argsMap {
-						params[key] = fmt.Sprintf("%v", value)
+						args[key] = fmt.Sprintf("%v", value)
 					}
 				}
 			}
 		}
 	}
 
-	return params
+	return args
 }
 
 // getSessionID extracts or generates a session ID from a log entry

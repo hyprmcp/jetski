@@ -19,7 +19,7 @@ import {
 } from '@ng-icons/lucide';
 import { HlmIconDirective } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
-import { ToolAnalytics, McpTool, ToolParameter } from './tool-analytics';
+import { ToolAnalytics, McpTool, ToolArgument } from './tool-analytics';
 import { ColorPipe } from '../../../../pipes/color-pipe';
 
 @Component({
@@ -32,7 +32,7 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
           <div>
             <div hlmCardTitle>Tool Analytics</div>
             <p class="text-sm text-muted-foreground">
-              Parameter usage insights for your MCP tools
+              Argument usage insights for your MCP tools
             </p>
           </div>
           <!-- Select Tool Dropdown -->
@@ -84,32 +84,32 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
       </div>
       <div hlmCardContent>
         <div class="space-y-6">
-          <!-- Parameter Usage Distribution -->
+          <!-- Argument Usage Distribution -->
           <div class="space-y-6">
-            <!-- Parameter Cards -->
+            <!-- Argument Cards -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
               @for (
-                parameter of visibleParameters;
-                track parameter.name;
+                argument of visibleArguments;
+                track argument.name;
                 let i = $index
               ) {
                 <div hlmCard class="p-5">
                   <div hlmCardHeader class="pb-3">
                     <div hlmCardTitle class="text-base">
-                      {{ parameter.name }}
+                      {{ argument.name }}
                     </div>
                     <p class="text-sm text-muted-foreground">
-                      Used {{ parameter.usageCount }} times ({{
-                        getParameterUsagePercentage(parameter)
+                      Used {{ argument.usageCount }} times ({{
+                        getArgumentUsagePercentage(argument)
                       }}%)
                     </p>
                   </div>
                   <div hlmCardContent class="space-y-3">
                     <h5 class="text-sm font-medium text-muted-foreground mb-3">
-                      Most used parameter values
+                      Most used argument values
                     </h5>
                     @for (
-                      value of parameter.values;
+                      value of argument.values;
                       track value.name;
                       let i = $index
                     ) {
@@ -129,12 +129,12 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
                               class="h-2.5 rounded-full "
                               [class]="i | color"
                               [style.width]="
-                                getPercentage(value, parameter) + '%'
+                                getPercentage(value, argument) + '%'
                               "
                             ></div>
                           </div>
                           <span class="text-sm font-bold w-12 text-right"
-                            >{{ getPercentage(value, parameter) }}%</span
+                            >{{ getPercentage(value, argument) }}%</span
                           >
                         </div>
                       </div>
@@ -150,22 +150,22 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
                 <button
                   type="button"
                   class="courser-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                  [disabled]="currentParameterIndex === 0"
-                  (click)="previousParameter()"
+                  [disabled]="currentArgumentIndex === 0"
+                  (click)="previousArgument()"
                 >
                   <ng-icon hlm name="lucideChevronLeft" size="sm" />
                 </button>
                 <span
                   class="text-sm text-muted-foreground min-w-[60px] text-center"
                 >
-                  page {{ Math.ceil(currentParameterIndex / 2) + 1 }} of
-                  {{ Math.ceil(parameters.length / 2) }}
+                  page {{ Math.ceil(currentArgumentIndex / 2) + 1 }} of
+                  {{ Math.ceil(arguments.length / 2) }}
                 </span>
                 <button
                   type="button"
                   class="courser-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                  [disabled]="currentParameterIndex + 2 >= parameters.length"
-                  (click)="nextParameter()"
+                  [disabled]="currentArgumentIndex + 2 >= arguments.length"
+                  (click)="nextArgument()"
                 >
                   <ng-icon hlm name="lucideChevronRight" size="sm" />
                 </button>
@@ -204,9 +204,9 @@ export class ToolAnalyticsComponent implements OnInit {
   selectedTool: McpTool = this.data?.tools[0] || {
     name: '',
     calls: 0,
-    parameters: [],
+    arguments: [],
   };
-  currentParameterIndex = 0;
+  currentArgumentIndex = 0;
 
   ngOnInit() {
     if (this.data?.tools?.length > 0) {
@@ -214,47 +214,47 @@ export class ToolAnalyticsComponent implements OnInit {
     }
   }
 
-  get parameters(): ToolParameter[] {
-    return this.selectedTool?.parameters || [];
+  get arguments(): ToolArgument[] {
+    return this.selectedTool?.arguments || [];
   }
 
-  get visibleParameters(): ToolParameter[] {
-    const startIndex = this.currentParameterIndex;
-    const endIndex = Math.min(startIndex + 2, this.parameters.length);
-    return this.parameters.slice(startIndex, endIndex);
+  get visibleArguments(): ToolArgument[] {
+    const startIndex = this.currentArgumentIndex;
+    const endIndex = Math.min(startIndex + 2, this.arguments.length);
+    return this.arguments.slice(startIndex, endIndex);
   }
 
-  previousParameter() {
-    if (this.currentParameterIndex > 0) {
-      this.currentParameterIndex = Math.max(0, this.currentParameterIndex - 2);
+  previousArgument() {
+    if (this.currentArgumentIndex > 0) {
+      this.currentArgumentIndex = Math.max(0, this.currentArgumentIndex - 2);
     }
   }
 
-  nextParameter() {
-    if (this.currentParameterIndex < this.parameters.length - 2) {
-      this.currentParameterIndex = Math.min(
-        this.parameters.length - 2,
-        this.currentParameterIndex + 2,
+  nextArgument() {
+    if (this.currentArgumentIndex < this.arguments.length - 2) {
+      this.currentArgumentIndex = Math.min(
+        this.arguments.length - 2,
+        this.currentArgumentIndex + 2,
       );
     }
   }
 
   onToolChange(tool: McpTool) {
     this.selectedTool = tool;
-    this.currentParameterIndex = 0; // Reset to first parameter when tool changes
+    this.currentArgumentIndex = 0; // Reset to first argument when tool changes
   }
 
   getPercentage(
     value: { count: number },
-    parameter: { usageCount: number },
+    argument: { usageCount: number },
   ): number {
-    if (parameter.usageCount === 0) return 0;
-    return Math.round((value.count / parameter.usageCount) * 100);
+    if (argument.usageCount === 0) return 0;
+    return Math.round((value.count / argument.usageCount) * 100);
   }
 
-  getParameterUsagePercentage(parameter: { usageCount: number }): number {
+  getArgumentUsagePercentage(argument: { usageCount: number }): number {
     if (this.selectedTool.calls === 0) return 0;
-    return Math.round((parameter.usageCount / this.selectedTool.calls) * 100);
+    return Math.round((argument.usageCount / this.selectedTool.calls) * 100);
   }
 
   protected readonly Math = Math;

@@ -1,18 +1,18 @@
-export interface ParameterValue {
+export interface ArgumentValue {
   name: string;
   count: number;
 }
 
-export interface ToolParameter {
+export interface ToolArgument {
   name: string;
   usageCount: number;
-  values: ParameterValue[];
+  values: ArgumentValue[];
 }
 
 export interface McpTool {
   name: string;
   calls: number;
-  parameters: ToolParameter[];
+  arguments: ToolArgument[];
 }
 
 export interface ToolAnalytics {

@@ -43,16 +43,16 @@ type ToolAnalytics struct {
 type McpTool struct {
 	Name       string          `json:"name"`
 	Calls      int             `json:"calls"`
-	Parameters []ToolParameter `json:"parameters"`
+	Arguments []ToolArgument `json:"arguments"`
 }
 
-type ToolParameter struct {
-	Name       string           `json:"name"`
-	UsageCount int              `json:"usageCount"`
-	Values     []ParameterValue `json:"values"`
+type ToolArgument struct {
+	Name       string          `json:"name"`
+	UsageCount int             `json:"usageCount"`
+	Values     []ArgumentValue `json:"values"`
 }
 
-type ParameterValue struct {
+type ArgumentValue struct {
 	Name  string `json:"name"`
 	Count int    `json:"count"`
 }
