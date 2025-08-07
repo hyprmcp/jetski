@@ -54,6 +54,17 @@ export class NavigationComponent {
           href: [...projectBase, 'logs'],
         },
         {
+          label: 'Deployments',
+          href: [
+            '/',
+            organization.name,
+            'project',
+            project.name,
+            'deployments',
+          ],
+          active: false,
+        },
+        {
           label: 'Monitoring',
           href: [...projectBase, 'monitoring'],
         },

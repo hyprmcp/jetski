@@ -85,7 +85,7 @@ export class UsageCardComponent {
     const formattedCount =
       count > 1000 ? (count / 1000).toFixed(1) + 'K' : count;
     return {
-      label: 'Requests',
+      label: 'Tool Calls',
       value: `${usage.hasValue() ? formattedCount : 'n.a.'} / 1M`,
       color: 'bg-yellow-400',
     };
