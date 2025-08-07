@@ -5,6 +5,8 @@ import {
   ViewChild,
   ElementRef,
   OnDestroy,
+  inject,
+  effect,
 } from '@angular/core';
 import {
   HlmCardContentDirective,
@@ -15,13 +17,13 @@ import {
 import { Chart, registerables } from 'chart.js';
 import { DecimalPipe } from '@angular/common';
 import { ClientUsage } from './client-usage';
-import { ColorPipe } from '../../../../pipes/color-pipe';
+import { ThemeService } from '../../../../services/theme.service';
 
 @Component({
   selector: 'app-client-usage',
   template: `
     <!-- Client Usage -->
-    <div hlmCard>
+    <div hlmCard class="overflow-hidden">
       <div hlmCardHeader>
         <div hlmCardTitle>Client Usage</div>
         <p class="text-sm text-muted-foreground">
@@ -29,38 +31,57 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
         </p>
       </div>
       <div hlmCardContent>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Legend and Details -->
-          <div class="space-y-3">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Modern Donut Chart -->
+          <div class="flex justify-center items-center">
+            <div class="relative">
+              <div class="w-72 h-72">
+                <canvas #pieChart></canvas>
+              </div>
+              <!-- Center label -->
+              <div
+                class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
+              >
+                <div class="text-3xl font-semibold">
+                  {{ data.totalSessions | number }}
+                </div>
+                <div class="text-sm text-muted-foreground">Total Sessions</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modern Legend -->
+          <div class="flex flex-col justify-center space-y-4">
             @for (client of data.clients; track client.name; let i = $index) {
               <div
-                class="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
+                class="group duration-200"
               >
-                <div class="flex items-center space-x-3">
-                  <div class="w-4 h-4 rounded-full" [class]="i | color"></div>
-                  <div>
-                    <div class="font-medium">
-                      {{ getDisplayName(client.name) }}
-                    </div>
-                    <div class="text-sm text-muted-foreground">
-                      {{ client.sessions | number }} sessions
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-3">
+                    <div
+                      class="w-3 h-3 rounded-full transition-all duration-200 group-hover:scale-125"
+                      [style.background-color]="getModernColor(i)"
+                    ></div>
+                    <div>
+                      <div class="font-medium text-sm">
+                        {{ getDisplayName(client.name) }}
+                      </div>
+                      <div class="text-xs text-muted-foreground">
+                        {{ client.sessions | number }} sessions
+                      </div>
                     </div>
                   </div>
                 </div>
-                <div class="text-right">
-                  <div class="text-lg font-bold">
-                    {{ getPercentage(client) }}%
-                  </div>
+                <!-- Progress bar -->
+                <div class="mt-2 h-1 bg-muted rounded-full overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-500"
+                    [style.width.%]="getPercentage(client)"
+                    [style.background-color]="getModernColor(i)"
+                  ></div>
                 </div>
               </div>
             }
-          </div>
-
-          <!-- Chart.js Pie Chart -->
-          <div class="flex justify-center items-center">
-            <div class="relative w-64 h-64">
-              <canvas #pieChart></canvas>
-            </div>
           </div>
         </div>
       </div>
@@ -72,7 +93,6 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
     HlmCardHeaderDirective,
     HlmCardTitleDirective,
     DecimalPipe,
-    ColorPipe,
   ],
 })
 export class ClientUsageComponent implements AfterViewInit, OnDestroy {
@@ -82,6 +102,16 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
   pieChartCanvas!: ElementRef<HTMLCanvasElement>;
 
   private pieChart: Chart | null = null;
+  private themeService = inject(ThemeService);
+
+  constructor() {
+    effect(() => {
+      this.themeService.isDark(); // Subscribe to theme changes
+      if (this.pieChart) {
+        this.updateChartTheme();
+      }
+    });
+  }
 
   ngAfterViewInit() {
     setTimeout(() => {
@@ -111,30 +141,68 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
     return Math.round((client.sessions / this.data.totalSessions) * 100);
   }
 
-  getChartColor(index: number): string {
-    // Convert ColorPipe Tailwind classes to hex colors for Chart.js
-    const colorMap: Record<string, string> = {
-      'bg-blue-500': '#3b82f6',
-      'bg-emerald-500': '#10b981',
-      'bg-violet-500': '#8b5cf6',
-      'bg-red-500': '#ef4444',
-      'bg-amber-500': '#f59e0b',
-      'bg-orange-500': '#f97316',
-      'bg-teal-500': '#14b8a6',
-      'bg-indigo-500': '#6366f1',
-      'bg-amber-600': '#d97706',
-      'bg-pink-500': '#ec4899',
-      'bg-orange-600': '#ea580c',
-      'bg-cyan-500': '#06b6d4',
-      'bg-violet-400': '#a78bfa',
-      'bg-rose-500': '#f43f5e',
-      'bg-lime-500': '#84cc16',
-      'bg-black': '#000000',
-    };
+  getModernColor(index: number): string {
+    const isDark = this.themeService.isDark();
 
-    const colorPipe = new ColorPipe();
-    const tailwindClass = colorPipe.transform(index);
-    return colorMap[tailwindClass] || '#000000';
+    // Modern color palette inspired by Vercel
+    const lightColors = [
+      '#0070f3', // Blue
+      '#00d9ff', // Cyan
+      '#7928ca', // Purple
+      '#ff0080', // Pink
+      '#ff4500', // Orange
+      '#00a870', // Green
+      '#f5a623', // Yellow
+      '#50e3c2', // Teal
+    ];
+
+    const darkColors = [
+      '#0096ff', // Bright Blue
+      '#00e5ff', // Bright Cyan
+      '#a855f7', // Bright Purple
+      '#ff0080', // Bright Pink
+      '#ff6b6b', // Coral
+      '#00d68f', // Bright Green
+      '#ffd93d', // Bright Yellow
+      '#6bcf7f', // Bright Teal
+    ];
+
+    const colors = isDark ? darkColors : lightColors;
+    return colors[index % colors.length];
+  }
+
+  private updateChartTheme() {
+    if (!this.pieChart) return;
+
+    const isDark = this.themeService.isDark();
+
+    // Update chart colors
+    if (this.pieChart.data.datasets[0]) {
+      this.pieChart.data.datasets[0].backgroundColor = this.data.clients.map(
+        (_, index) => this.getModernColor(index),
+      );
+      this.pieChart.data.datasets[0].borderColor = isDark
+        ? '#1a1a1a'
+        : '#ffffff';
+    }
+
+    // Update tooltip styles
+    if (this.pieChart.options?.plugins?.tooltip) {
+      this.pieChart.options.plugins.tooltip.backgroundColor = isDark
+        ? '#1a1a1a'
+        : '#ffffff';
+      this.pieChart.options.plugins.tooltip.titleColor = isDark
+        ? '#ffffff'
+        : '#000000';
+      this.pieChart.options.plugins.tooltip.bodyColor = isDark
+        ? '#ffffff'
+        : '#000000';
+      this.pieChart.options.plugins.tooltip.borderColor = isDark
+        ? '#333333'
+        : '#e5e7eb';
+    }
+
+    this.pieChart.update();
   }
 
   private initializeChart() {
@@ -157,8 +225,10 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
         this.pieChart.destroy();
       }
 
+      const isDark = this.themeService.isDark();
+
       this.pieChart = new Chart(ctx, {
-        type: 'pie',
+        type: 'doughnut', // Changed to doughnut for modern look
         data: {
           labels: this.data.clients.map((client) =>
             this.getDisplayName(client.name),
@@ -169,21 +239,40 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
                 this.getPercentage(client),
               ),
               backgroundColor: this.data.clients.map((_, index) =>
-                this.getChartColor(index),
+                this.getModernColor(index),
               ),
-              borderWidth: 1,
-              borderColor: '#ffffff',
+              borderWidth: 2,
+              borderColor: isDark ? '#1a1a1a' : '#ffffff',
+              borderRadius: 0,
+              spacing: 2,
             },
           ],
         },
         options: {
           responsive: true,
-          maintainAspectRatio: false,
+          maintainAspectRatio: true,
+          cutout: '70%', // Creates the donut hole
+          animation: {
+            animateRotate: true,
+            animateScale: false,
+            duration: 1000,
+            easing: 'easeInOutQuart',
+          },
           plugins: {
             legend: {
               display: false,
             },
             tooltip: {
+              backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
+              titleColor: isDark ? '#ffffff' : '#000000',
+              bodyColor: isDark ? '#ffffff' : '#000000',
+              borderColor: isDark ? '#333333' : '#e5e7eb',
+              borderWidth: 1,
+              padding: 12,
+              displayColors: true,
+              boxPadding: 4,
+              cornerRadius: 8,
+              caretSize: 0,
               callbacks: {
                 label: function (context) {
                   const label = context.label || '';
@@ -196,9 +285,9 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
         },
       });
 
-      console.log('Client usage pie chart initialized successfully');
+      console.log('Client usage donut chart initialized successfully');
     } catch (error) {
-      console.error('Error initializing client usage pie chart:', error);
+      console.error('Error initializing client usage chart:', error);
     }
   }
 }
