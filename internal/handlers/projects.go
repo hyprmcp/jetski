@@ -6,6 +6,7 @@ import (
 	"github.com/jetski-sh/jetski/internal/types"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -20,6 +21,7 @@ func ProjectsRouter(r chi.Router) {
 	r.Get("/", getProjects)
 	r.Post("/", postProjectHandler())
 	r.Route("/{projectId}", func(r chi.Router) {
+		r.Get("/", getProjectSummary)
 		r.Get("/logs", getLogsForProject)
 		r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
 		r.Get("/analytics", getAnalytics)
@@ -65,6 +67,19 @@ func postProjectHandler() http.HandlerFunc {
 		} else {
 			RespondJSON(w, project)
 		}
+	}
+}
+
+func getProjectSummary(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	projectID := getProjectIDIfAllowed(w, r, pathParam)
+	if projectID == uuid.Nil {
+		return
+	}
+	if p, err := db.GetProjectSummary(ctx, projectID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get project")
+	} else {
+		RespondJSON(w, p)
 	}
 }
 
@@ -120,17 +135,21 @@ func putProjectSettings(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	isSet := func(s *string) bool {
+		return s != nil && len(strings.TrimSpace(*s)) > 0
+	}
+
 	err := db.RunTx(ctx, func(ctx context.Context) error {
 		projectID := getProjectIDIfAllowed(w, r, pathParam)
 		if projectID == uuid.Nil {
 			return nil
 		}
 
-		if req.OciUrl != nil {
+		if isSet(req.OciUrl) {
 			if req.Port == nil {
 				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is required if OCI URL is set")
 				return nil
-			} else if req.ProxyURL != nil {
+			} else if isSet(req.ProxyURL) {
 				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Proxy URL not allowed if OCI URL is set")
 				return nil
 			}
@@ -141,7 +160,7 @@ func putProjectSettings(w http.ResponseWriter, r *http.Request) {
 			}
 			w.WriteHeader(http.StatusAccepted)
 			return nil
-		} else if req.ProxyURL != nil {
+		} else if isSet(req.ProxyURL) {
 			if req.Port != nil {
 				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is not allowed if Proxy URL is set")
 				return nil
