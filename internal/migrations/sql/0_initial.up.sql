@@ -34,8 +34,10 @@ CREATE TABLE DeploymentRevision (
   created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
   created_by UUID NOT NULL REFERENCES UserAccount (id),
   project_id UUID NOT NULL REFERENCES Project (id),
-  port INT NOT NULL,
-  oci_url TEXT NOT NULL
+  port INT,
+  oci_url TEXT,
+  authenticated BOOL NOT NULL DEFAULT FALSE,
+  proxy_url TEXT
 );
 CREATE INDEX fk_DeploymentRevision_project_id ON DeploymentRevision (project_id);
 ALTER TABLE Project ADD COLUMN latest_deployment_revision_id UUID REFERENCES DeploymentRevision (id);

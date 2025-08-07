@@ -35,13 +35,15 @@ type Project struct {
 }
 
 type DeploymentRevision struct {
-	ID          uuid.UUID `db:"id" json:"id"`
-	CreatedAt   time.Time `db:"created_at" json:"createdAt"`
-	CreatedBy   uuid.UUID `db:"created_by" json:"createdBy"`
-	ProjectID   uuid.UUID `db:"project_id" json:"projectId"`
-	Port        int       `db:"port" json:"port"`
-	OCIURL      string    `db:"oci_url" json:"ociUrl"`
-	BuildNumber int       `db:"build_number" json:"buildNumber"`
+	ID            uuid.UUID `db:"id" json:"id"`
+	CreatedAt     time.Time `db:"created_at" json:"createdAt"`
+	CreatedBy     uuid.UUID `db:"created_by" json:"createdBy"`
+	ProjectID     uuid.UUID `db:"project_id" json:"projectId"`
+	Port          *int      `db:"port" json:"port"`
+	OCIURL        *string   `db:"oci_url" json:"ociUrl"`
+	Authenticated bool      `db:"authenticated" json:"authenticated"`
+	ProxyURL      *string   `db:"proxy_url" json:"proxyUrl"`
+	BuildNumber   int       `db:"build_number" json:"buildNumber"`
 }
 
 type DeploymentRevisionEventType string

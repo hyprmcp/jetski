@@ -195,7 +195,8 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 						return fmt.Errorf("failed to parse duration: %w", err)
 					}
 					ts := time.Now().UTC().Add(ago * -1)
-					dr, err := db.CreateDeploymentRevision(ctx, proj.ID, user.ID, drData.Port, drData.OCIUrl, &ts)
+					// TODO support proxied and unauthenticated deployment revisions in demo data
+					dr, err := db.CreateHostedDeploymentRevision(ctx, proj.ID, user.ID, drData.Port, drData.OCIUrl, true, &ts)
 					if err != nil {
 						return fmt.Errorf("failed to create deployment revision: %w", err)
 					}

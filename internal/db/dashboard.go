@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"fmt"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
@@ -10,26 +11,7 @@ import (
 
 func GetProjectSummaries(ctx context.Context, orgID uuid.UUID) ([]types.ProjectSummary, error) {
 	db := internalctx.GetDb(ctx)
-	rows, err := db.Query(ctx, `
-    SELECT
-      `+projectOutExpr+`,
-      (`+organizationOutputExpr+`),
-      CASE
-        WHEN dr.id IS NOT NULL
-          THEN (`+deploymentRevisionWithoutBuildNrOutExpr+`,
-			(SELECT COUNT(DISTINCT dr2.id) FROM DeploymentRevision dr2 WHERE dr2.project_id = p.id))
-      END,
-      CASE
-        WHEN dre.id IS NOT NULL
-          THEN (`+deploymentRevisionEventOutExpr+`)
-      END
-    FROM Project p
-    INNER JOIN Organization o ON p.organization_id = o.id
-    LEFT JOIN DeploymentRevision dr ON p.latest_deployment_revision_id = dr.id
-    LEFT JOIN DeploymentRevisionEvent dre ON p.latest_deployment_revision_event_id = dre.id AND dre.deployment_revision_id = dr.id
-    WHERE o.id = @id
-    ORDER BY o.name, p.name
-	`, pgx.NamedArgs{"id": orgID})
+	rows, err := db.Query(ctx, buildGetProjectSummaryQuery(true), pgx.NamedArgs{"id": orgID})
 	if err != nil {
 		return nil, err
 	}
@@ -39,6 +21,48 @@ func GetProjectSummaries(ctx context.Context, orgID uuid.UUID) ([]types.ProjectS
 	} else {
 		return result, nil
 	}
+}
+
+func GetProjectSummary(ctx context.Context, projectID uuid.UUID) (*types.ProjectSummary, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, buildGetProjectSummaryQuery(false), pgx.NamedArgs{"id": projectID})
+	if err != nil {
+		return nil, err
+	}
+	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByPos[types.ProjectSummary])
+	if err != nil {
+		return nil, err
+	} else {
+		return result, nil
+	}
+}
+
+func buildGetProjectSummaryQuery(byOrg bool) string {
+	var whereTableAlias string
+	if byOrg {
+		whereTableAlias = "o"
+	} else {
+		whereTableAlias = "p"
+	}
+	return fmt.Sprintf(`
+	SELECT
+      %v,
+      (%v),
+      CASE
+        WHEN dr.id IS NOT NULL
+          THEN (%v,
+			(SELECT COUNT(DISTINCT dr2.id) FROM DeploymentRevision dr2 WHERE dr2.project_id = p.id))
+      END,
+      CASE
+        WHEN dre.id IS NOT NULL
+          THEN (%v)
+      END
+    FROM Project p
+    INNER JOIN Organization o ON p.organization_id = o.id
+    LEFT JOIN DeploymentRevision dr ON p.latest_deployment_revision_id = dr.id
+    LEFT JOIN DeploymentRevisionEvent dre ON p.latest_deployment_revision_event_id = dre.id AND dre.deployment_revision_id = dr.id
+    WHERE %v.id = @id
+    ORDER BY o.name, p.name`, projectOutExpr, organizationOutputExpr, deploymentRevisionWithoutBuildNrOutExpr, deploymentRevisionEventOutExpr, whereTableAlias)
 }
 
 func GetRecentDeploymentRevisionSummaries(ctx context.Context, orgID uuid.UUID) ([]types.DeploymentRevisionSummary, error) {
