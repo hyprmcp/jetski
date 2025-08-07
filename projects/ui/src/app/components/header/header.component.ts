@@ -62,7 +62,7 @@ import { ContextService } from '../../services/context.service';
             aria-label="Home"
           ></a>
 
-          @if (contextService.selectedOrg()) {
+          @if (contextService.organizations().length !== 0) {
             <button
               class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
               [brnMenuTriggerFor]="projectMenu"
@@ -117,6 +117,14 @@ import { ContextService } from '../../services/context.service';
                   </hlm-sub-menu>
                 </ng-template>
               }
+
+              <a
+                routerLink="/organizations/new"
+                class="cursor-pointer"
+                hlmMenuItem
+              >
+                Create New Organization
+              </a>
             </hlm-menu-group>
           </hlm-menu>
         </ng-template>

@@ -1,6 +1,7 @@
 package routing
 
 import (
+	"github.com/jetski-sh/jetski/internal/mail"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"net/http"
 	"time"
@@ -17,7 +18,7 @@ import (
 )
 
 func NewRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set,
+	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set, mailer mail.Mailer,
 ) http.Handler {
 	router := chi.NewRouter()
 	router.Use(
@@ -26,7 +27,7 @@ func NewRouter(
 		// Reject bodies larger than 1MiB
 		chimiddleware.RequestSize(1048576),
 	)
-	router.Mount("/api", ApiRouter(logger, db, tracers, jwkSet))
+	router.Mount("/api", ApiRouter(logger, db, tracers, jwkSet, mailer))
 	router.Mount("/internal", InternalRouter())
 	router.Mount("/webhook", WebhookRouter(logger, db))
 	router.Mount("/", FrontendRouter())
@@ -34,7 +35,7 @@ func NewRouter(
 }
 
 func ApiRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set,
+	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set, mailer mail.Mailer,
 ) http.Handler {
 	r := chi.NewRouter()
 	r.Use(
@@ -43,7 +44,7 @@ func ApiRouter(
 		middleware.Sentry,
 		middleware.LoggerCtxMiddleware(logger),
 		middleware.LoggingMiddleware,
-		middleware.ContextInjectorMiddleware(db),
+		middleware.ContextInjectorMiddleware(db, mailer),
 		middleware.AuthMiddleware(jwkSet),
 	)
 
@@ -80,7 +81,7 @@ func WebhookRouter(logger *zap.Logger, db *pgxpool.Pool) http.Handler {
 		middleware.Sentry,
 		middleware.LoggerCtxMiddleware(logger),
 		middleware.LoggingMiddleware,
-		middleware.ContextInjectorMiddleware(db),
+		middleware.ContextInjectorMiddleware(db, nil),
 	)
 	router.Route("/", handlers.WebhookRouter)
 	return router

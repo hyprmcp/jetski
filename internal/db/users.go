@@ -43,8 +43,25 @@ func AddUserToOrganization(ctx context.Context, userID, orgID uuid.UUID) error {
 	_, err := db.Exec(ctx, `
 		INSERT INTO Organization_UserAccount (organization_id, user_account_id)
 		VALUES (@orgID, @userID)
+		ON CONFLICT (organization_id, user_account_id) DO NOTHING
 	`, pgx.NamedArgs{"orgID": orgID, "userID": userID})
-	return err
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
+}
+
+func RemoveUserFromOrganization(ctx context.Context, userID, orgID uuid.UUID) error {
+	db := internalctx.GetDb(ctx)
+	_, err := db.Exec(ctx, `
+		DELETE FROM Organization_UserAccount WHERE user_account_id = @userID AND organization_id = @orgID
+	`, pgx.NamedArgs{"orgID": orgID, "userID": userID})
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
 }
 
 func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, error) {
@@ -90,23 +107,28 @@ func GetUserByEmailOrCreate(ctx context.Context, email string) (*types.UserAccou
 	return user, nil
 }
 
-func IsUserPartOfOrg(ctx context.Context, userID, orgID uuid.UUID) (bool, error) {
+func IsUserPartOfOrg(ctx context.Context, userID, orgID uuid.UUID) (bool, *types.Organization, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
-		SELECT EXISTS (
-			SELECT * FROM Organization_UserAccount
-			WHERE user_account_id = @userID AND organization_id = @orgID
-		)`, pgx.NamedArgs{"userID": userID, "orgID": orgID})
+		SELECT
+			EXISTS (
+				SELECT * FROM Organization_UserAccount
+				WHERE user_account_id = @userID AND organization_id = @orgID
+			), `+
+		`(`+organizationOutputExpr+`)
+		FROM Organization o
+		WHERE o.id = @orgID`, pgx.NamedArgs{"userID": userID, "orgID": orgID})
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
 	res, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByPos[struct {
-		Exists bool
+		Exists       bool
+		Organization types.Organization
 	}])
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
-	return res.Exists, nil
+	return res.Exists, &res.Organization, nil
 }
 
 func CanUserAccessProject(ctx context.Context, userID, projectID uuid.UUID) (bool, error) {

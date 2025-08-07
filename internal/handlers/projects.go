@@ -49,7 +49,7 @@ func postProjectHandler() http.HandlerFunc {
 			return
 		}
 
-		if userInOrg, err := db.IsUserPartOfOrg(ctx, user.ID, projectReq.OrganizationID); err != nil {
+		if userInOrg, _, err := db.IsUserPartOfOrg(ctx, user.ID, projectReq.OrganizationID); err != nil {
 			HandleInternalServerError(w, r, err, "check user org error")
 			return
 		} else if !userInOrg {
@@ -67,7 +67,7 @@ func postProjectHandler() http.HandlerFunc {
 
 func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	projectID := getProjectIDAndCheckAccess(w, r)
+	projectID := getProjectIDIfAllowed(w, r, pathParam)
 	if projectID == uuid.Nil {
 		return
 	}
@@ -91,7 +91,7 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 
 func getDeploymentRevisionsForProject(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	projectID := getProjectIDAndCheckAccess(w, r)
+	projectID := getProjectIDIfAllowed(w, r, pathParam)
 	if projectID == uuid.Nil {
 		return
 	}
@@ -102,10 +102,10 @@ func getDeploymentRevisionsForProject(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func getProjectIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUID {
+func getProjectIDIfAllowed(w http.ResponseWriter, r *http.Request, getter paramGetter) uuid.UUID {
 	ctx := r.Context()
 	user := internalctx.GetUser(ctx)
-	if projectIDStr := r.PathValue("projectId"); projectIDStr == "" {
+	if projectIDStr := getter(r, "projectId"); projectIDStr == "" {
 		return uuid.Nil
 	} else if projectID, err := uuid.Parse(projectIDStr); err != nil {
 		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid projectId")
@@ -123,7 +123,7 @@ func getProjectIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUI
 
 func getAnalytics(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
-	projectID := getProjectIDAndCheckAccess(w, r)
+	projectID := getProjectIDIfAllowed(w, r, pathParam)
 	if projectID == uuid.Nil {
 		return
 	}

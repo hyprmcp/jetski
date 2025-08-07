@@ -58,3 +58,23 @@ func CreateOrganization(ctx context.Context, name string) (*types.Organization, 
 		return result, nil
 	}
 }
+
+func GetOrganizationMembers(ctx context.Context, orgID uuid.UUID) ([]types.UserAccount, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT`+userOutExpr+`
+			FROM UserAccount u
+			INNER JOIN Organization_UserAccount j ON u.id = j.user_account_id
+			WHERE j.organization_id = @id
+			ORDER BY u.created_at
+	`, pgx.NamedArgs{"id": orgID})
+	if err != nil {
+		return nil, err
+	}
+	result, err := pgx.CollectRows(rows, pgx.RowToStructByName[types.UserAccount])
+	if err != nil {
+		return nil, err
+	} else {
+		return result, nil
+	}
+}

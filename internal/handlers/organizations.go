@@ -1,9 +1,15 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
+	"github.com/getsentry/sentry-go"
+	"github.com/google/uuid"
 	"github.com/jetski-sh/jetski/internal/apierrors"
+	"github.com/jetski-sh/jetski/internal/mailsending"
+	"github.com/jetski-sh/jetski/internal/types"
+	"go.uber.org/zap"
 	"net/http"
 	"regexp"
 	"strings"
@@ -16,6 +22,13 @@ import (
 func OrganizationsRouter(r chi.Router) {
 	r.Get("/", getOrganizations)
 	r.Post("/", postOrganizationHandler())
+	r.Route("/{organizationId}", func(r chi.Router) {
+		r.Route("/members", func(r chi.Router) {
+			r.Get("/", getOrganizationMembers)
+			r.Put("/", putOrganizationMember())
+			r.Delete("/{userId}", deleteOrganizationMember())
+		})
+	})
 }
 
 func getOrganizations(w http.ResponseWriter, r *http.Request) {
@@ -73,4 +86,113 @@ func validateOrgName(w http.ResponseWriter, name string) bool {
 		return false
 	}
 	return true
+}
+
+func getOrganizationMembers(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	org := getOrganizationIfAllowed(w, r, pathParam)
+	if org == nil {
+		return
+	}
+	users, err := db.GetOrganizationMembers(ctx, org.ID)
+	if err != nil {
+		HandleInternalServerError(w, r, err, "could not get users of org")
+		return
+	}
+
+	RespondJSON(w, users)
+}
+
+func putOrganizationMember() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		log := internalctx.GetLogger(ctx)
+		org := getOrganizationIfAllowed(w, r, pathParam)
+		if org == nil {
+			return
+		}
+
+		var req struct {
+			Email string `json:"email"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			Handle4XXError(w, http.StatusBadRequest)
+			return
+		}
+		req.Email = strings.TrimSpace(req.Email)
+		var user *types.UserAccount
+		err := db.RunTx(ctx, func(ctx context.Context) error {
+			var err error
+			if user, err = db.GetUserByEmailOrCreate(ctx, req.Email); err != nil {
+				return err
+			} else if err = db.AddUserToOrganization(ctx, user.ID, org.ID); err != nil && !errors.Is(err, apierrors.ErrAlreadyExists) {
+				return err
+			} else {
+				return nil
+			}
+		})
+		if err != nil {
+			HandleInternalServerError(w, r, err, "failed to add user to org")
+		} else {
+			if err := mailsending.SendUserInviteMail(ctx, *user, *org); err != nil {
+				log.Error("failed to send invite mail", zap.Error(err))
+				sentry.GetHubFromContext(ctx).CaptureException(err)
+			}
+			RespondJSON(w, user)
+		}
+	}
+}
+
+func deleteOrganizationMember() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		user := internalctx.GetUser(ctx)
+		org := getOrganizationIfAllowed(w, r, pathParam)
+		if org == nil {
+			return
+		}
+		toBeRemovedID := getUserID(w, r)
+		if toBeRemovedID == uuid.Nil {
+			return
+		} else if user.ID == toBeRemovedID {
+			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "You cannot remove yourself from the organization.")
+			return
+		}
+
+		if err := db.RemoveUserFromOrganization(ctx, toBeRemovedID, org.ID); err != nil {
+			HandleInternalServerError(w, r, err, "failed to remove user from org")
+		} else {
+			w.WriteHeader(http.StatusAccepted)
+		}
+	}
+}
+
+func getOrganizationIfAllowed(w http.ResponseWriter, r *http.Request, getter paramGetter) *types.Organization {
+	ctx := r.Context()
+	user := internalctx.GetUser(ctx)
+	if orgIDStr := getter(r, "organizationId"); orgIDStr == "" {
+		return nil
+	} else if orgID, err := uuid.Parse(orgIDStr); err != nil {
+		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid organizationId")
+		return nil
+	} else if ok, org, err := db.IsUserPartOfOrg(ctx, user.ID, orgID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to check if user is part of org")
+		return nil
+	} else if !ok {
+		Handle4XXError(w, http.StatusNotFound)
+		return nil
+	} else {
+		return org
+	}
+}
+
+func getUserID(w http.ResponseWriter, r *http.Request) uuid.UUID {
+	if userIDStr := r.PathValue("userId"); userIDStr == "" {
+		return uuid.Nil
+	} else if userID, err := uuid.Parse(userIDStr); err != nil {
+		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid userId")
+		return uuid.Nil
+	} else {
+		return userID
+	}
 }
