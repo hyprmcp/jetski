@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/jetski-sh/jetski/internal/mail"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"net/http"
 	"syscall"
@@ -23,6 +24,7 @@ type Registry struct {
 	execDbMigrations bool
 	tracers          *tracers.Tracers
 	jwkSet           jwk.Set
+	mailer           mail.Mailer
 }
 
 func NewDefault(ctx context.Context) (*Registry, error) {
@@ -70,6 +72,12 @@ func newRegistry(ctx context.Context, reg *Registry) (*Registry, error) {
 		reg.jwkSet = oidcProvider
 	}
 
+	if mailer, err := createMailer(ctx); err != nil {
+		return nil, err
+	} else {
+		reg.mailer = mailer
+	}
+
 	return reg, nil
 }
 
@@ -95,6 +103,7 @@ func (r *Registry) GetRouter() http.Handler {
 		r.GetDbPool(),
 		r.GetTracers(),
 		r.GetJwkSet(),
+		r.GetMailer(),
 	)
 }
 

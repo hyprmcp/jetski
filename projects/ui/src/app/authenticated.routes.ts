@@ -11,6 +11,9 @@ import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
 import { DeploymentsComponent } from './pages/project/deployments/deployments.component';
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
+import { OrganizationSettingsComponent } from './pages/organization-settings/organization-settings.component';
+import { OrganizationSettingsGeneralComponent } from './pages/organization-settings/organization-settings-general.component';
+import { OrganizationSettingsMembersComponent } from './pages/organization-settings/organization-settings-members.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -86,6 +89,16 @@ export const authenticatedRoutes: Routes = [
         path: 'onboarding',
         component: OnboardingComponent,
         canActivate: [onboardingGuard],
+        data: {
+          flow: 'onboarding',
+        },
+      },
+      {
+        path: 'organizations/new',
+        component: OnboardingComponent,
+        data: {
+          flow: 'new-organization',
+        },
       },
       {
         path: ':organizationName',
@@ -97,6 +110,20 @@ export const authenticatedRoutes: Routes = [
           {
             path: 'monitoring',
             component: MonitoringComponent,
+          },
+          {
+            path: 'settings',
+            component: OrganizationSettingsComponent,
+            children: [
+              {
+                path: '',
+                component: OrganizationSettingsGeneralComponent,
+              },
+              {
+                path: 'members',
+                component: OrganizationSettingsMembersComponent,
+              },
+            ],
           },
           {
             path: 'project',

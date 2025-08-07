@@ -14,12 +14,16 @@ import { ContextService } from '../../services/context.service';
       >
         <div class="flex items-center px-6 py-3">
           <div class="flex space-x-8">
-            @for (item of navItems(); track item.label) {
+            @for (
+              item of navItems();
+              track item.label;
+              let isOverview = $first
+            ) {
               <a
                 [routerLink]="item.href"
                 routerLinkActive="text-foreground"
                 #rla="routerLinkActive"
-                [routerLinkActiveOptions]="{ exact: true }"
+                [routerLinkActiveOptions]="{ exact: isOverview }"
                 [class.text-muted-foreground]="!rla.isActive"
                 class="text-sm font-medium transition-colors hover:text-foreground"
               >
@@ -78,6 +82,10 @@ export class NavigationComponent {
         {
           label: 'Monitoring',
           href: [...orgBase, 'monitoring'],
+        },
+        {
+          label: 'Settings',
+          href: [...orgBase, 'settings'],
         },
       ];
     }

@@ -30,3 +30,13 @@ func Handle4XXError(w http.ResponseWriter, status int) {
 func Handle4XXErrorWithStatusText(w http.ResponseWriter, status int, statusText string) {
 	http.Error(w, statusText, status)
 }
+
+type paramGetter func(r *http.Request, param string) string
+
+func pathParam(r *http.Request, param string) string {
+	return r.PathValue(param)
+}
+
+func queryParam(r *http.Request, param string) string {
+	return r.URL.Query().Get(param)
+}
