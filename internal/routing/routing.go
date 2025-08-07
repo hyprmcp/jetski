@@ -56,6 +56,7 @@ func ApiRouter(
 			httprate.Limit(2000, 1*time.Hour, httprate.WithKeyFuncs(middleware.RateLimitUserIDKey)),
 		)
 
+		r.Route("/context", handlers.ContextRouter)
 		r.Route("/organizations", handlers.OrganizationsRouter)
 		r.Route("/projects", handlers.ProjectsRouter)
 		r.Route("/dashboard", handlers.DashboardRouter)

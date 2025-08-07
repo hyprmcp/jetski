@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+
 	"github.com/google/uuid"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -63,6 +64,31 @@ func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, erro
 	}
 	return user, nil
 }
+func GetUserByEmailOrCreate(ctx context.Context, email string) (*types.UserAccount, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		WITH inserted AS (
+			INSERT INTO UserAccount (email)
+			VALUES (@email)
+			ON CONFLICT (email) DO NOTHING
+			RETURNING *
+		)
+		SELECT `+userOutExpr+` FROM UserAccount u WHERE u.email = @email
+		UNION
+		SELECT `+userOutExpr+` FROM inserted u
+	`, pgx.NamedArgs{"email": email})
+	if err != nil {
+		return nil, err
+	}
+	user, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[types.UserAccount])
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, apierrors.ErrNotFound
+		}
+		return nil, err
+	}
+	return user, nil
+}
 
 func IsUserPartOfOrg(ctx context.Context, userID, orgID uuid.UUID) (bool, error) {
 	db := internalctx.GetDb(ctx)
@@ -102,4 +128,18 @@ func CanUserAccessProject(ctx context.Context, userID, projectID uuid.UUID) (boo
 		return false, err
 	}
 	return res.Exists, nil
+}
+
+func GetAllUsers(ctx context.Context) ([]types.UserAccount, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, `
+		SELECT `+userOutExpr+` FROM UserAccount u `)
+	if err != nil {
+		return nil, err
+	}
+	users, err := pgx.CollectRows(rows, pgx.RowToStructByName[types.UserAccount])
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
 }

@@ -62,27 +62,29 @@ import { ContextService } from '../../services/context.service';
             aria-label="Home"
           ></a>
 
-          <button
-            class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
-            [brnMenuTriggerFor]="projectMenu"
-          >
-            <span
-              class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
-              >{{ contextService.selectedOrg()?.name }}</span
+          @if (contextService.selectedOrg()) {
+            <button
+              class="flex items-center gap-2 px-4 py-2 -my-2 rounded hover:bg-muted transition-colors group"
+              [brnMenuTriggerFor]="projectMenu"
             >
-            @if (contextService.selectedProject(); as proj) {
-              <span class="font-semibold text-lg"> / {{ proj.name }}</span>
               <span
-                class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
-                >Hobby</span
+                class="font-semibold text-lg text-muted-foreground group-hover:text-foreground transition-colors"
+                >{{ contextService.selectedOrg()?.name }}</span
               >
-            }
-            <div
-              class="text-muted-foreground group-hover:text-foreground transition-colors leading-none"
-            >
-              <ng-icon name="lucideChevronsUpDown" size="16" />
-            </div>
-          </button>
+              @if (contextService.selectedProject(); as proj) {
+                <span class="font-semibold text-lg"> / {{ proj.name }}</span>
+                <span
+                  class="text-xs bg-muted px-2 py-1 rounded text-muted-foreground"
+                  >Hobby</span
+                >
+              }
+              <div
+                class="text-muted-foreground group-hover:text-foreground transition-colors leading-none"
+              >
+                <ng-icon name="lucideChevronsUpDown" size="16" />
+              </div>
+            </button>
+          }
         </div>
 
         <ng-template #projectMenu>
@@ -180,8 +182,8 @@ export class HeaderComponent {
   protected readonly userData = this.oauthService.getIdentityClaims();
 
   protected readonly projectDropdownData = computed(() => {
-    const projects = this.contextService.projects.value();
-    const organizations = this.contextService.organizations.value();
+    const projects = this.contextService.projects();
+    const organizations = this.contextService.organizations();
     if (!projects || !organizations) {
       return [];
     } else {

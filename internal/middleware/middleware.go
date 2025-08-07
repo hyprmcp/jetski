@@ -2,8 +2,6 @@ package middleware
 
 import (
 	"errors"
-	"github.com/lestrrat-go/jwx/v3/jwk"
-	"github.com/lestrrat-go/jwx/v3/jwt"
 	"net/http"
 	"strings"
 	"time"
@@ -17,6 +15,8 @@ import (
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
 	"github.com/jetski-sh/jetski/internal/types"
+	"github.com/lestrrat-go/jwx/v3/jwk"
+	"github.com/lestrrat-go/jwx/v3/jwt"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"go.opentelemetry.io/otel/trace"
 	"go.uber.org/zap"
@@ -86,7 +86,7 @@ func AuthMiddleware(jwkSet jwk.Set) func(next http.Handler) http.Handler {
 				return
 			}
 			var user *types.UserAccount
-			if user, err = db.GetUserByEmail(ctx, email); err != nil {
+			if user, err = db.GetUserByEmailOrCreate(ctx, email); err != nil {
 				if errors.Is(err, apierrors.ErrNotFound) {
 					logger.Info("no user found for email", zap.Error(err), zap.String("email", email))
 					http.Error(w, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)

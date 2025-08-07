@@ -1,14 +1,42 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideActivity, lucideCircleCheck } from '@ng-icons/lucide';
+import {
+  lucideActivity,
+  lucideCircleCheck,
+  lucideChevronDown,
+} from '@ng-icons/lucide';
+import { ContextService } from '../../services/context.service';
+import { getDeploymentsForProject } from '../../../api/project';
+import { BrnSelectModule } from '@spartan-ng/brain/select';
+import {
+  HlmSelectContentDirective,
+  HlmSelectTriggerComponent,
+  HlmSelectOptionComponent,
+} from '@spartan-ng/helm/select';
+import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { FormsModule } from '@angular/forms';
+import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 
 @Component({
   selector: 'app-monitoring',
   standalone: true,
-  imports: [CommonModule, HlmButtonDirective, NgIcon],
-  viewProviders: [provideIcons({ lucideActivity, lucideCircleCheck })],
+  imports: [
+    CommonModule,
+    HlmButtonDirective,
+    NgIcon,
+    BrnSelectModule,
+    HlmSelectContentDirective,
+    HlmSelectTriggerComponent,
+    HlmSelectOptionComponent,
+    HlmIconDirective,
+    FormsModule,
+    RelativeDatePipe,
+  ],
+  viewProviders: [
+    provideIcons({ lucideActivity, lucideCircleCheck, lucideChevronDown }),
+  ],
   template: `
     <div class="space-y-6">
       <!-- Pro Feature Banner -->
@@ -42,10 +70,56 @@ import { lucideActivity, lucideCircleCheck } from '@ng-icons/lucide';
             Real-time performance and health metrics
           </p>
         </div>
-        <button hlmBtn variant="outline">
-          <ng-icon name="lucideActivity" class="h-4 w-4 mr-2"></ng-icon>
-          Refresh
-        </button>
+        <div class="flex items-center gap-2">
+          <!-- Deployment Version Filter (only show in project context) -->
+          @if (contextService.selectedProject()) {
+            <div class="relative">
+              <brn-select
+                [ngModel]="selectedDeploymentVersion"
+                (ngModelChange)="onDeploymentVersionChange($event)"
+                class="w-32"
+              >
+                <hlm-select-trigger>
+                  <div class="flex items-center gap-2">
+                    <span class="text-sm font-medium">
+                      {{
+                        selectedDeploymentVersion
+                          ? 'v' + selectedDeploymentVersion
+                          : 'All Versions'
+                      }}
+                    </span>
+                    <ng-icon hlm name="lucideChevronDown" size="sm" />
+                  </div>
+                </hlm-select-trigger>
+                <hlm-select-content>
+                  <hlm-option value="">
+                    <div class="flex items-center justify-between w-full">
+                      <span>All Versions</span>
+                    </div>
+                  </hlm-option>
+                  @for (
+                    revision of deploymentRevisions.value();
+                    track revision.id
+                  ) {
+                    <hlm-option [value]="revision.buildNumber">
+                      <div class="flex items-center justify-between w-full">
+                        <span>Version {{ revision.buildNumber }}</span>
+                        <span class="text-xs text-muted-foreground">
+                          {{ revision.createdAt | relativeDate }}
+                        </span>
+                      </div>
+                    </hlm-option>
+                  }
+                </hlm-select-content>
+              </brn-select>
+            </div>
+          }
+
+          <button hlmBtn variant="outline">
+            <ng-icon name="lucideActivity" class="h-4 w-4 mr-2"></ng-icon>
+            Refresh
+          </button>
+        </div>
       </div>
 
       <!-- Status Overview -->
@@ -194,4 +268,15 @@ import { lucideActivity, lucideCircleCheck } from '@ng-icons/lucide';
     </div>
   `,
 })
-export class MonitoringComponent {}
+export class MonitoringComponent {
+  contextService = inject(ContextService);
+  selectedDeploymentVersion: string | null = null;
+  readonly deploymentRevisions = getDeploymentsForProject(
+    this.contextService.selectedProject,
+  );
+
+  onDeploymentVersionChange(version: string) {
+    this.selectedDeploymentVersion = version;
+    // TODO: Implement logic to filter data based on selected version
+  }
+}

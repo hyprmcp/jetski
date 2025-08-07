@@ -1,0 +1,23 @@
+{{ template "header.html" . }}
+
+<div class="grid gap-2">
+  {{ range $c := .Connectors }}
+  <div class="theme-form-row">
+    <a href="{{ $c.URL }}" target="_self">
+      <button
+        class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-white transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 bg-gray-900 text-white hover:bg-gray-800 dark:bg-gray-100 dark:text-gray-900 dark:hover:bg-gray-200 h-10 px-4 py-2 w-full cursor-pointer">
+        <span class="size-6 mr-2 bg-center bg-contain bg-no-repeat dex-btn-icon--{{ $c.Type }}"></span>
+        Sign in with {{ $c.Name }}
+      </button>
+    </a>
+  </div>
+  {{ end }}
+</div>
+
+<script type="text/javascript">
+  document.querySelector('button').onclick = function (e) {
+    e.target.setAttribute('disabled', 'disabled');
+  };
+</script>
+
+{{ template "footer.html" . }}

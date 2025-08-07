@@ -1,19 +1,26 @@
 package handlers
 
 import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
+	"github.com/jetski-sh/jetski/internal/analytics"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
 	"github.com/jetski-sh/jetski/internal/lists"
-	"net/http"
 )
 
 func ProjectsRouter(r chi.Router) {
 	r.Get("/", getProjects)
+	r.Post("/", postProjectHandler())
 	r.Route("/{projectId}", func(r chi.Router) {
 		r.Get("/logs", getLogsForProject)
 		r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
+		r.Get("/analytics", getAnalytics)
 	})
 }
 
@@ -24,6 +31,37 @@ func getProjects(w http.ResponseWriter, r *http.Request) {
 		HandleInternalServerError(w, r, err, "failed to get projects for user")
 	} else {
 		RespondJSON(w, projects)
+	}
+}
+
+func postProjectHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		user := internalctx.GetUser(ctx)
+
+		var projectReq struct {
+			Name           string    `json:"name"`
+			OrganizationID uuid.UUID `json:"organizationId"`
+		}
+
+		if err := json.NewDecoder(r.Body).Decode(&projectReq); err != nil {
+			Handle4XXError(w, http.StatusBadRequest)
+			return
+		}
+
+		if userInOrg, err := db.IsUserPartOfOrg(ctx, user.ID, projectReq.OrganizationID); err != nil {
+			HandleInternalServerError(w, r, err, "check user org error")
+			return
+		} else if !userInOrg {
+			Handle4XXError(w, http.StatusBadRequest)
+			return
+		}
+
+		if project, err := db.CreateProject(ctx, projectReq.OrganizationID, user.ID, projectReq.Name); err != nil {
+			HandleInternalServerError(w, r, err, "create project error")
+		} else {
+			RespondJSON(w, project)
+		}
 	}
 }
 
@@ -80,5 +118,42 @@ func getProjectIDAndCheckAccess(w http.ResponseWriter, r *http.Request) uuid.UUI
 		return uuid.Nil
 	} else {
 		return projectID
+	}
+}
+
+func getAnalytics(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	projectID := getProjectIDAndCheckAccess(w, r)
+	if projectID == uuid.Nil {
+		return
+	}
+
+	// Parse startedAt query parameter
+	var startAt *time.Time
+	if startAtStr := r.URL.Query().Get("startedAt"); startAtStr != "" {
+		if startAtInt, err := strconv.ParseInt(startAtStr, 10, 64); err != nil {
+			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid startedAt timestamp")
+			return
+		} else {
+			t := time.Unix(startAtInt, 0)
+			startAt = &t
+		}
+	}
+
+	// Parse buildNumber query parameter
+	var buildNumber *int
+	if buildNumberStr := r.URL.Query().Get("buildNumber"); buildNumberStr != "" {
+		if bn, err := strconv.Atoi(buildNumberStr); err != nil {
+			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid buildNumber")
+			return
+		} else {
+			buildNumber = &bn
+		}
+	}
+
+	if analyticsData, err := analytics.GetProjectAnalytics(ctx, projectID, startAt, buildNumber); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get analytics for project")
+	} else {
+		RespondJSON(w, analyticsData)
 	}
 }

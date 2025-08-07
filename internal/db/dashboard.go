@@ -16,7 +16,8 @@ func GetProjectSummaries(ctx context.Context, orgID uuid.UUID) ([]types.ProjectS
       (`+organizationOutputExpr+`),
       CASE
         WHEN dr.id IS NOT NULL
-          THEN (`+deploymentRevisionOutExpr+`) -- TODO build number
+          THEN (`+deploymentRevisionWithoutBuildNrOutExpr+`,
+			(SELECT COUNT(DISTINCT dr2.id) FROM DeploymentRevision dr2 WHERE dr2.project_id = p.id))
       END,
       CASE
         WHEN dre.id IS NOT NULL
@@ -44,7 +45,7 @@ func GetRecentDeploymentRevisionSummaries(ctx context.Context, orgID uuid.UUID) 
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
     SELECT
-      `+deploymentRevisionOutExpr+`, -- TODO build number
+      `+deploymentRevisionWithoutBuildNrOutExpr+`, row_number() OVER (PARTITION BY dr.project_id ORDER BY dr.created_at),
       ( `+projectOutExpr+`),
       (`+userOutExpr+`),
       CASE
@@ -70,7 +71,7 @@ func GetRecentDeploymentRevisionSummaries(ctx context.Context, orgID uuid.UUID) 
 	}
 }
 
-func GetUsage(ctx context.Context, orgID uuid.UUID) (types.Usage, error) {
+func GetUsage(ctx context.Context, orgID uuid.UUID) (types.OrganizationDashboardUsage, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
 		SELECT
@@ -82,11 +83,11 @@ func GetUsage(ctx context.Context, orgID uuid.UUID) (types.Usage, error) {
 		WHERE p.organization_id = @id
 	`, pgx.NamedArgs{"id": orgID})
 	if err != nil {
-		return types.Usage{}, err
+		return types.OrganizationDashboardUsage{}, err
 	}
-	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[types.Usage])
+	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToStructByName[types.OrganizationDashboardUsage])
 	if err != nil {
-		return types.Usage{}, err
+		return types.OrganizationDashboardUsage{}, err
 	} else {
 		return result, nil
 	}

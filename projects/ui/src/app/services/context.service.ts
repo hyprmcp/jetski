@@ -1,16 +1,22 @@
-import { inject, Injectable, Signal } from '@angular/core';
+import { computed, inject, Injectable, Signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { combineLatestWith, filter, map } from 'rxjs';
-import { getProjects, Project } from '../../api/project';
-import { getOrganizations, Organization } from '../../api/organization';
+import { Project } from '../../api/project';
+import { Organization } from '../../api/organization';
+import { getContext } from '../../api/context';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ContextService {
-  readonly projects = getProjects();
-  readonly organizations = getOrganizations();
+  readonly context = getContext();
+  readonly projects = computed(
+    () => (this.context.value()?.projects as Project[]) ?? [],
+  );
+  readonly organizations = computed(
+    () => (this.context.value()?.organizations as Organization[]) ?? [],
+  );
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
@@ -19,7 +25,7 @@ export class ContextService {
     this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
       map(() => this.getFirstPathParam(this.route, 'organizationName')),
-      combineLatestWith(toObservable(this.organizations.value)),
+      combineLatestWith(toObservable(this.organizations)),
       map(([organizationName, orgs]) =>
         orgs?.find((org: Organization) => org.name === organizationName),
       ),
@@ -32,7 +38,7 @@ export class ContextService {
       map(() => this.getFirstPathParam(this.route, 'projectName')),
       combineLatestWith(
         toObservable(this.selectedOrg),
-        toObservable(this.projects.value),
+        toObservable(this.projects),
       ),
       map(([projectName, org, projects]) =>
         projects?.find(

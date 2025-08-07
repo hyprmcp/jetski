@@ -129,10 +129,12 @@ When using ng-icons in components, follow this pattern:
 
 ### Code Formatting
 
-**Always run `npm run format` after making changes to ensure code follows the prettier configuration.**
+**Always run `npm run format` after making changes to TypeScript code to ensure code follows the prettier configuration.**
+**Always run `mise run lint` after making changes to Go code to ensure it passes all linting checks.**
 
-- `npm run format` - Format all files with prettier and fix linting issues
-- `npm run lint` - Check formatting and linting without making changes
+- `npm run format` - Format all files with prettier and fix linting issues for frontend
+- `npm run lint` - Check formatting and linting without making changes for frontend
+- `mise run lint` - Run Go linting with golangci-lint to check backend code quality
 - Prettier is configured with Angular HTML parser for proper template formatting
 
 ### Package Manager
@@ -142,3 +144,39 @@ This project uses **pnpm** as the package manager. Make sure to use pnpm for ins
 - `pnpm install` - Install dependencies
 - `pnpm add <package>` - Add a new dependency
 - `pnpm add -D <package>` - Add a dev dependency
+
+## Authentication System (Dex)
+
+### Dex Architecture
+
+This application uses **Dex** as a federated OpenID Connect provider that serves as an authentication proxy. Dex handles user authentication and provides OAuth2/OIDC tokens to the main Angular application.
+
+### Dex UI Customization
+
+Dex UI can be customized through Go templates and Tailwind CSS:
+
+- **Templates Location**: `dex/web/templates/` - Contains Go HTML templates for authentication pages
+  - `login.html` - Login page template
+  - `password.html` - Password input template
+  - `error.html` - Error page template
+  - `header.html` - Common header template
+  - `footer.html` - Common footer template
+  - Additional templates: `approval.html`, `device.html`, `device_success.html`, `oob.html`
+
+- **Static Assets**: `dex/web/static/` - Contains CSS, images, and compiled assets
+  - `static/dist/` - Compiled Tailwind CSS output
+  - `static/img/` - Provider icons (GitHub, Google, Microsoft, etc.)
+  - `static/main.css` - Base CSS styles
+
+### Dex Development Commands
+
+- `pnpm run dex:build` - Build Tailwind CSS for Dex templates (outputs to `./dex/web/static/dist/tailwind.css`)
+
+### Styling Dex Templates
+
+Since Tailwind CSS is already configured, you can use Tailwind utility classes directly in the Dex Go templates to maintain design consistency with the main Angular application. The Dex authentication pages should follow the same design system principles as the main UI.
+
+**Key Integration Points:**
+1. Use the same Tailwind configuration for consistent theming
+2. Maintain light/dark mode compatibility
+3. Follow the minimal, clean aesthetic established in the main application

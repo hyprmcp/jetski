@@ -55,9 +55,9 @@ export class UsageCardComponent {
 
   readonly metrics = computed(() => {
     const projects =
-      this.contextService.projects
-        .value()
-        ?.filter((p) => p.organizationId === this.organization()?.id) ?? [];
+      this.contextService
+        .projects()
+        .filter((p) => p.organizationId === this.organization()?.id) ?? [];
     return [
       {
         label: 'Projects',
@@ -85,7 +85,7 @@ export class UsageCardComponent {
     const formattedCount =
       count > 1000 ? (count / 1000).toFixed(1) + 'K' : count;
     return {
-      label: 'Requests',
+      label: 'Tool Calls',
       value: `${usage.hasValue() ? formattedCount : 'n.a.'} / 1M`,
       color: 'bg-yellow-400',
     };
