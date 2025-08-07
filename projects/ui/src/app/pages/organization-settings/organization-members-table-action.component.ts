@@ -19,7 +19,6 @@ import { HlmDialogImports } from '../../../../libs/ui/ui-dialog-helm/src';
     BrnDialogContentDirective,
     HlmDialogImports,
     BrnDialogImports,
-    HlmDialogImports,
   ],
   providers: [provideIcons({ lucideEllipsis, lucideEye })],
   template: `
