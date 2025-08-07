@@ -133,7 +133,6 @@ jobs:
         with:
           images: |
             ghcr.io/jetski-sh/jetski
-            registry.distr.sh/jetski-sh/jetski
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}
