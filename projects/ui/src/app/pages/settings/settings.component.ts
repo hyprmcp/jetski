@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
@@ -10,7 +10,7 @@ import {
 } from '@ng-icons/lucide';
 import { HlmCheckboxComponent } from '@spartan-ng/helm/checkbox';
 import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
-import { HttpClient, httpResource } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ContextService } from '../../services/context.service';
 import { toast } from 'ngx-sonner';
@@ -94,10 +94,11 @@ import { ProjectSummary } from '../../../api/dashboard';
 
                 <!-- Actions -->
                 <div
-                  class="flex items-center justify-between pt-4 border-t border-border"
+                  class="flex items-center justify-end pt-4 border-t border-border"
                 >
-                  <button hlmBtn variant="outline">Cancel</button>
-                  <button hlmBtn type="submit">Save Changes</button>
+                  <button hlmBtn type="submit" [disabled]="loading()">
+                    Save Changes
+                  </button>
                 </div>
               </div>
             </form>
@@ -107,15 +108,43 @@ import { ProjectSummary } from '../../../api/dashboard';
     </div>
   `,
 })
-export class SettingsComponent {
+export class SettingsComponent implements OnInit {
   private contextService = inject(ContextService);
   protected form = new FormGroup({
     authenticated: new FormControl<boolean>(false),
     proxyUrl: new FormControl<string>(''),
   });
   private http = inject(HttpClient);
+  loading = signal(false);
+
+  ngOnInit(): void {
+    const projectId = this.contextService.selectedProject()?.id;
+    if (!projectId) return;
+    this.loading.set(true);
+    this.form.disable();
+    this.http.get<ProjectSummary>(`/api/v1/projects/${projectId}`).subscribe({
+      next: (summary) => {
+        const rev = summary.latestDeploymentRevision;
+        if (rev) {
+          this.form.patchValue({
+            authenticated: rev.authenticated ?? false,
+            proxyUrl: rev.proxyUrl ?? '',
+          });
+        }
+        this.loading.set(false);
+        this.form.enable();
+      },
+      error: () => {
+        this.loading.set(false);
+        this.form.enable();
+        toast.error('An error occurred while loading project settings');
+      },
+    });
+  }
 
   protected onSubmit() {
+    this.loading.set(true);
+    this.form.disable();
     this.http
       .put(
         `/api/v1/projects/${this.contextService.selectedProject()!.id}/settings`,
@@ -127,10 +156,15 @@ export class SettingsComponent {
       )
       .subscribe({
         next: () => {
+          this.loading.set(false);
+          this.form.enable();
+          toast.success('settings saved successfully');
           // TODO
         },
-        error: (err) => {
-          // TODO
+        error: () => {
+          this.loading.set(false);
+          this.form.enable();
+          toast.error('An error occurred while saving settings');
         },
       });
   }

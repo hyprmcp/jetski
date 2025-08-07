@@ -29,7 +29,7 @@ func GetProjectSummary(ctx context.Context, projectID uuid.UUID) (*types.Project
 	if err != nil {
 		return nil, err
 	}
-	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByName[types.ProjectSummary])
+	result, err := pgx.CollectExactlyOneRow(rows, pgx.RowToAddrOfStructByPos[types.ProjectSummary])
 	if err != nil {
 		return nil, err
 	} else {
