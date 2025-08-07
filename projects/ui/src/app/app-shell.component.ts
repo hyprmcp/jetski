@@ -1,8 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { HeaderComponent } from './components/header/header.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { RouterOutlet } from '@angular/router';
 import { HlmToasterImports } from '../../libs/ui/ui-sonner-helm/src';
+import { ThemeService } from './services/theme.service';
 
 @Component({
   selector: 'app-shell',
@@ -17,10 +18,12 @@ import { HlmToasterImports } from '../../libs/ui/ui-sonner-helm/src';
       <app-header></app-header>
       <app-navigation></app-navigation>
       <main class="pt-32 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <hlm-toaster richColors></hlm-toaster>
         <router-outlet />
+        <hlm-toaster [theme]="themeService.theme()"></hlm-toaster>
       </main>
     </div>
   `,
 })
-export class AppShellComponent {}
+export class AppShellComponent {
+  public themeService = inject(ThemeService);
+}

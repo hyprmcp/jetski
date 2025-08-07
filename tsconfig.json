@@ -11,12 +11,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve",
-    "paths": {
-      "@spartan-ng/helm/sonner": [
-        "./projects/ui/libs/ui/ui-sonner-helm/src/index.ts"
-      ]
-    }
+    "module": "preserve"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,
