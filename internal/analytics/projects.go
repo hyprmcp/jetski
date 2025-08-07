@@ -3,6 +3,7 @@ package analytics
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
@@ -176,10 +177,8 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 		}
 	}
 
-	// Convert to slices and sort by performance
-	topPerforming := make([]types.PerformingTool, 0)
-	needingAttention := make([]types.PerformingTool, 0)
-
+	// Convert to slice for sorting
+	allTools := make([]types.PerformingTool, 0, len(toolStats))
 	for toolName, stats := range toolStats {
 		successRate := 0.0
 		if stats.calls > 0 {
@@ -193,16 +192,46 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 
 		tool := types.PerformingTool{
 			Name:        toolName,
-			Calls:       stats.calls,
+			Calls:       stats.successfulCalls, // Use successful calls for sorting
 			SuccessRate: successRate,
 			AvgLatency:  avgLatency,
 		}
 
-		if successRate >= 95 && avgLatency <= 500 {
-			topPerforming = append(topPerforming, tool)
-		} else if successRate < 90 || avgLatency > 1000 {
-			needingAttention = append(needingAttention, tool)
+		allTools = append(allTools, tool)
+	}
+
+	// Sort by successful calls (descending) and then by avg latency (ascending)
+	sort.Slice(allTools, func(i, j int) bool {
+		if allTools[i].Calls != allTools[j].Calls {
+			return allTools[i].Calls > allTools[j].Calls
 		}
+		return allTools[i].AvgLatency < allTools[j].AvgLatency
+	})
+
+	// Restore original calls count after sorting
+	for i := range allTools {
+		toolName := allTools[i].Name
+		allTools[i].Calls = toolStats[toolName].calls
+	}
+
+	topPerforming := make([]types.PerformingTool, 0)
+	needingAttention := make([]types.PerformingTool, 0)
+
+	totalTools := len(allTools)
+	if totalTools < 50 {
+		// If less than 50 tools, split in half
+		midPoint := totalTools / 2
+		topPerforming = allTools[:midPoint]
+		needingAttention = allTools[midPoint:]
+	} else {
+		// Take top 25 and bottom 25
+		topPerforming = allTools[:25]
+		needingAttention = allTools[totalTools-25:]
+	}
+
+	// Reverse the needingAttention array so worst performing appear first
+	for i, j := 0, len(needingAttention)-1; i < j; i, j = i+1, j-1 {
+		needingAttention[i], needingAttention[j] = needingAttention[j], needingAttention[i]
 	}
 
 	return types.ToolsPerformance{
