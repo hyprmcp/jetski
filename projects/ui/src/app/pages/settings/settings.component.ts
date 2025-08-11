@@ -1,6 +1,6 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideBell,
@@ -8,13 +8,13 @@ import {
   lucideShield,
   lucideUser,
 } from '@ng-icons/lucide';
+import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { HlmCheckboxComponent } from '@spartan-ng/helm/checkbox';
-import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
-import { HttpClient } from '@angular/common/http';
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { ContextService } from '../../services/context.service';
 import { toast } from 'ngx-sonner';
+import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
 import { ProjectSummary } from '../../../api/dashboard';
+import { ProjectService } from '../../../api/project';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-settings',
@@ -67,7 +67,7 @@ import { ProjectSummary } from '../../../api/dashboard';
                   />
                   <div class="grid gap-2">
                     <label hlmLabel for="authentication"
-                      >Enforce User authentication</label
+                      >Require user authentication</label
                     >
                     <p class="text-muted-foreground text-sm">
                       Users must authenticate via OAuth2 to access the MCP
@@ -109,63 +109,71 @@ import { ProjectSummary } from '../../../api/dashboard';
   `,
 })
 export class SettingsComponent implements OnInit {
-  private contextService = inject(ContextService);
-  protected form = new FormGroup({
-    authenticated: new FormControl<boolean>(false),
-    proxyUrl: new FormControl<string>(''),
-  });
-  private http = inject(HttpClient);
-  loading = signal(false);
+  private readonly contextService = inject(ContextService);
+  private readonly projectService = inject(ProjectService);
+  private readonly fb = inject(FormBuilder);
 
-  ngOnInit(): void {
+  protected readonly loading = signal(false);
+  protected readonly form = this.fb.nonNullable.group({
+    authenticated: this.fb.nonNullable.control(false),
+    proxyUrl: this.fb.nonNullable.control(''),
+  });
+
+  public ngOnInit(): void {
     const projectId = this.contextService.selectedProject()?.id;
-    if (!projectId) return;
-    this.loading.set(true);
-    this.form.disable();
-    this.http.get<ProjectSummary>(`/api/v1/projects/${projectId}`).subscribe({
-      next: (summary) => {
-        const rev = summary.latestDeploymentRevision;
-        if (rev) {
-          this.form.patchValue({
-            authenticated: rev.authenticated ?? false,
-            proxyUrl: rev.proxyUrl ?? '',
-          });
-        }
-        this.loading.set(false);
-        this.form.enable();
-      },
-      error: () => {
-        this.loading.set(false);
-        this.form.enable();
-        toast.error('An error occurred while loading project settings');
-      },
-    });
+    if (projectId) {
+      this.loading.set(true);
+      this.form.disable();
+
+      this.projectService.getProjectSummary(projectId).subscribe({
+        next: (summary) => {
+          this.updateFormValues(summary);
+          this.loading.set(false);
+          this.form.enable();
+        },
+        error: () => {
+          this.loading.set(false);
+          this.form.enable();
+          toast.error('An error occurred while loading project settings');
+        },
+      });
+    }
   }
 
-  protected onSubmit() {
+  protected onSubmit(): void {
     this.loading.set(true);
     this.form.disable();
-    this.http
-      .put(
-        `/api/v1/projects/${this.contextService.selectedProject()!.id}/settings`,
-        {
-          proxyUrl: this.form.value.proxyUrl,
-          authenticated: this.form.value.authenticated,
-        },
-        { responseType: 'text' },
-      )
-      .subscribe({
-        next: () => {
+
+    const projectId = this.contextService.selectedProject()?.id;
+    if (projectId) {
+      const request = {
+        proxyUrl: this.form.value.proxyUrl,
+        authenticated: this.form.value.authenticated ?? true,
+      }
+      this.projectService.putProjectSettings(projectId, request).subscribe({
+        next: summary => {
+          this.updateFormValues(summary);
           this.loading.set(false);
           this.form.enable();
           toast.success('settings saved successfully');
-          // TODO
         },
         error: () => {
           this.loading.set(false);
           this.form.enable();
           toast.error('An error occurred while saving settings');
         },
+      })
+    }
+  }
+
+  private updateFormValues(summary: ProjectSummary): void {
+    const rev = summary.latestDeploymentRevision;
+
+    if (rev) {
+      this.form.patchValue({
+        authenticated: rev.authenticated ?? false,
+        proxyUrl: rev.proxyUrl ?? '',
       });
+    }
   }
 }
