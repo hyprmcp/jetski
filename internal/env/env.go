@@ -1,13 +1,11 @@
 package env
 
 import (
-	"fmt"
-	"github.com/jetski-sh/jetski/internal/envparse"
-	"github.com/jetski-sh/jetski/internal/envutil"
-	"github.com/joho/godotenv"
-	"os"
 	"strconv"
 	"time"
+
+	"github.com/jetski-sh/jetski/internal/envparse"
+	"github.com/jetski-sh/jetski/internal/envutil"
 )
 
 var (
@@ -31,13 +29,6 @@ var (
 )
 
 func Initialize() {
-	if currentEnv, ok := os.LookupEnv("JETSKI_ENV"); ok {
-		fmt.Fprintf(os.Stderr, "environment=%v\n", currentEnv)
-		if err := godotenv.Load(currentEnv); err != nil {
-			fmt.Fprintf(os.Stderr, "environment %v not loaded: %v\n", currentEnv, err)
-		}
-	}
-
 	databaseUrl = envutil.RequireEnv("DATABASE_URL")
 	oidcUrl = envutil.RequireEnv("OIDC_URL")
 	oidcClientID = envutil.RequireEnv("OIDC_CLIENT_ID")
