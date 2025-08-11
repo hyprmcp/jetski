@@ -149,9 +149,9 @@ export class SettingsComponent implements OnInit {
       const request = {
         proxyUrl: this.form.value.proxyUrl,
         authenticated: this.form.value.authenticated ?? true,
-      }
+      };
       this.projectService.putProjectSettings(projectId, request).subscribe({
-        next: summary => {
+        next: (summary) => {
           this.updateFormValues(summary);
           this.loading.set(false);
           this.form.enable();
@@ -162,7 +162,7 @@ export class SettingsComponent implements OnInit {
           this.form.enable();
           toast.error('An error occurred while saving settings');
         },
-      })
+      });
     }
   }
 

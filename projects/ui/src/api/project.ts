@@ -26,8 +26,14 @@ export class ProjectService {
     return this.httpClient.get<ProjectSummary>(`/api/v1/projects/${projectId}`);
   }
 
-  public putProjectSettings(projectId: string, request: ProjectSettingsRequest): Observable<ProjectSummary> {
-    return this.httpClient.put<ProjectSummary>(`/api/v1/projects/${projectId}/settings`, request);
+  public putProjectSettings(
+    projectId: string,
+    request: ProjectSettingsRequest,
+  ): Observable<ProjectSummary> {
+    return this.httpClient.put<ProjectSummary>(
+      `/api/v1/projects/${projectId}/settings`,
+      request,
+    );
   }
 }
 
