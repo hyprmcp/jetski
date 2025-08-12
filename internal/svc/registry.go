@@ -4,18 +4,22 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/jetski-sh/jetski/internal/mail"
-	"github.com/lestrrat-go/jwx/v3/jwk"
 	"net/http"
 	"syscall"
 
+	"github.com/go-logr/zapr"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/jetski-sh/jetski/internal/buildconfig"
+	"github.com/jetski-sh/jetski/internal/kubernetes/webhook"
+	"github.com/jetski-sh/jetski/internal/mail"
 	"github.com/jetski-sh/jetski/internal/migrations"
 	"github.com/jetski-sh/jetski/internal/routing"
 	"github.com/jetski-sh/jetski/internal/server"
 	"github.com/jetski-sh/jetski/internal/tracers"
+	"github.com/lestrrat-go/jwx/v3/jwk"
 	"go.uber.org/zap"
+	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"
+	ctrllog "sigs.k8s.io/controller-runtime/pkg/log"
 )
 
 type Registry struct {
@@ -25,6 +29,7 @@ type Registry struct {
 	tracers          *tracers.Tracers
 	jwkSet           jwk.Set
 	mailer           mail.Mailer
+	k8sClient        ctrlclient.Client
 }
 
 func NewDefault(ctx context.Context) (*Registry, error) {
@@ -78,6 +83,13 @@ func newRegistry(ctx context.Context, reg *Registry) (*Registry, error) {
 		reg.mailer = mailer
 	}
 
+	if client, err := createK8SClient(); err != nil {
+		return nil, err
+	} else {
+		ctrllog.SetLogger(zapr.NewLogger(reg.logger.With(zap.String("component", "controller-runtime"))))
+		reg.k8sClient = client
+	}
+
 	return reg, nil
 }
 
@@ -104,9 +116,14 @@ func (r *Registry) GetRouter() http.Handler {
 		r.GetTracers(),
 		r.GetJwkSet(),
 		r.GetMailer(),
+		r.GetK8SClient(),
 	)
 }
 
 func (r *Registry) GetServer() server.Server {
 	return server.NewServer(r.GetRouter(), r.logger.With(zap.String("server", "main")))
+}
+
+func (r *Registry) GetWebhookServer() server.Server {
+	return server.NewServer(webhook.NewHandler(), r.logger.With(zap.String("server", "webhook")))
 }

@@ -1,8 +1,9 @@
 package main
 
 import (
-	"github.com/jetski-sh/jetski/internal/cmd"
 	"os"
+
+	"github.com/jetski-sh/jetski/internal/cmd"
 )
 
 func main() {

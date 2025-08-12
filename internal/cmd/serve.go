@@ -9,12 +9,16 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/jetski-sh/jetski/internal/buildconfig"
 	"github.com/jetski-sh/jetski/internal/env"
+	"github.com/jetski-sh/jetski/internal/kubernetes/controller"
 	"github.com/jetski-sh/jetski/internal/svc"
 	"github.com/jetski-sh/jetski/internal/util"
 	"github.com/spf13/cobra"
 )
 
-type serveOptions struct{ Migrate bool }
+type serveOptions struct {
+	Migrate           bool
+	InstallController bool
+}
 
 func NewServeCommand() *cobra.Command {
 	opts := serveOptions{
@@ -31,7 +35,10 @@ func NewServeCommand() *cobra.Command {
 		},
 	}
 
-	cmd.Flags().BoolVar(&opts.Migrate, "migrate", opts.Migrate, "run database migrations before starting the server")
+	cmd.Flags().BoolVar(&opts.Migrate, "migrate", opts.Migrate,
+		"run database migrations before starting the server")
+	cmd.Flags().BoolVar(&opts.InstallController, "install-controller", opts.InstallController,
+		"install the MCPGateway CRD and metacontroller configuration in the current Kubernetes cluster")
 
 	return cmd
 }
@@ -56,15 +63,23 @@ func runServe(ctx context.Context, opts serveOptions) {
 	registry := util.Require(svc.New(ctx, svc.ExecDbMigration(opts.Migrate)))
 	defer func() { util.Must(registry.Shutdown(ctx)) }()
 
+	if opts.InstallController {
+		util.Must(controller.Install(ctx, registry.GetLogger(), registry.GetK8SClient()))
+	}
+
 	server := registry.GetServer()
+	webhookServer := registry.GetWebhookServer()
 
 	sigCtx, _ := signal.NotifyContext(ctx, syscall.SIGTERM, syscall.SIGINT)
 	context.AfterFunc(sigCtx, func() {
 		ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 		server.Shutdown(ctx)
+		webhookServer.Shutdown(ctx)
 		cancel()
 	})
 
 	go func() { util.Must(server.Start(":8080")) }()
+	go func() { util.Must(webhookServer.Start(":8085")) }()
 	server.WaitForShutdown()
+	webhookServer.WaitForShutdown()
 }
