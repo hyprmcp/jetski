@@ -64,8 +64,8 @@ github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/getsentry/sentry-go v0.35.1 h1:iopow6UVLE2aXu46xKVIs8Z9D/YZkJrHkgozrxa+tOQ=
 github.com/getsentry/sentry-go v0.35.1/go.mod h1:C55omcY9ChRQIUcVcGcs+Zdy4ZpQGvNJ7JYHIoSWOtE=
-github.com/getsentry/sentry-go/otel v0.35.0 h1:wotfrYR27zTviSnn164pTRBbupjyqsJ0F9rNmzTMmDc=
-github.com/getsentry/sentry-go/otel v0.35.0/go.mod h1:fTznqWrS6QkAgUwPRMvCC+dodTT5ishD9yBTIAWo4UY=
+github.com/getsentry/sentry-go/otel v0.35.1 h1:vw9mMaEUnbJ053o7PawTAzTFISsShfIi9A1shpTfFt8=
+github.com/getsentry/sentry-go/otel v0.35.1/go.mod h1:c/tH1DVjCl6XyhicQBpUcMCuBN+1h+Fwf6vvqNQ7aF8=
 github.com/go-chi/chi/v5 v5.2.2 h1:CMwsvRVTbXVytCk1Wd72Zy1LAsAh9GxMmSNWLHCG618=
 github.com/go-chi/chi/v5 v5.2.2/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
 github.com/go-chi/httprate v0.15.0 h1:j54xcWV9KGmPf/X4H32/aTH+wBlrvxL7P+SdnRqxh5g=
