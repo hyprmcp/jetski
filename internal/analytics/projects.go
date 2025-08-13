@@ -346,21 +346,21 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 	for _, log := range logs {
 		sessionID := getSessionID(log)
 
-		if _, exists := sessionData[sessionID]; !exists {
-			sessionData[sessionID] = &sessionInfo{
-				sessionID:     sessionID,
-				startedAt:     log.StartedAt,
-				totalDuration: 0,
-				calls:         0,
-				errors:        0,
-				userAgent:     "",
-				lastToolCall:  "",
+		session, exists := sessionData[sessionID]
+		if !exists {
+			session = &sessionInfo{
+				sessionID:      sessionID,
+				firstStartedAt: log.StartedAt,
+				lastStartedAt:  log.StartedAt,
+				lastDuration:   log.Duration,
 			}
+			sessionData[sessionID] = session
+		} else if session.lastStartedAt.Add(session.lastDuration).Before(log.StartedAt.Add(log.Duration)) {
+			session.lastStartedAt = log.StartedAt
+			session.lastDuration = log.Duration
 		}
 
-		session := sessionData[sessionID]
 		session.calls++
-		session.totalDuration += log.Duration
 
 		if log.HttpStatusCode != nil && *log.HttpStatusCode >= 400 {
 			session.errors++
@@ -379,20 +379,14 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 	// Convert to required format and get recent sessions
 	sessions := make([]types.RecentSession, 0)
 	for _, session := range sessionData {
-		// Format duration as "2m 30s"
-		duration := formatDuration(session.totalDuration)
-
-		// Calculate time ago as "2h ago"
-		ago := formatTimeAgo(session.startedAt)
-
 		sessions = append(sessions, types.RecentSession{
 			SessionID:    session.sessionID,
 			User:         normalizeUserAgent(session.userAgent),
-			Duration:     duration,
 			Calls:        session.calls,
 			Errors:       session.errors,
 			LastToolCall: session.lastToolCall,
-			StartedAgo:   ago,
+			StartedAt:    session.firstStartedAt,
+			EndedAt:      session.lastStartedAt.Add(session.lastDuration),
 		})
 	}
 
@@ -415,13 +409,14 @@ type toolAnalyticsData struct {
 }
 
 type sessionInfo struct {
-	sessionID     string
-	startedAt     time.Time
-	totalDuration time.Duration
-	calls         int
-	errors        int
-	userAgent     string
-	lastToolCall  string
+	sessionID      string
+	firstStartedAt time.Time
+	lastStartedAt  time.Time
+	lastDuration   time.Duration
+	calls          int
+	errors         int
+	userAgent      string
+	lastToolCall   string
 }
 
 // extractToolName extracts the tool name from an MCP request
@@ -431,7 +426,7 @@ func extractToolName(mcpRequest any) string {
 	}
 
 	// Try to parse as JSON and extract method or tool name
-	requestMap, ok := mcpRequest.(map[string]interface{})
+	requestMap, ok := mcpRequest.(map[string]any)
 	if !ok {
 		return ""
 	}
@@ -466,16 +461,16 @@ func extractArguments(mcpRequest any) map[string]string {
 		return args
 	}
 
-	requestMap, ok := mcpRequest.(map[string]interface{})
+	requestMap, ok := mcpRequest.(map[string]any)
 	if !ok {
 		return args
 	}
 
 	// Extract arguments from tools/call request
 	if paramsField, exists := requestMap["params"]; exists {
-		if paramsMap, ok := paramsField.(map[string]interface{}); ok {
+		if paramsMap, ok := paramsField.(map[string]any); ok {
 			if arguments, exists := paramsMap["arguments"]; exists {
-				if argsMap, ok := arguments.(map[string]interface{}); ok {
+				if argsMap, ok := arguments.(map[string]any); ok {
 					for key, value := range argsMap {
 						args[key] = fmt.Sprintf("%v", value)
 					}
@@ -540,38 +535,4 @@ func countUniqueUsers(logs []types.MCPServerLog) int {
 		}
 	}
 	return len(users)
-}
-
-// formatDuration formats a duration as "2m 30s"
-func formatDuration(d time.Duration) string {
-	if d < time.Minute {
-		return fmt.Sprintf("%ds", int(d.Seconds()))
-	}
-
-	minutes := int(d.Minutes())
-	seconds := int(d.Seconds()) % 60
-
-	if seconds == 0 {
-		return fmt.Sprintf("%dm", minutes)
-	}
-
-	return fmt.Sprintf("%dm %ds", minutes, seconds)
-}
-
-// formatTimeAgo formats time difference as "2h ago"
-func formatTimeAgo(t time.Time) string {
-	now := time.Now()
-	diff := now.Sub(t)
-
-	if diff < time.Minute {
-		return "just now"
-	}
-	if diff < time.Hour {
-		return fmt.Sprintf("%dm ago", int(diff.Minutes()))
-	}
-	if diff < 24*time.Hour {
-		return fmt.Sprintf("%dh ago", int(diff.Hours()))
-	}
-
-	return fmt.Sprintf("%dd ago", int(diff.Hours()/24))
 }

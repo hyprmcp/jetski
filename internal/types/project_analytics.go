@@ -1,5 +1,7 @@
 package types
 
+import "time"
+
 type ProjectAnalytics struct {
 	Overview         Overview         `json:"overview"`
 	ToolsPerformance ToolsPerformance `json:"toolsPerformance"`
@@ -41,8 +43,8 @@ type ToolAnalytics struct {
 }
 
 type McpTool struct {
-	Name       string          `json:"name"`
-	Calls      int             `json:"calls"`
+	Name      string         `json:"name"`
+	Calls     int            `json:"calls"`
 	Arguments []ToolArgument `json:"arguments"`
 }
 
@@ -59,8 +61,8 @@ type ArgumentValue struct {
 
 // ClientUsage represents client usage analytics
 type ClientUsage struct {
-	TotalSessions int                `json:"totalSessions"`
-	Clients       []ClientUsageData  `json:"clients"`
+	TotalSessions int               `json:"totalSessions"`
+	Clients       []ClientUsageData `json:"clients"`
 }
 
 type ClientUsageData struct {
@@ -74,11 +76,11 @@ type RecentSessions struct {
 }
 
 type RecentSession struct {
-	SessionID    string `json:"sessionId"`
-	User         string `json:"user"`
-	Duration     string `json:"duration"`
-	Calls        int    `json:"calls"`
-	Errors       int    `json:"errors"`
-	LastToolCall string `json:"lastToolCall"`
-	StartedAgo   string `json:"startedAgo"`
+	SessionID    string    `json:"sessionId"`
+	User         string    `json:"user"`
+	Calls        int       `json:"calls"`
+	Errors       int       `json:"errors"`
+	LastToolCall string    `json:"lastToolCall"`
+	StartedAt    time.Time `json:"startedAt"`
+	EndedAt      time.Time `json:"endedAt"`
 }
