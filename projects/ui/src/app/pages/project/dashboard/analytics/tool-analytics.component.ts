@@ -84,94 +84,108 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
       </div>
       <div hlmCardContent>
         <div class="space-y-6">
-          <!-- Argument Usage Distribution -->
-          <div class="space-y-6">
-            <!-- Argument Cards -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              @for (
-                argument of visibleArguments;
-                track argument.name;
-                let i = $index
-              ) {
-                <div hlmCard class="p-5">
-                  <div hlmCardHeader class="pb-3">
-                    <div hlmCardTitle class="text-base">
-                      {{ argument.name }}
-                    </div>
-                    <p class="text-sm text-muted-foreground">
-                      Used {{ argument.usageCount }} times ({{
-                        getArgumentUsagePercentage(argument)
-                      }}%)
-                    </p>
-                  </div>
-                  <div hlmCardContent class="space-y-3">
-                    <h5 class="text-sm font-medium text-muted-foreground mb-3">
-                      Most used argument values
-                    </h5>
-                    @for (
-                      value of argument.values;
-                      track value.name;
-                      let i = $index
-                    ) {
-                      <div class="flex items-center justify-between">
-                        <div class="flex items-center space-x-3 min-w-0 flex-1">
-                          <div
-                            class="w-3 h-3 rounded-full flex-shrink-0"
-                            [class]="i | color"
-                          ></div>
-                          <span class="text-sm font-medium truncate">{{
-                            value.name
-                          }}</span>
-                        </div>
-                        <div class="flex items-center space-x-3 flex-shrink-0">
-                          <div class="w-24 bg-gray-200 rounded-full h-2.5">
-                            <div
-                              class="h-2.5 rounded-full "
-                              [class]="i | color"
-                              [style.width]="
-                                getPercentage(value, argument) + '%'
-                              "
-                            ></div>
-                          </div>
-                          <span class="text-sm font-bold w-12 text-right"
-                            >{{ getPercentage(value, argument) }}%</span
-                          >
-                        </div>
+          @if (visibleArguments.length > 0) {
+            <!-- Argument Usage Distribution -->
+            <div class="space-y-6">
+              <!-- Argument Cards -->
+              <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                @for (
+                  argument of visibleArguments;
+                  track argument.name;
+                  let i = $index
+                ) {
+                  <div hlmCard class="p-5">
+                    <div hlmCardHeader class="pb-3">
+                      <div hlmCardTitle class="text-base">
+                        {{ argument.name }}
                       </div>
-                    }
+                      <p class="text-sm text-muted-foreground">
+                        Used {{ argument.usageCount }} times ({{
+                          getArgumentUsagePercentage(argument)
+                        }}%)
+                      </p>
+                    </div>
+                    <div hlmCardContent class="space-y-3">
+                      <h5
+                        class="text-sm font-medium text-muted-foreground mb-3"
+                      >
+                        Most used argument values
+                      </h5>
+                      @for (
+                        value of argument.values;
+                        track value.name;
+                        let i = $index
+                      ) {
+                        <div class="flex items-center justify-between">
+                          <div
+                            class="flex items-center space-x-3 min-w-0 flex-1"
+                          >
+                            <div
+                              class="w-3 h-3 rounded-full flex-shrink-0"
+                              [class]="i | color"
+                            ></div>
+                            <span class="text-sm font-medium truncate">{{
+                              value.name
+                            }}</span>
+                          </div>
+                          <div
+                            class="flex items-center space-x-3 flex-shrink-0"
+                          >
+                            <div class="w-24 bg-gray-200 rounded-full h-2.5">
+                              <div
+                                class="h-2.5 rounded-full "
+                                [class]="i | color"
+                                [style.width]="
+                                  getPercentage(value, argument) + '%'
+                                "
+                              ></div>
+                            </div>
+                            <span class="text-sm font-bold w-12 text-right"
+                              >{{ getPercentage(value, argument) }}%</span
+                            >
+                          </div>
+                        </div>
+                      }
+                    </div>
                   </div>
-                </div>
-              }
-            </div>
+                }
+              </div>
 
-            <!-- Navigation Controls -->
-            <div class="flex items-center justify-center">
-              <div class="flex items-center space-x-3">
-                <button
-                  type="button"
-                  class="courser-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                  [disabled]="currentArgumentIndex === 0"
-                  (click)="previousArgument()"
-                >
-                  <ng-icon hlm name="lucideChevronLeft" size="sm" />
-                </button>
-                <span
-                  class="text-sm text-muted-foreground min-w-[60px] text-center"
-                >
-                  page {{ Math.ceil(currentArgumentIndex / 2) + 1 }} of
-                  {{ Math.ceil(arguments.length / 2) }}
-                </span>
-                <button
-                  type="button"
-                  class="courser-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
-                  [disabled]="currentArgumentIndex + 2 >= arguments.length"
-                  (click)="nextArgument()"
-                >
-                  <ng-icon hlm name="lucideChevronRight" size="sm" />
-                </button>
+              <!-- Navigation Controls -->
+              <div class="flex items-center justify-center">
+                <div class="flex items-center space-x-3">
+                  <button
+                    type="button"
+                    class="courser-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                    [disabled]="currentArgumentIndex === 0"
+                    (click)="previousArgument()"
+                  >
+                    <ng-icon hlm name="lucideChevronLeft" size="sm" />
+                  </button>
+                  <span
+                    class="text-sm text-muted-foreground min-w-[60px] text-center"
+                  >
+                    page {{ Math.ceil(currentArgumentIndex / 2) + 1 }} of
+                    {{ Math.ceil(arguments.length / 2) }}
+                  </span>
+                  <button
+                    type="button"
+                    class="courser-pointer inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 px-3"
+                    [disabled]="currentArgumentIndex + 2 >= arguments.length"
+                    (click)="nextArgument()"
+                  >
+                    <ng-icon hlm name="lucideChevronRight" size="sm" />
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          } @else {
+            <div class="flex flex-col items-center">
+              <p class="text-sm text-muted-foreground">
+                {{ selectedTool.name }} does not seem to have any arguments
+              </p>
+            </div>
+          }
         </div>
       </div>
     </div>
