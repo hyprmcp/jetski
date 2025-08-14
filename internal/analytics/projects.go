@@ -3,6 +3,7 @@ package analytics
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -297,6 +298,8 @@ func calculateToolAnalytics(logs []types.MCPServerLog) types.ToolAnalytics {
 			Arguments: arguments,
 		})
 	}
+
+	slices.SortFunc(tools, func(a, b types.McpTool) int { return strings.Compare(a.Name, b.Name) })
 
 	return types.ToolAnalytics{
 		Tools: tools,
