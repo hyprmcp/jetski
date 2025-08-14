@@ -1,11 +1,11 @@
 export interface RecentSession {
   sessionId: string;
   user: string;
-  duration: string;
   calls: number;
   errors: number;
   lastToolCall: string;
-  startedAgo: string;
+  startedAt: string;
+  endedAt: string;
 }
 
 export interface RecentSessions {
