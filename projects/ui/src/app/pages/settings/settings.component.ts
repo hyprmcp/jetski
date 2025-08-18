@@ -84,12 +84,21 @@ import { ContextService } from '../../services/context.service';
                     If you host the MCP server somewhere other than jetski,
                     enter its URL here.
                   </p>
-                  <input
-                    id="proxy_url"
-                    type="text"
-                    [formControl]="form.controls.proxyUrl"
-                    class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                  />
+                  <div>
+                    <input
+                      id="proxy_url"
+                      type="text"
+                      placeholder="https://your-custom-domain.com/mcp/"
+                      [formControl]="form.controls.proxyUrl"
+                      class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
+                    />
+                    @if (
+                      form.controls.proxyUrl.touched &&
+                      form.controls.proxyUrl.errors
+                    ) {
+                      <div class="text-xs text-red-500">Not a valid URL</div>
+                    }
+                  </div>
                 </div>
 
                 <!-- Actions -->
@@ -116,7 +125,14 @@ export class SettingsComponent implements OnInit {
   protected readonly loading = signal(false);
   protected readonly form = this.fb.nonNullable.group({
     authenticated: this.fb.nonNullable.control(false),
-    proxyUrl: this.fb.nonNullable.control(''),
+    proxyUrl: this.fb.nonNullable.control('', {
+      validators: [
+        (ctrl) =>
+          ctrl.value && URL.parse(ctrl.value) === null
+            ? { url: 'value is not a valid URL' }
+            : null,
+      ],
+    }),
   });
 
   public ngOnInit(): void {
@@ -141,6 +157,10 @@ export class SettingsComponent implements OnInit {
   }
 
   protected onSubmit(): void {
+    if (this.form.invalid) {
+      return;
+    }
+
     this.loading.set(true);
     this.form.disable();
 

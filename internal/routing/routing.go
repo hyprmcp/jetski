@@ -1,10 +1,12 @@
 package routing
 
 import (
-	"github.com/jetski-sh/jetski/internal/mail"
-	"github.com/lestrrat-go/jwx/v3/jwk"
 	"net/http"
 	"time"
+
+	"github.com/jetski-sh/jetski/internal/mail"
+	"github.com/lestrrat-go/jwx/v3/jwk"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
@@ -18,7 +20,12 @@ import (
 )
 
 func NewRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set, mailer mail.Mailer,
+	logger *zap.Logger,
+	db *pgxpool.Pool,
+	tracers *tracers.Tracers,
+	jwkSet jwk.Set,
+	mailer mail.Mailer,
+	k8sClient client.Client,
 ) http.Handler {
 	router := chi.NewRouter()
 	router.Use(
@@ -27,7 +34,7 @@ func NewRouter(
 		// Reject bodies larger than 1MiB
 		chimiddleware.RequestSize(1048576),
 	)
-	router.Mount("/api", ApiRouter(logger, db, tracers, jwkSet, mailer))
+	router.Mount("/api", ApiRouter(logger, db, tracers, jwkSet, mailer, k8sClient))
 	router.Mount("/internal", InternalRouter())
 	router.Mount("/webhook", WebhookRouter(logger, db))
 	router.Mount("/", FrontendRouter())
@@ -35,7 +42,12 @@ func NewRouter(
 }
 
 func ApiRouter(
-	logger *zap.Logger, db *pgxpool.Pool, tracers *tracers.Tracers, jwkSet jwk.Set, mailer mail.Mailer,
+	logger *zap.Logger,
+	db *pgxpool.Pool,
+	tracers *tracers.Tracers,
+	jwkSet jwk.Set,
+	mailer mail.Mailer,
+	k8sClient client.Client,
 ) http.Handler {
 	r := chi.NewRouter()
 	r.Use(
@@ -59,7 +71,7 @@ func ApiRouter(
 
 		r.Route("/context", handlers.ContextRouter)
 		r.Route("/organizations", handlers.OrganizationsRouter)
-		r.Route("/projects", handlers.ProjectsRouter)
+		r.Route("/projects", handlers.ProjectsRouter(k8sClient))
 		r.Route("/dashboard", handlers.DashboardRouter)
 	})
 

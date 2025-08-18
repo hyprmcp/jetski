@@ -33,6 +33,7 @@ async function initializeOAuth() {
     responseType: 'code',
     showDebugInformation: !environment.production,
     clockSkewInSec: 0,
+    requireHttps: false,
   });
   oauthService.setupAutomaticSilentRefresh();
   return await oauthService.loadDiscoveryDocumentAndLogin();

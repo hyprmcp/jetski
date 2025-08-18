@@ -13,20 +13,28 @@ import (
 	"github.com/jetski-sh/jetski/internal/analytics"
 	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"github.com/jetski-sh/jetski/internal/db"
+	"github.com/jetski-sh/jetski/internal/env"
+	"github.com/jetski-sh/jetski/internal/kubernetes/api/v1alpha1"
 	"github.com/jetski-sh/jetski/internal/lists"
 	"github.com/jetski-sh/jetski/internal/types"
+	"github.com/jetski-sh/jetski/internal/util"
+	"go.uber.org/zap"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
-func ProjectsRouter(r chi.Router) {
-	r.Get("/", getProjects)
-	r.Post("/", postProjectHandler())
-	r.Route("/{projectId}", func(r chi.Router) {
-		r.Get("/", getProjectSummary)
-		r.Get("/logs", getLogsForProject)
-		r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
-		r.Get("/analytics", getAnalytics)
-		r.Put("/settings", putProjectSettings)
-	})
+func ProjectsRouter(k8sClient client.Client) func(r chi.Router) {
+	return func(r chi.Router) {
+		r.Get("/", getProjects)
+		r.Post("/", postProjectHandler())
+		r.Route("/{projectId}", func(r chi.Router) {
+			r.Get("/", getProjectSummary)
+			r.Get("/logs", getLogsForProject)
+			r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
+			r.Get("/analytics", getAnalytics)
+			r.Put("/settings", putProjectSettings(k8sClient))
+		})
+	}
 }
 
 func getProjects(w http.ResponseWriter, r *http.Request) {
@@ -120,99 +128,146 @@ func getDeploymentRevisionsForProject(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func putProjectSettings(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	user := internalctx.GetUser(ctx)
-	var req struct {
-		OCIURL        *string `json:"ociUrl,omitempty"`
-		Port          *int    `json:"port,omitempty"`
-		Authenticated bool    `json:"authenticated"`
-		ProxyURL      *string `json:"proxyUrl,omitempty"`
-	}
+func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		log := internalctx.GetLogger(ctx)
+		user := internalctx.GetUser(ctx)
+		var req struct {
+			OCIURL        *string `json:"ociUrl,omitempty"`
+			Port          *int    `json:"port,omitempty"`
+			Authenticated bool    `json:"authenticated"`
+			ProxyURL      *string `json:"proxyUrl,omitempty"`
+		}
 
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		Handle4XXError(w, http.StatusBadRequest)
-		return
-	}
-
-	if req.OCIURL != nil && req.ProxyURL != nil {
-		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Proxy URL not allowed if OCI URL is set")
-		return
-	} else if req.OCIURL != nil {
-		if req.Port == nil {
-			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is required if OCI URL is set")
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			Handle4XXError(w, http.StatusBadRequest)
 			return
 		}
-	} else if req.ProxyURL != nil {
-		if req.Port != nil {
-			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is not allowed if proxy URL is set")
+
+		if req.OCIURL != nil && req.ProxyURL != nil {
+			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Proxy URL not allowed if OCI URL is set")
 			return
-		} else if u, err := url.Parse(*req.ProxyURL); err != nil || u.Scheme == "" || u.Host == "" {
-			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Invalid proxy URL format")
-			return
-		}
-	}
-
-	projectID := getProjectIDIfAllowed(w, r, pathParam)
-	if projectID == uuid.Nil {
-		return
-	}
-
-	err := db.RunTx(ctx, func(ctx context.Context) error {
-		dr := types.DeploymentRevision{
-			ProjectID:     projectID,
-			CreatedBy:     user.ID,
-			Authenticated: req.Authenticated,
-		}
-
-		ps, err := db.GetProjectSummary(ctx, projectID)
-		if err != nil {
-			return err
-		}
-
-		if req.OCIURL != nil {
-			dr.OCIURL = req.OCIURL
-		} else if ps.LatestDeploymentRevision != nil {
-			dr.OCIURL = ps.LatestDeploymentRevision.OCIURL
-		}
-
-		if req.Port != nil {
-			dr.Port = req.Port
-		} else if ps.LatestDeploymentRevision != nil {
-			dr.Port = ps.LatestDeploymentRevision.Port
-		}
-
-		if req.ProxyURL != nil {
-			dr.ProxyURL = req.ProxyURL
-		} else if ps.LatestDeploymentRevision != nil {
-			dr.ProxyURL = ps.LatestDeploymentRevision.ProxyURL
-		}
-
-		if dr.OCIURL == nil && dr.ProxyURL == nil {
-			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "One of Proxy URL and OCI URL is required")
-			return nil
-		}
-
-		if err := db.CreateDeploymentRevision(ctx, &dr); err != nil {
-			return err
-		}
-
-		if dr.OCIURL != nil {
-			if err := db.AddDeploymentRevisionEvent(ctx, dr.ID, types.DeploymentRevisionEventTypeProgressing, nil); err != nil {
-				return err
+		} else if req.OCIURL != nil {
+			if req.Port == nil {
+				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is required if OCI URL is set")
+				return
+			}
+		} else if req.ProxyURL != nil {
+			if req.Port != nil {
+				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Port is not allowed if proxy URL is set")
+				return
+			} else if u, err := url.Parse(*req.ProxyURL); err != nil || u.Scheme == "" || u.Host == "" {
+				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Invalid proxy URL format")
+				return
 			}
 		}
 
-		ps.LatestDeploymentRevisionID = &dr.ID
-		ps.LatestDeploymentRevision = &dr
-		RespondJSON(w, ps)
+		projectID := getProjectIDIfAllowed(w, r, pathParam)
+		if projectID == uuid.Nil {
+			return
+		}
 
-		return nil
-	})
+		err := db.RunTx(ctx, func(ctx context.Context) error {
+			dr := types.DeploymentRevision{
+				ProjectID:     projectID,
+				CreatedBy:     user.ID,
+				Authenticated: req.Authenticated,
+			}
 
-	if err != nil {
-		HandleInternalServerError(w, r, err, "failed to save settings of project")
-		return
+			ps, err := db.GetProjectSummary(ctx, projectID)
+			if err != nil {
+				return err
+			}
+
+			if req.OCIURL != nil {
+				dr.OCIURL = req.OCIURL
+			} else if ps.LatestDeploymentRevision != nil {
+				dr.OCIURL = ps.LatestDeploymentRevision.OCIURL
+			}
+
+			if req.Port != nil {
+				dr.Port = req.Port
+			} else if ps.LatestDeploymentRevision != nil {
+				dr.Port = ps.LatestDeploymentRevision.Port
+			}
+
+			if req.ProxyURL != nil {
+				dr.ProxyURL = req.ProxyURL
+			} else if ps.LatestDeploymentRevision != nil {
+				dr.ProxyURL = ps.LatestDeploymentRevision.ProxyURL
+			}
+
+			if dr.OCIURL == nil && dr.ProxyURL == nil {
+				Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "One of Proxy URL and OCI URL is required")
+				return nil
+			}
+
+			if err := db.CreateDeploymentRevision(ctx, &dr); err != nil {
+				return err
+			}
+
+			if dr.OCIURL != nil {
+				if err := db.AddDeploymentRevisionEvent(ctx, dr.ID, types.DeploymentRevisionEventTypeProgressing, nil); err != nil {
+					return err
+				}
+			}
+
+			ps.LatestDeploymentRevisionID = &dr.ID
+			ps.LatestDeploymentRevision = &dr
+
+			var gatewayProjects []v1alpha1.MCPGatewayProject
+			if pss, err := db.GetProjectSummaries(ctx, ps.OrganizationID); err != nil {
+				HandleInternalServerError(w, r, err, "failed to retrieve project summaries after settings update")
+				return err
+			} else {
+				for _, ps := range pss {
+					if ps.LatestDeploymentRevisionID == nil {
+						continue
+					}
+					gatewayProjects = append(gatewayProjects, v1alpha1.MCPGatewayProject{
+						ProjectID:            ps.ID.String(),
+						ProjectName:          ps.Name,
+						DeploymentRevisionID: ps.LatestDeploymentRevision.ID.String(),
+						Authenticated:        ps.LatestDeploymentRevision.Authenticated,
+						ProxyURL:             ps.LatestDeploymentRevision.ProxyURL,
+					})
+				}
+			}
+
+			err = k8sClient.Patch(
+				r.Context(),
+				&v1alpha1.MCPGateway{
+					TypeMeta: metav1.TypeMeta{
+						APIVersion: v1alpha1.GroupVersion.Identifier(),
+						Kind:       "MCPGateway",
+					},
+					ObjectMeta: metav1.ObjectMeta{
+						Name:      ps.Organization.Name,
+						Namespace: env.GatewayNamespace(),
+					},
+					Spec: v1alpha1.MCPGatewaySpec{
+						OrganizationID:   ps.OrganizationID.String(),
+						OrganizationName: ps.Organization.Name,
+						Projects:         gatewayProjects,
+					},
+				},
+				client.Apply,
+				&client.PatchOptions{Force: util.PtrTo(true), FieldManager: "jetski"},
+			)
+			if err != nil {
+				log.Error("failed to create MCPGateway resource", zap.Error(err))
+			}
+
+			RespondJSON(w, ps)
+
+			return nil
+		})
+
+		if err != nil {
+			HandleInternalServerError(w, r, err, "failed to save settings of project")
+			return
+		}
 	}
 }
 

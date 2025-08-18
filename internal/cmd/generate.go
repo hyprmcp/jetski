@@ -226,7 +226,7 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
 							MCPRequest: jsonrpc2.Request{
-								Method: fmt.Sprintf("method-%v", i),
+								Method: fmt.Sprintf("method-%v", i%5),
 								Params: nil,
 								ID:     jsonrpc2.ID{Num: uint64(i)},
 								Notif:  false,
