@@ -5,6 +5,8 @@ import {
   HlmCardHeaderDirective,
   HlmCardTitleDirective,
 } from '@spartan-ng/helm/card';
+import { formatDistance } from 'date-fns';
+import { RelativeDatePipe } from '../../../../pipes/relative-date-pipe';
 import { RecentSessions } from './recent-sessions';
 
 @Component({
@@ -39,7 +41,9 @@ import { RecentSessions } from './recent-sessions';
                     {{ session.sessionId }}
                   </td>
                   <td class="py-3 px-4">{{ session.user }}</td>
-                  <td class="py-3 px-4">{{ session.duration }}</td>
+                  <td class="py-3 px-4">
+                    {{ formatDateDistance(session.endedAt, session.startedAt) }}
+                  </td>
                   <td class="py-3 px-4">{{ session.calls }}</td>
                   <td class="py-3 px-4">{{ session.errors }}</td>
                   <td class="py-3 px-4">
@@ -47,7 +51,9 @@ import { RecentSessions } from './recent-sessions';
                       session.lastToolCall
                     }}</span>
                   </td>
-                  <td class="py-3 px-4">{{ session.startedAgo }}</td>
+                  <td class="py-3 px-4">
+                    {{ session.startedAt | relativeDate }}
+                  </td>
                 </tr>
               }
             </tbody>
@@ -61,8 +67,13 @@ import { RecentSessions } from './recent-sessions';
     HlmCardContentDirective,
     HlmCardHeaderDirective,
     HlmCardTitleDirective,
+    RelativeDatePipe,
   ],
 })
 export class RecentSessionsComponent {
   @Input() data!: RecentSessions;
+
+  protected formatDateDistance(start: string, end: string): string {
+    return formatDistance(end, start);
+  }
 }
