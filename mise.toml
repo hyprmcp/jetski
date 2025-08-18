@@ -4,8 +4,10 @@ pnpm = "10"
 go = "1.24"
 golangci-lint = "2"
 "ubi:kubernetes-sigs/controller-tools" = { version = "v0.18.0", exe = "controller-gen" }
+helm = "3"
 
 [env]
+_.file = '.env.development.local'
 JETSKI_ENV = '.env.development.local'
 
 [vars]
@@ -42,8 +44,10 @@ run = [
   'minikube start -p {{vars.minikube_profile}}',
   'minikube addons enable ingress -p {{vars.minikube_profile}}',
   'helm upgrade metacontroller oci://ghcr.io/metacontroller/metacontroller-helm --install --version 4.12.5 --namespace metacontroller --create-namespace --kube-context {{vars.minikube_profile}}',
+  'docker pull $GATEWAY_CONTAINER_IMAGE_TAG',
+  'minikube image load $GATEWAY_CONTAINER_IMAGE_TAG -p {{vars.minikube_profile}}'
 ]
-description = "Start a dedicated minikube cluster with metacontroller installed"
+description = "Start a dedicated minikube cluster with metacontroller installed and the jetski gateway loaded"
 
 [tasks.minikube-stop]
 run = 'minikube stop -p {{vars.minikube_profile}}'
