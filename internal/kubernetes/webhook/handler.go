@@ -24,6 +24,7 @@ func NewHandler() http.Handler {
 
 		if desired, err := req.GetDesiredChildren(); err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		} else {
 			resp.Children = desired
 		}
