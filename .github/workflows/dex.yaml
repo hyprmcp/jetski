@@ -26,12 +26,11 @@ jobs:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
-
       - name: Generate SBOM for dex project
         uses: anchore/sbom-action@da167eac915b4e86f08b264dbdbc867b61be6f0c # v0.20.5
         with:
           file: Dockerfile
-          output-file: dex/dist/dex.spdx.json
+          output-file: dex.spdx.json
           format: spdx-json
           upload-release-assets: false
 
