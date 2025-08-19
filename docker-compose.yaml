@@ -1,6 +1,6 @@
 services:
   dex:
-    image: ghcr.io/dexidp/dex:v2.43.1-distroless
+    build: dex
     command: ["dex", "serve", "/config.yaml"]
     ports:
       - 5556:5556
@@ -8,10 +8,6 @@ services:
     configs:
       - source: config.yaml
         target: /config.yaml
-    environment:
-      - DEX_FRONTEND_DIR=/opt/jetski/dex/web
-    volumes:
-      - ./dex/web:/opt/jetski/dex/web:ro
     env_file:
       - .dex.secret.env
 
