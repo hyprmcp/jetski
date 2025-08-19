@@ -31,6 +31,7 @@ var (
 	serverShutdownDelayDuration   *time.Duration
 	gatewayContainerImageTag      string
 	gatewayNamespace              string
+	gatewayIngressAnnotations     map[string]string
 	gatewayHostFormat             string
 	gatewayPathFormat             string
 	gatewayHostScheme             string
@@ -70,8 +71,16 @@ func Initialize() {
 	frontendPosthogAPIHost = envutil.GetEnvOrNil("FRONTEND_POSTHOG_API_HOST")
 	frontendPosthogUIHost = envutil.GetEnvOrNil("FRONTEND_POSTHOG_UI_HOST")
 
-	gatewayContainerImageTag = envutil.GetEnvOrDefault("GATEWAY_CONTAINER_IMAGE_TAG", "ghcr.io/jetski-sh/mcp-proxy:0.1.0-alpha.4")
+	gatewayContainerImageTag = envutil.GetEnvOrDefault(
+		"GATEWAY_CONTAINER_IMAGE_TAG",
+		"ghcr.io/jetski-sh/mcp-proxy:0.1.0-alpha.4",
+	)
 	gatewayNamespace = envutil.GetEnvOrDefault("GATEWAY_NAMESPACE", "default")
+	gatewayIngressAnnotations = envutil.GetEnvParsedOrDefault(
+		"GATEWAY_INGRESS_ANNOTATIONS",
+		parseYAMLMap,
+		map[string]string{},
+	)
 	gatewayHostFormat = envutil.GetEnvOrDefault("GATEWAY_HOST_FORMAT", "%v.jetski.cloud")
 	gatewayPathFormat = envutil.GetEnvOrDefault("GATEWAY_PATH_FORMAT", "/%v/mcp")
 	gatewayHostScheme = envutil.GetEnvOrDefault("GATEWAY_HOST_SCHEME", "https")
@@ -167,6 +176,10 @@ func GatewayContainerImageTag() string {
 
 func GatewayNamespace() string {
 	return gatewayNamespace
+}
+
+func GatewayIngressAnnotations() map[string]string {
+	return gatewayIngressAnnotations
 }
 
 func GatewayHostFormat() string {

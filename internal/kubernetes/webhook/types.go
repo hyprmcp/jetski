@@ -96,8 +96,12 @@ func (req *request) GetDesiredChildren() ([]client.Object, error) {
 			},
 		},
 		&networkingv1.Ingress{
-			TypeMeta:   metav1.TypeMeta{APIVersion: "networking.k8s.io/v1", Kind: "Ingress"},
-			ObjectMeta: metav1.ObjectMeta{Name: req.Parent.Name, Namespace: req.Parent.Namespace},
+			TypeMeta: metav1.TypeMeta{APIVersion: "networking.k8s.io/v1", Kind: "Ingress"},
+			ObjectMeta: metav1.ObjectMeta{
+				Name:        req.Parent.Name,
+				Namespace:   req.Parent.Namespace,
+				Annotations: env.GatewayIngressAnnotations(),
+			},
 			Spec: networkingv1.IngressSpec{
 				Rules: []networkingv1.IngressRule{{
 					Host: fmt.Sprintf(env.GatewayHostFormat(), req.Parent.Spec.OrganizationName),
