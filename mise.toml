@@ -1,7 +1,7 @@
 [tools]
 node = "24"
 pnpm = "10"
-go = "1.24"
+go = "1.25.0"
 golangci-lint = "2"
 "ubi:kubernetes-sigs/controller-tools" = { version = "v0.18.0", exe = "controller-gen" }
 helm = "3"
