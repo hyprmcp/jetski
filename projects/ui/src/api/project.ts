@@ -1,8 +1,9 @@
-import { httpResource } from '@angular/common/http';
+import { HttpClient, httpResource } from '@angular/common/http';
 import { Base } from './base';
-import { Signal } from '@angular/core';
-import { DeploymentRevisionSummary } from './dashboard';
+import { inject, Injectable, Signal } from '@angular/core';
+import { DeploymentRevisionSummary, ProjectSummary } from './dashboard';
 import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
+import { Observable } from 'rxjs';
 
 export interface Project extends Base {
   name: string;
@@ -10,6 +11,30 @@ export interface Project extends Base {
   createdBy: string;
   latestDeploymentRevisionId: string;
   latestDeploymentRevisionEventId: string | undefined;
+}
+
+export interface ProjectSettingsRequest {
+  proxyUrl?: string;
+  authenticated: boolean;
+}
+
+@Injectable({ providedIn: 'root' })
+export class ProjectService {
+  private readonly httpClient = inject(HttpClient);
+
+  public getProjectSummary(projectId: string): Observable<ProjectSummary> {
+    return this.httpClient.get<ProjectSummary>(`/api/v1/projects/${projectId}`);
+  }
+
+  public putProjectSettings(
+    projectId: string,
+    request: ProjectSettingsRequest,
+  ): Observable<ProjectSummary> {
+    return this.httpClient.put<ProjectSummary>(
+      `/api/v1/projects/${projectId}/settings`,
+      request,
+    );
+  }
 }
 
 export function getDeploymentsForProject(project: Signal<Project | undefined>) {

@@ -43,6 +43,7 @@ type DeploymentRevision struct {
 	OCIURL        *string   `db:"oci_url" json:"ociUrl"`
 	Authenticated bool      `db:"authenticated" json:"authenticated"`
 	ProxyURL      *string   `db:"proxy_url" json:"proxyUrl"`
+	Telemetry     bool      `db:"telemetry" json:"telemetry"`
 	BuildNumber   int       `db:"build_number" json:"buildNumber"`
 }
 

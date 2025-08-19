@@ -9,11 +9,12 @@ import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
-import { DeploymentsComponent } from './pages/project/deployments/deployments.component';
+import { SettingsComponent } from './pages/settings/settings.component';
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
 import { OrganizationSettingsComponent } from './pages/organization-settings/organization-settings.component';
 import { OrganizationSettingsGeneralComponent } from './pages/organization-settings/organization-settings-general.component';
 import { OrganizationSettingsMembersComponent } from './pages/organization-settings/organization-settings-members.component';
+import { ProjectDeploymentsComponent } from './components/deployments/project-deployments.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -141,11 +142,15 @@ export const authenticatedRoutes: Routes = [
                   },
                   {
                     path: 'deployments',
-                    component: DeploymentsComponent,
+                    component: ProjectDeploymentsComponent,
                   },
                   {
                     path: 'monitoring',
                     component: MonitoringComponent,
+                  },
+                  {
+                    path: 'settings',
+                    component: SettingsComponent,
                   },
                 ],
               },

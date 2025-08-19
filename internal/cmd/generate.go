@@ -196,7 +196,7 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 					}
 					ts := time.Now().UTC().Add(ago * -1)
 					// TODO support proxied and unauthenticated deployment revisions in demo data
-					dr, err := db.CreateHostedDeploymentRevision(ctx, proj.ID, user.ID, drData.Port, drData.OCIUrl, true, &ts)
+					dr, err := db.CreateHostedDeploymentRevision(ctx, proj.ID, user.ID, drData.Port, drData.OCIUrl, true, true, &ts)
 					if err != nil {
 						return fmt.Errorf("failed to create deployment revision: %w", err)
 					}
@@ -226,7 +226,7 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
 							MCPRequest: jsonrpc2.Request{
-								Method: fmt.Sprintf("method-%v", i),
+								Method: fmt.Sprintf("method-%v", i%5),
 								Params: nil,
 								ID:     jsonrpc2.ID{Num: uint64(i)},
 								Notif:  false,

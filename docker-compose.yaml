@@ -27,15 +27,15 @@ services:
       - "127.0.0.1:5432:5432"
 
   mailpit:
-    image: 'axllent/mailpit:v1.27.5'
+    image: "axllent/mailpit:v1.27.5"
     ports:
-      - '1025:1025'
-      - '8025:8025'
+      - "1025:1025"
+      - "8025:8025"
 
 configs:
   config.yaml:
     content: |
-      issuer: http://localhost:5556
+      issuer: http://host.minikube.internal:5556
       web:
         http: 0.0.0.0:5556
         allowedOrigins: ['*']
