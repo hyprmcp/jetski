@@ -29,8 +29,8 @@ jobs:
       - name: Generate SBOM for dex project
         uses: anchore/sbom-action@da167eac915b4e86f08b264dbdbc867b61be6f0c # v0.20.5
         with:
-          file: Dockerfile
-          output-file: dex.spdx.json
+          file: dex/Dockerfile
+          output-file: dex/dist/dex.spdx.json
           format: spdx-json
           upload-release-assets: false
 
@@ -63,7 +63,7 @@ jobs:
         id: build-push
         with:
           platforms: ${{ startsWith(github.ref, 'refs/tags/') && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
-          context: .
+          context: dex/
           file: Dockerfile
           push: ${{ startsWith(github.ref, 'refs/tags/') }}
           sbom: true
