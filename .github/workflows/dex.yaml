@@ -15,9 +15,6 @@ jobs:
     name: Build Dex
     timeout-minutes: 10
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./dex
     permissions:
       contents: read
       id-token: write
@@ -25,6 +22,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@a7487c7e89a18df4991f7f222e4898a00d66ddda # v4.1.0
+        with:
+          version: 10
+
+      - name: Setup node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: '24'
+          cache: pnpm
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Install frontend dependencies with pnpm
+        run: pnpm install
+
+      - name: Build dex frontend
+        run: pnpm run dex:build
 
       - name: Login to GitHub Container Registry (tag only)
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
