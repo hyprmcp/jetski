@@ -137,6 +137,7 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 			OCIURL        *string `json:"ociUrl,omitempty"`
 			Port          *int    `json:"port,omitempty"`
 			Authenticated bool    `json:"authenticated"`
+			Telemetry     bool    `json:"telemetry"`
 			ProxyURL      *string `json:"proxyUrl,omitempty"`
 		}
 
@@ -173,6 +174,7 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 				ProjectID:     projectID,
 				CreatedBy:     user.ID,
 				Authenticated: req.Authenticated,
+				Telemetry:     req.Telemetry,
 			}
 
 			ps, err := db.GetProjectSummary(ctx, projectID)
@@ -230,6 +232,7 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 						ProjectName:          ps.Name,
 						DeploymentRevisionID: ps.LatestDeploymentRevision.ID.String(),
 						Authenticated:        ps.LatestDeploymentRevision.Authenticated,
+						Telemetry:            ps.LatestDeploymentRevision.Telemetry,
 						ProxyURL:             ps.LatestDeploymentRevision.ProxyURL,
 					})
 				}

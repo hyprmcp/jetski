@@ -58,11 +58,14 @@ spec:
                       type: string
                     proxyUrl:
                       type: string
+                    telemetryEnabled:
+                      type: boolean
                   required:
                   - authenticationEnabled
                   - deploymentRevisionId
                   - projectId
                   - projectName
+                  - telemetryEnabled
                   type: object
                 type: array
             required:

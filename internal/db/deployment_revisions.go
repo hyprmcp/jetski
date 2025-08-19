@@ -11,11 +11,11 @@ import (
 )
 
 const (
-	deploymentRevisionWithoutBuildNrOutExpr = " dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url, dr.authenticated, dr.proxy_url "
+	deploymentRevisionWithoutBuildNrOutExpr = " dr.id, dr.created_at, dr.created_by, dr.project_id, dr.port, dr.oci_url, dr.authenticated, dr.proxy_url, dr.telemetry "
 	deploymentRevisionEventOutExpr          = " dre.id, dre.created_at, dre.deployment_revision_id, dre.type "
 )
 
-func CreateHostedDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, port int, ociUrl string, authenticated bool, timestamp *time.Time) (*types.DeploymentRevision, error) {
+func CreateHostedDeploymentRevision(ctx context.Context, projectID, createdBy uuid.UUID, port int, ociUrl string, authenticated bool, telemetry bool, timestamp *time.Time) (*types.DeploymentRevision, error) {
 	db := internalctx.GetDb(ctx)
 	createdAt := time.Now().UTC()
 	if timestamp != nil {
@@ -24,10 +24,10 @@ func CreateHostedDeploymentRevision(ctx context.Context, projectID, createdBy uu
 	var res *types.DeploymentRevision
 	err := RunTx(ctx, func(ctx context.Context) error {
 		rows, err := db.Query(ctx, `
-			INSERT INTO DeploymentRevision as dr (project_id, created_by, port, oci_url, authenticated, created_at)
-			VALUES (@projectID, @createdBy, @port, @ociUrl, @authenticated, @createdAt)
+			INSERT INTO DeploymentRevision as dr (project_id, created_by, port, oci_url, authenticated, telemetry, created_at)
+			VALUES (@projectID, @createdBy, @port, @ociUrl, @authenticated, @telemetry, @createdAt)
 			RETURNING `+deploymentRevisionWithoutBuildNrOutExpr,
-			pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "port": port, "ociUrl": ociUrl, "createdAt": createdAt, "authenticated": authenticated})
+			pgx.NamedArgs{"projectID": projectID, "createdBy": createdBy, "port": port, "ociUrl": ociUrl, "createdAt": createdAt, "authenticated": authenticated, "telemetry": telemetry})
 		if err != nil {
 			return err
 		}
@@ -51,14 +51,15 @@ func CreateDeploymentRevision(ctx context.Context, dr *types.DeploymentRevision)
 	err := RunTx(ctx, func(ctx context.Context) error {
 		rows, err := db.Query(
 			ctx,
-			`INSERT INTO DeploymentRevision as dr (project_id, created_by, proxy_url, authenticated, port, oci_url)
-			VALUES (@projectID, @createdBy, @proxyUrl, @authenticated, @port, @ociUrl)
+			`INSERT INTO DeploymentRevision as dr (project_id, created_by, proxy_url, authenticated, telemetry, port, oci_url)
+			VALUES (@projectID, @createdBy, @proxyUrl, @authenticated, @telemetry, @port, @ociUrl)
 			RETURNING `+deploymentRevisionWithoutBuildNrOutExpr,
 			pgx.NamedArgs{
 				"projectID":     dr.ProjectID,
 				"createdBy":     dr.CreatedBy,
 				"proxyUrl":      dr.ProxyURL,
 				"authenticated": dr.Authenticated,
+				"telemetry":     dr.Telemetry,
 				"port":          dr.Port,
 				"ociUrl":        dr.OCIURL,
 			},

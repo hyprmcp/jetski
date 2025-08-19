@@ -74,6 +74,33 @@ organizations:
   - name: glasskube
     user: pmig@glasskube.com
     projects:
+      - name: weather
+        deploymentRevisions:
+          - port: 9000
+            ociUrl: localhost
+            ago: 1h
+            randomLogs: 0
+            events:
+              - type: ok
+                ago: 15m
+      - name: public-weather
+        deploymentRevisions:
+          - port: 9000
+            ociUrl: localhost
+            ago: 1h
+            randomLogs: 0
+            events:
+              - type: ok
+                ago: 15m
+      - name: prompt-catcher
+        deploymentRevisions:
+          - port: 3000
+            ociUrl: localhost
+            ago: 1h
+            randomLogs: 0
+            events:
+              - type: ok
+                ago: 15m
       - name: distr
         deploymentRevisions:
           - port: 8080

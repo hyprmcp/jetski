@@ -1,20 +1,20 @@
 import { Component, inject } from '@angular/core';
 import { UsageCardComponent } from '../../components/usage-card/usage-card.component';
 import { ProjectsGridComponent } from '../../components/projects-grid/projects-grid.component';
-import { RecentDeploymentsComponent } from '../../components/recent-deployments/recent-deployments.component';
 import { ContextService } from '../../services/context.service';
 import { getRecentDeployments } from '../../../api/dashboard';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import { provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
 import { FormsModule } from '@angular/forms';
+import { OrganizationDeploymentsComponent } from '../../components/deployments/organization-deployments.component';
 
 @Component({
   selector: 'app-organization-dashboard',
   imports: [
     UsageCardComponent,
     ProjectsGridComponent,
-    RecentDeploymentsComponent,
+    OrganizationDeploymentsComponent,
     BrnSelectModule,
     FormsModule,
   ],
@@ -40,9 +40,9 @@ import { FormsModule } from '@angular/forms';
           [organization]="contextService.selectedOrg()"
         ></app-usage-card>
         <div class="mt-4"></div>
-        <app-recent-deployments
+        <app-organization-deployments
           [organization]="contextService.selectedOrg()"
-        ></app-recent-deployments>
+        ></app-organization-deployments>
       </div>
 
       <!-- Right column - Projects -->

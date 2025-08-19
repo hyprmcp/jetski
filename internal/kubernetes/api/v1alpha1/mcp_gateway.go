@@ -10,6 +10,7 @@ type MCPGatewayProject struct {
 	ProjectName          string  `json:"projectName"`
 	DeploymentRevisionID string  `json:"deploymentRevisionId"`
 	Authenticated        bool    `json:"authenticationEnabled"`
+	Telemetry            bool    `json:"telemetryEnabled"`
 	ProxyURL             *string `json:"proxyUrl,omitempty"`
 }
 

@@ -54,11 +54,11 @@ import { ContextService } from '../../services/context.service';
 
         <div class="lg:col-span-3">
           <div class="bg-card border border-border rounded-lg p-6">
-            <h2 class="text-lg font-semibold text-foreground mb-6">
-              Authentication
-            </h2>
-
             <form [formGroup]="form" (ngSubmit)="onSubmit()">
+              <h2 class="text-lg font-semibold text-foreground mb-6">
+                Authentication
+              </h2>
+
               <div class="space-y-6">
                 <div class="flex items-start gap-3">
                   <hlm-checkbox
@@ -77,6 +77,29 @@ import { ContextService } from '../../services/context.service';
                     </p>
                   </div>
                 </div>
+
+                <h2 class="text-lg font-semibold text-foreground mb-6">
+                  Telemetry
+                </h2>
+
+                <div class="flex items-start gap-3">
+                  <hlm-checkbox
+                    id="telemetry"
+                    [formControl]="form.controls.telemetry"
+                  />
+                  <div class="grid gap-2">
+                    <label hlmLabel for="telemetry">Enable telemetry</label>
+                    <p class="text-muted-foreground text-sm">
+                      Enabling telemetry will give you insights about the
+                      prompt<br />
+                      and context that triggered the MCP call.
+                    </p>
+                  </div>
+                </div>
+
+                <h2 class="text-lg font-semibold text-foreground mb-6">
+                  Proxy Mode
+                </h2>
 
                 <div class="space-y-2">
                   <label for="proxy_url" hlmLabel>Proxy URL</label>
@@ -125,6 +148,7 @@ export class SettingsComponent implements OnInit {
   protected readonly loading = signal(false);
   protected readonly form = this.fb.nonNullable.group({
     authenticated: this.fb.nonNullable.control(false),
+    telemetry: this.fb.nonNullable.control(false),
     proxyUrl: this.fb.nonNullable.control('', {
       validators: [
         (ctrl) =>
@@ -169,6 +193,7 @@ export class SettingsComponent implements OnInit {
       const request = {
         proxyUrl: this.form.value.proxyUrl,
         authenticated: this.form.value.authenticated ?? true,
+        telemetry: this.form.value.telemetry ?? false,
       };
       this.projectService.putProjectSettings(projectId, request).subscribe({
         next: (summary) => {
@@ -192,6 +217,7 @@ export class SettingsComponent implements OnInit {
     if (rev) {
       this.form.patchValue({
         authenticated: rev.authenticated ?? false,
+        telemetry: rev.telemetry ?? false,
         proxyUrl: rev.proxyUrl ?? '',
       });
     }

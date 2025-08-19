@@ -143,6 +143,9 @@ func (req *request) GetGatewayConfig() (*gatewayconfig.Config, error) {
 			Authentication: gatewayconfig.ProxyAuthentication{
 				Enabled: project.Authenticated,
 			},
+			Telemetry: gatewayconfig.ProxyTelemetry{
+				Enabled: project.Telemetry,
+			},
 			Webhook: &gatewayconfig.Webhook{
 				Method: http.MethodPost,
 				Url: gatewayconfig.URL{

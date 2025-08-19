@@ -7,6 +7,7 @@ export interface DeploymentRevision extends Base {
   ociUrl: string | undefined;
   buildNumber: number;
   authenticated: boolean;
+  telemetry: boolean;
   proxyUrl: string | undefined;
 }
 
