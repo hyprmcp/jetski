@@ -35,6 +35,9 @@ jobs:
           cache: pnpm
           registry-url: 'https://registry.npmjs.org'
 
+      - name: Install frontend dependencies with pnpm
+        run: pnpm install
+
       - name: Build dex frontend
         run: pnpm run dex:build
 
