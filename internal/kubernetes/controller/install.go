@@ -8,6 +8,7 @@ import (
 
 	metactrl "metacontroller/pkg/apis/metacontroller/v1alpha1"
 
+	"github.com/jetski-sh/jetski/internal/env"
 	"github.com/jetski-sh/jetski/internal/kubernetes/api/v1alpha1"
 	ctrlfs "github.com/jetski-sh/jetski/internal/kubernetes/fs"
 	"github.com/jetski-sh/jetski/internal/util"
@@ -74,7 +75,7 @@ func ControllerConfig() *metactrl.CompositeController {
 			},
 			Hooks: &metactrl.CompositeControllerHooks{
 				Sync: &metactrl.Hook{
-					Webhook: &metactrl.Webhook{URL: util.PtrTo("http://host.minikube.internal:8085/sync")},
+					Webhook: &metactrl.Webhook{URL: util.PtrTo(env.GatewayWebhookURL())},
 				},
 			},
 		},
