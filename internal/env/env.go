@@ -30,6 +30,7 @@ var (
 	frontendPosthogUIHost         *string
 	serverShutdownDelayDuration   *time.Duration
 	gatewayContainerImageTag      string
+	gatewayWebhookURL             string
 	gatewayNamespace              string
 	gatewayIngressAnnotations     map[string]string
 	gatewayHostFormat             string
@@ -75,6 +76,7 @@ func Initialize() {
 		"GATEWAY_CONTAINER_IMAGE_TAG",
 		"ghcr.io/jetski-sh/mcp-proxy:0.1.0-alpha.4",
 	)
+	gatewayWebhookURL = envutil.GetEnvOrDefault("GATEWAY_WEBHOOK_URL", "http://host.minikube.internal:8085/sync")
 	gatewayNamespace = envutil.GetEnvOrDefault("GATEWAY_NAMESPACE", "default")
 	gatewayIngressAnnotations = envutil.GetEnvParsedOrDefault(
 		"GATEWAY_INGRESS_ANNOTATIONS",
@@ -176,6 +178,10 @@ func GatewayContainerImageTag() string {
 
 func GatewayNamespace() string {
 	return gatewayNamespace
+}
+
+func GatewayWebhookURL() string {
+	return gatewayWebhookURL
 }
 
 func GatewayIngressAnnotations() map[string]string {
