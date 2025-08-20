@@ -73,7 +73,7 @@ importers:
         version: 8.5.6
       posthog-js:
         specifier: ^1.257.0
-        version: 1.259.0
+        version: 1.260.1
       rxjs:
         specifier: ~7.8.0
         version: 7.8.2
@@ -5625,8 +5625,8 @@ packages:
     resolution: {integrity: sha512-3Ybi1tAuwAP9s0r1UQ2J4n5Y0G05bJkpUIO0/bI9MhwmD70S5aTWbXGBwxHrelT+XM1k6dM0pk+SwNkpTRN7Pg==}
     engines: {node: ^10 || ^12 || >=14}
 
-  posthog-js@1.259.0:
-    resolution: {integrity: sha512-6usLnJshky8fQ82ask7PIJh4BSFOU0VkRbFg8Zanm/HIlYMG1VOdRWlToA63JXeO7Bzm9TuREq1wFm5U2VEVCg==}
+  posthog-js@1.260.1:
+    resolution: {integrity: sha512-DD8ZSRpdScacMqtqUIvMFme8lmOWkOvExG8VvjONE7Cm3xpRH5xXpfrwMJE4bayTGWKMx4ij6SfphK6dm/o2ug==}
     peerDependencies:
       '@rrweb/types': 2.0.0-alpha.17
       rrweb-snapshot: 2.0.0-alpha.17
@@ -5636,8 +5636,8 @@ packages:
       rrweb-snapshot:
         optional: true
 
-  preact@10.27.0:
-    resolution: {integrity: sha512-/DTYoB6mwwgPytiqQTh/7SFRL98ZdiD8Sk8zIUVOxtwq4oWcwrcd1uno9fE/zZmUaUrFNYzbH14CPebOz9tZQw==}
+  preact@10.27.1:
+    resolution: {integrity: sha512-V79raXEWch/rbqoNc7nT9E4ep7lu+mI3+sBmfRD4i1M73R3WLYcCtdI0ibxGVf4eQL8ZIz2nFacqEC+rmnOORQ==}
 
   prelude-ls@1.2.1:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
@@ -13318,14 +13318,14 @@ snapshots:
       picocolors: 1.1.1
       source-map-js: 1.2.1
 
-  posthog-js@1.259.0:
+  posthog-js@1.260.1:
     dependencies:
       core-js: 3.45.0
       fflate: 0.4.8
-      preact: 10.27.0
+      preact: 10.27.1
       web-vitals: 4.2.4
 
-  preact@10.27.0: {}
+  preact@10.27.1: {}
 
   prelude-ls@1.2.1: {}
 
