@@ -250,7 +250,7 @@ export class LogsComponent {
       id: 'mcpRequest',
       header: 'MCP Method',
       cell: (info) =>
-        `<span class="capitalize">${info.getValue<JsonRpcRequest>().method}</span>`,
+        info.getValue<JsonRpcRequest | undefined>()?.method ?? '-',
       enableSorting: false,
     },
     {
@@ -258,12 +258,12 @@ export class LogsComponent {
       id: 'toolName',
       header: 'Tool Name',
       cell: (info) => {
-        const request = info.getValue<JsonRpcRequest>();
+        const request = info.getValue<JsonRpcRequest | undefined>();
         const toolName =
-          request.method.toLowerCase() === 'tools/call'
+          request?.method.toLowerCase() === 'tools/call'
             ? request.params?.name
             : '-';
-        return `<span>${toolName || '-'}</span>`;
+        return toolName || '-';
       },
       enableSorting: false,
     },
