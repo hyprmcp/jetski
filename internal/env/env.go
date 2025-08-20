@@ -39,6 +39,8 @@ var (
 )
 
 func Initialize() {
+	host = envutil.RequireEnv("HOST")
+	hostScheme = envutil.GetEnvOrDefault("HOST_SCHEME", "https")
 	databaseUrl = envutil.RequireEnv("DATABASE_URL")
 	oidcUrl = envutil.RequireEnv("OIDC_URL")
 	oidcClientID = envutil.RequireEnv("OIDC_CLIENT_ID")
