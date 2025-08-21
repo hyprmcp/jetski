@@ -1,6 +1,8 @@
 package webhook
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -40,6 +42,11 @@ func (req *request) GetDesiredChildren() ([]client.Object, error) {
 		return nil, err
 	}
 
+	gatewayConfigHash := sha256.Sum256([]byte(gatewayConfigStr))
+	gatewayAnnotations := map[string]string{
+		"gatewayConfigHash": hex.EncodeToString(gatewayConfigHash[:]),
+	}
+
 	// When adding resources, make sure that the resource type is also registered in the CompositeController
 	// configuration at: internal/kubernetes/controller/install.go
 	var result = []client.Object{
@@ -54,7 +61,7 @@ func (req *request) GetDesiredChildren() ([]client.Object, error) {
 			Spec: appsv1.DeploymentSpec{
 				Selector: &metav1.LabelSelector{MatchLabels: gatewayLabels},
 				Template: corev1.PodTemplateSpec{
-					ObjectMeta: metav1.ObjectMeta{Labels: gatewayLabels},
+					ObjectMeta: metav1.ObjectMeta{Labels: gatewayLabels, Annotations: gatewayAnnotations},
 					Spec: corev1.PodSpec{
 						ImagePullSecrets: []corev1.LocalObjectReference{{Name: "image-pull-secret"}},
 						Containers: []corev1.Container{{
