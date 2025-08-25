@@ -4,19 +4,20 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"github.com/getsentry/sentry-go"
-	"github.com/google/uuid"
-	"github.com/jetski-sh/jetski/internal/apierrors"
-	"github.com/jetski-sh/jetski/internal/mailsending"
-	"github.com/jetski-sh/jetski/internal/types"
-	"go.uber.org/zap"
 	"net/http"
 	"regexp"
 	"strings"
 
+	"github.com/getsentry/sentry-go"
+	"github.com/google/uuid"
+	"github.com/hyprmcp/jetski/internal/apierrors"
+	"github.com/hyprmcp/jetski/internal/mailsending"
+	"github.com/hyprmcp/jetski/internal/types"
+	"go.uber.org/zap"
+
 	"github.com/go-chi/chi/v5"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/db"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/db"
 )
 
 func OrganizationsRouter(r chi.Router) {

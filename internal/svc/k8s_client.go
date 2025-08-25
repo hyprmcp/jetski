@@ -3,7 +3,7 @@ package svc
 import (
 	metactrl "metacontroller/pkg/apis/metacontroller/v1alpha1"
 
-	"github.com/jetski-sh/jetski/internal/kubernetes/api/v1alpha1"
+	"github.com/hyprmcp/jetski/internal/kubernetes/api/v1alpha1"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/cli-runtime/pkg/genericclioptions"
 	ctrlclient "sigs.k8s.io/controller-runtime/pkg/client"

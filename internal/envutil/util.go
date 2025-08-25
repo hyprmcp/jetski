@@ -2,8 +2,9 @@ package envutil
 
 import (
 	"fmt"
-	"github.com/jetski-sh/jetski/internal/util"
 	"os"
+
+	"github.com/hyprmcp/jetski/internal/util"
 )
 
 func GetEnv(key string) string {

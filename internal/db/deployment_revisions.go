@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/jackc/pgx/v5"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/types"
 )
 
 const (

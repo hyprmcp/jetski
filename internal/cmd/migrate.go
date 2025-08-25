@@ -3,10 +3,10 @@ package cmd
 import (
 	"context"
 
-	"github.com/jetski-sh/jetski/internal/env"
-	"github.com/jetski-sh/jetski/internal/migrations"
-	"github.com/jetski-sh/jetski/internal/svc"
-	"github.com/jetski-sh/jetski/internal/util"
+	"github.com/hyprmcp/jetski/internal/env"
+	"github.com/hyprmcp/jetski/internal/migrations"
+	"github.com/hyprmcp/jetski/internal/svc"
+	"github.com/hyprmcp/jetski/internal/util"
 	"github.com/spf13/cobra"
 )
 

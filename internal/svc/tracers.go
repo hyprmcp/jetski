@@ -2,10 +2,11 @@ package svc
 
 import (
 	"context"
+
 	sentryotel "github.com/getsentry/sentry-go/otel"
 	"github.com/go-logr/zapr"
-	"github.com/jetski-sh/jetski/internal/env"
-	"github.com/jetski-sh/jetski/internal/tracers"
+	"github.com/hyprmcp/jetski/internal/env"
+	"github.com/hyprmcp/jetski/internal/tracers"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"

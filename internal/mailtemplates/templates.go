@@ -2,11 +2,12 @@ package mailtemplates
 
 import (
 	"embed"
-	"github.com/jetski-sh/jetski/internal/types"
 	"html/template"
 	"io/fs"
 	"net/url"
 	"path"
+
+	"github.com/hyprmcp/jetski/internal/types"
 )
 
 var (

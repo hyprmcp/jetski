@@ -2,9 +2,10 @@ package context
 
 import (
 	"context"
-	"github.com/jetski-sh/jetski/internal/db/queryable"
-	"github.com/jetski-sh/jetski/internal/mail"
-	"github.com/jetski-sh/jetski/internal/types"
+
+	"github.com/hyprmcp/jetski/internal/db/queryable"
+	"github.com/hyprmcp/jetski/internal/mail"
+	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/lestrrat-go/jwx/v3/jwt"
 
 	"go.uber.org/zap"

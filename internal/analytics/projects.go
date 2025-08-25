@@ -9,9 +9,9 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"github.com/jetski-sh/jetski/internal/db"
-	"github.com/jetski-sh/jetski/internal/lists"
-	"github.com/jetski-sh/jetski/internal/types"
+	"github.com/hyprmcp/jetski/internal/db"
+	"github.com/hyprmcp/jetski/internal/lists"
+	"github.com/hyprmcp/jetski/internal/types"
 )
 
 // GetProjectAnalytics retrieves and aggregates analytics data for a project from the database

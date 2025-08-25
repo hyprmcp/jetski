@@ -3,14 +3,15 @@ package db
 import (
 	"context"
 	"errors"
+
+	"github.com/hyprmcp/jetski/internal/apierrors"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jetski-sh/jetski/internal/apierrors"
 
 	"github.com/google/uuid"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/jackc/pgx/v5"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/types"
 )
 
 const (

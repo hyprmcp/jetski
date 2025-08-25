@@ -3,10 +3,11 @@ package db
 import (
 	"context"
 	"fmt"
+
 	"github.com/google/uuid"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/jackc/pgx/v5"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/types"
 )
 
 func GetProjectSummaries(ctx context.Context, orgID uuid.UUID) ([]types.ProjectSummary, error) {

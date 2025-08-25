@@ -2,11 +2,12 @@ package lists
 
 import (
 	"errors"
-	"github.com/jetski-sh/jetski/internal/util"
 	"net/http"
 	"slices"
 	"strconv"
 	"strings"
+
+	"github.com/hyprmcp/jetski/internal/util"
 )
 
 var (
