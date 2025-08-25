@@ -1,4 +1,4 @@
-module github.com/jetski-sh/jetski
+module github.com/hyprmcp/jetski
 
 go 1.24.0
 

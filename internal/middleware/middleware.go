@@ -2,20 +2,21 @@ package middleware
 
 import (
 	"errors"
-	"github.com/jetski-sh/jetski/internal/mail"
 	"net/http"
 	"strings"
 	"time"
+
+	"github.com/hyprmcp/jetski/internal/mail"
 
 	"github.com/getsentry/sentry-go"
 	sentryhttp "github.com/getsentry/sentry-go/http"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"github.com/hyprmcp/jetski/internal/apierrors"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/db"
+	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jetski-sh/jetski/internal/apierrors"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/db"
-	"github.com/jetski-sh/jetski/internal/types"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"

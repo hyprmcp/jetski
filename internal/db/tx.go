@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
+	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/jackc/pgx/v5"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
 	"go.uber.org/multierr"
 )
 

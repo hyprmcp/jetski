@@ -3,13 +3,14 @@ package svc
 import (
 	"context"
 	"errors"
-	"github.com/jetski-sh/jetski/internal/mail/smtp"
+
+	"github.com/hyprmcp/jetski/internal/mail/smtp"
 	gomail "github.com/wneessen/go-mail"
 
-	"github.com/jetski-sh/jetski/internal/env"
-	"github.com/jetski-sh/jetski/internal/mail"
-	"github.com/jetski-sh/jetski/internal/mail/noop"
-	"github.com/jetski-sh/jetski/internal/mail/ses"
+	"github.com/hyprmcp/jetski/internal/env"
+	"github.com/hyprmcp/jetski/internal/mail"
+	"github.com/hyprmcp/jetski/internal/mail/noop"
+	"github.com/hyprmcp/jetski/internal/mail/ses"
 )
 
 func (r *Registry) GetMailer() mail.Mailer {

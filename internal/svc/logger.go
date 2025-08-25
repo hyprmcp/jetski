@@ -1,7 +1,7 @@
 package svc
 
 import (
-	"github.com/jetski-sh/jetski/internal/buildconfig"
+	"github.com/hyprmcp/jetski/internal/buildconfig"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

@@ -4,18 +4,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jetski-sh/jetski/internal/mail"
+	"github.com/hyprmcp/jetski/internal/mail"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/go-chi/chi/v5"
 	chimiddleware "github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httprate"
+	"github.com/hyprmcp/jetski/internal/frontend"
+	"github.com/hyprmcp/jetski/internal/handlers"
+	"github.com/hyprmcp/jetski/internal/middleware"
+	"github.com/hyprmcp/jetski/internal/tracers"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jetski-sh/jetski/internal/frontend"
-	"github.com/jetski-sh/jetski/internal/handlers"
-	"github.com/jetski-sh/jetski/internal/middleware"
-	"github.com/jetski-sh/jetski/internal/tracers"
 	"go.uber.org/zap"
 )
 

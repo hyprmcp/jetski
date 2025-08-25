@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jetski-sh/jetski/internal/env"
+	"net/http"
+	"net/url"
+
+	"github.com/hyprmcp/jetski/internal/env"
 	"github.com/lestrrat-go/httprc/v3"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
-	"net/http"
-	"net/url"
 )
 
 func (r *Registry) GetJwkSet() jwk.Set {

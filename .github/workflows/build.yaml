@@ -5,9 +5,9 @@ name: Build Jetski
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     tags:
-      - '*'
+      - "*"
   pull_request:
 
 jobs:
@@ -48,7 +48,7 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5.5.0
         with:
-          go-version-file: 'go.mod'
+          go-version-file: "go.mod"
           check-latest: true
           cache-dependency-path: |
             go.sum
@@ -59,9 +59,9 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '24'
+          node-version: "24"
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
       - name: Generate commit hash
         id: hash
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
@@ -91,23 +91,23 @@ jobs:
       - name: Build application
         run: go build -ldflags="$LDFLAGS" -o dist/jetski .
         env:
-          CGO_ENABLED: '0'
+          CGO_ENABLED: "0"
           LDFLAGS: >-
-            -X github.com/jetski-sh/jetski/internal/buildconfig.version=${{ github.ref_name }}
-            -X github.com/jetski-sh/jetski/internal/buildconfig.commit=${{ steps.hash.outputs.sha_short }}
+            -X github.com/hyprmcp/jetski/internal/buildconfig.version=${{ github.ref_name }}
+            -X github.com/hyprmcp/jetski/internal/buildconfig.commit=${{ steps.hash.outputs.sha_short }}
 
-#      - name: Start Jetski and verify migrations
-#        shell: bash
-#        run: dist/jetski serve &
-#          sleep 5 &&
-#          curl http://localhost:8080/internal/environment -f &&
-#          psql $DATABASE_URL -c "select version > 0, dirty from schema_migrations" --csv -t | grep "t,f" &&
-#          pkill -SIGTERM jetski &&
-#          dist/jetski migrate --down
-#        env:
-#          DATABASE_URL: postgres://test-user:test-password@localhost:5432/jetski
-#          OIDC_URL: "-"
-#          OIDC_CLIENT_ID: "-"
+      #      - name: Start Jetski and verify migrations
+      #        shell: bash
+      #        run: dist/jetski serve &
+      #          sleep 5 &&
+      #          curl http://localhost:8080/internal/environment -f &&
+      #          psql $DATABASE_URL -c "select version > 0, dirty from schema_migrations" --csv -t | grep "t,f" &&
+      #          pkill -SIGTERM jetski &&
+      #          dist/jetski migrate --down
+      #        env:
+      #          DATABASE_URL: postgres://test-user:test-password@localhost:5432/jetski
+      #          OIDC_URL: "-"
+      #          OIDC_CLIENT_ID: "-"
 
       - name: Generate SBOM for frontend project
         uses: anchore/sbom-action@da167eac915b4e86f08b264dbdbc867b61be6f0c # v0.20.5
@@ -131,7 +131,7 @@ jobs:
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
         with:
           images: |
-            ghcr.io/jetski-sh/jetski
+            ghcr.io/hyprmcp/jetski
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}

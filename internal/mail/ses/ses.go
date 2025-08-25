@@ -7,8 +7,8 @@ import (
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/ses"
 	"github.com/aws/aws-sdk-go-v2/service/ses/types"
-	"github.com/jetski-sh/jetski/internal/mail"
-	"github.com/jetski-sh/jetski/internal/util"
+	"github.com/hyprmcp/jetski/internal/mail"
+	"github.com/hyprmcp/jetski/internal/util"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-sdk-go-v2/otelaws"
 )
 

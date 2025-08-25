@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/jetski-sh/jetski/internal/db"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/hyprmcp/jetski/internal/db"
 )
 
 func DashboardRouter(r chi.Router) {

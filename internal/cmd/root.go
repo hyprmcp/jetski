@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/jetski-sh/jetski/internal/buildconfig"
+	"github.com/hyprmcp/jetski/internal/buildconfig"
 	"github.com/spf13/cobra"
 )
 

@@ -1,11 +1,12 @@
 package handlers
 
 import (
-	"github.com/go-chi/chi/v5"
-	"github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/db"
-	"github.com/jetski-sh/jetski/internal/types"
 	"net/http"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/db"
+	"github.com/hyprmcp/jetski/internal/types"
 )
 
 func ContextRouter(r chi.Router) {

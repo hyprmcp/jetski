@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/jetski-sh/jetski/internal/env"
-	"github.com/jetski-sh/jetski/internal/util"
+	"github.com/hyprmcp/jetski/internal/env"
+	"github.com/hyprmcp/jetski/internal/util"
 )
 
 func InternalRouter(r chi.Router) {

@@ -5,9 +5,9 @@ name: Build Dex
 on:
   push:
     branches:
-      - 'main'
+      - "main"
     tags:
-      - '*'
+      - "*"
   pull_request:
 
 jobs:
@@ -31,9 +31,9 @@ jobs:
       - name: Setup node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '24'
+          node-version: "24"
           cache: pnpm
-          registry-url: 'https://registry.npmjs.org'
+          registry-url: "https://registry.npmjs.org"
 
       - name: Install frontend dependencies with pnpm
         run: pnpm install
@@ -57,7 +57,7 @@ jobs:
         uses: docker/metadata-action@c1e51972afc2121e065aed6d45c65596fe445f3f # v5.8.0
         with:
           images: |
-            ghcr.io/jetski-sh/jetski-dex
+            ghcr.io/hyprmcp/jetski-dex
           tags: |
             type=ref,event=branch
             type=semver,pattern={{version}}

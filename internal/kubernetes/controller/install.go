@@ -8,10 +8,10 @@ import (
 
 	metactrl "metacontroller/pkg/apis/metacontroller/v1alpha1"
 
-	"github.com/jetski-sh/jetski/internal/env"
-	"github.com/jetski-sh/jetski/internal/kubernetes/api/v1alpha1"
-	ctrlfs "github.com/jetski-sh/jetski/internal/kubernetes/fs"
-	"github.com/jetski-sh/jetski/internal/util"
+	"github.com/hyprmcp/jetski/internal/env"
+	"github.com/hyprmcp/jetski/internal/kubernetes/api/v1alpha1"
+	ctrlfs "github.com/hyprmcp/jetski/internal/kubernetes/fs"
+	"github.com/hyprmcp/jetski/internal/util"
 	"go.uber.org/zap"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"

@@ -3,7 +3,7 @@ package noop
 import (
 	"context"
 
-	"github.com/jetski-sh/jetski/internal/mail"
+	"github.com/hyprmcp/jetski/internal/mail"
 )
 
 type mailer struct{}

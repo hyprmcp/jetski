@@ -4,8 +4,8 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jetski-sh/jetski/internal/envparse"
-	"github.com/jetski-sh/jetski/internal/envutil"
+	"github.com/hyprmcp/jetski/internal/envparse"
+	"github.com/hyprmcp/jetski/internal/envutil"
 )
 
 var (

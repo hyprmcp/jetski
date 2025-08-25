@@ -2,10 +2,11 @@ package mailsending
 
 import (
 	"context"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/mail"
-	"github.com/jetski-sh/jetski/internal/mailtemplates"
-	"github.com/jetski-sh/jetski/internal/types"
+
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/mail"
+	"github.com/hyprmcp/jetski/internal/mailtemplates"
+	"github.com/hyprmcp/jetski/internal/types"
 	"go.uber.org/zap"
 )
 

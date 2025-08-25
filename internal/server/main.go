@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/jetski-sh/jetski/internal/env"
+	"github.com/hyprmcp/jetski/internal/env"
 	"go.uber.org/zap"
 )
 

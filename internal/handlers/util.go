@@ -2,10 +2,11 @@ package handlers
 
 import (
 	"encoding/json"
-	"github.com/getsentry/sentry-go"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"go.uber.org/zap"
 	"net/http"
+
+	"github.com/getsentry/sentry-go"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"go.uber.org/zap"
 )
 
 func RespondJSON(w http.ResponseWriter, data any) {

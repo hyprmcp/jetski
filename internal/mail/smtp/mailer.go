@@ -3,7 +3,7 @@ package smtp
 import (
 	"context"
 
-	"github.com/jetski-sh/jetski/internal/mail"
+	"github.com/hyprmcp/jetski/internal/mail"
 	gomail "github.com/wneessen/go-mail"
 )
 

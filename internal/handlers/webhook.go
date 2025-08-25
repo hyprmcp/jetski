@@ -8,10 +8,10 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
-	"github.com/jetski-sh/jetski/internal/apierrors"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/db"
-	"github.com/jetski-sh/jetski/internal/types"
+	"github.com/hyprmcp/jetski/internal/apierrors"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/db"
+	"github.com/hyprmcp/jetski/internal/types"
 	"go.uber.org/zap"
 )
 

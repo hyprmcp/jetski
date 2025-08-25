@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/exaring/otelpgx"
+	"github.com/hyprmcp/jetski/internal/env"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/jetski-sh/jetski/internal/env"
 	"go.uber.org/zap"
 )
 

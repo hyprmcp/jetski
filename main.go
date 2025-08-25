@@ -3,7 +3,7 @@ package main
 import (
 	"os"
 
-	"github.com/jetski-sh/jetski/internal/cmd"
+	"github.com/hyprmcp/jetski/internal/cmd"
 )
 
 func main() {

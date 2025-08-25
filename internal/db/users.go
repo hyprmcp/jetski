@@ -5,12 +5,12 @@ import (
 	"errors"
 
 	"github.com/google/uuid"
+	"github.com/hyprmcp/jetski/internal/apierrors"
+	internalctx "github.com/hyprmcp/jetski/internal/context"
+	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
-	"github.com/jetski-sh/jetski/internal/apierrors"
-	internalctx "github.com/jetski-sh/jetski/internal/context"
-	"github.com/jetski-sh/jetski/internal/types"
 )
 
 const (

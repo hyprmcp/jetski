@@ -9,8 +9,8 @@ import (
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	"github.com/golang-migrate/migrate/v4/source/iofs"
+	"github.com/hyprmcp/jetski/internal/env"
 	_ "github.com/jackc/pgx/v5/stdlib"
-	"github.com/jetski-sh/jetski/internal/env"
 	"go.uber.org/multierr"
 	"go.uber.org/zap"
 )
