@@ -6,6 +6,7 @@ import { firstValueFrom, startWith } from 'rxjs';
 import { Router } from '@angular/router';
 import { Project } from '../../../api/project';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { validateResourceName } from '../../../vaildators/name';
 
 @Component({
   template: ` <div class="flex justify-center items-center ">
@@ -71,7 +72,7 @@ export class NewProjectComponent {
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
   protected readonly form = this.fb.group({
-    name: this.fb.control('', Validators.required),
+    name: this.fb.control('', [Validators.required, validateResourceName]),
   });
   protected readonly error = signal<unknown>(undefined);
   protected readonly loading = signal(false);

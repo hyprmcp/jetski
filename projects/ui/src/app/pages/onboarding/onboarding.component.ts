@@ -13,6 +13,7 @@ import { OAuthService } from 'angular-oauth2-oidc';
 import { map, startWith } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
 import { toast } from 'ngx-sonner';
+import { validateResourceName } from '../../../vaildators/name';
 
 @Component({
   selector: 'app-onboarding',
@@ -100,11 +101,10 @@ export class OnboardingComponent {
   readonly orgNameExample = `${this.nameFromToken?.replace(' ', '-').toLowerCase() ?? 'tom'}s-org`;
   readonly placeholder = `e.g. ${this.orgNameExample}`;
   readonly usernamePostfix = `${this.nameFromToken ? ', ' + this.nameFromToken : ''}`;
-  readonly namePattern = /^[a-zA-Z0-9]+(([-_])[a-zA-Z0-9]+)*$/;
   readonly form = new FormGroup({
     name: new FormControl<string>('', [
       Validators.required,
-      Validators.pattern(this.namePattern),
+      validateResourceName,
     ]),
   });
   loading = signal<boolean>(false);

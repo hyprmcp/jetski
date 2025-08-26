@@ -32,6 +32,9 @@ description = '''
   Use with 'mise serve -- --install-controller' to also install the MCPGateway CRD and metacontroller config.
 '''
 
+[tasks.test]
+run = "go test ./..."
+
 [tasks.generate]
 run = "go run . generate"
 

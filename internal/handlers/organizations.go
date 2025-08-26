@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"errors"
 	"net/http"
-	"regexp"
 	"strings"
 
 	"github.com/getsentry/sentry-go"
@@ -59,7 +58,7 @@ func postOrganizationHandler() http.HandlerFunc {
 			return
 		}
 		orgReq.Name = strings.TrimSpace(orgReq.Name)
-		if ok := validateOrgName(w, orgReq.Name); !ok {
+		if ok := validateName(w, orgReq.Name); !ok {
 			return
 		}
 		if org, err := db.CreateOrganization(ctx, orgReq.Name); errors.Is(err, apierrors.ErrAlreadyExists) {
@@ -73,20 +72,6 @@ func postOrganizationHandler() http.HandlerFunc {
 			RespondJSON(w, org)
 		}
 	}
-}
-
-func validateOrgName(w http.ResponseWriter, name string) bool {
-	name = strings.TrimSpace(name)
-	if name == "" {
-		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Empty name is not allowed.")
-		return false
-	}
-	pattern := "^[a-zA-Z0-9]+(([-_])[a-zA-Z0-9]+)*$"
-	if matched, _ := regexp.MatchString(pattern, name); !matched {
-		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "Name is invalid.")
-		return false
-	}
-	return true
 }
 
 func getOrganizationMembers(w http.ResponseWriter, r *http.Request) {
