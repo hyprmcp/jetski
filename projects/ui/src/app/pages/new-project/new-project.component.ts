@@ -12,9 +12,6 @@ import { toSignal } from '@angular/core/rxjs-interop';
     <div class="w-full max-w-2xl md:w-1/2 space-y-6">
       <div>
         <h1 class="text-2xl font-semibold text-foreground">New Project</h1>
-        <p class="text-muted-foreground">
-          Please set a name for your organization to proceed.
-        </p>
       </div>
 
       <div class="gap-6">
