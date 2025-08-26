@@ -168,6 +168,6 @@ export class ProjectsGridComponent {
   readonly projectSummaries = getProjectSummaries(this.organization);
 
   getProjectUrl(project: ProjectSummary): string {
-    return `${project.organization.name}.jetski.cloud/${project.name}/mcp`;
+    return `${project.organization.name}.hyprmcp.cloud/${project.name}/mcp`;
   }
 }
