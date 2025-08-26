@@ -9,7 +9,7 @@ type ProjectSummary struct {
 
 type DeploymentRevisionSummary struct {
 	DeploymentRevision
-	Project                              Project                 `json:"project"`
-	Author                               UserAccount             `json:"author"`
-	ProjectLatestDeploymentRevisionEvent DeploymentRevisionEvent `json:"projectLatestDeploymentRevisionEvent"`
+	Project                              Project                  `json:"project"`
+	Author                               UserAccount              `json:"author"`
+	ProjectLatestDeploymentRevisionEvent *DeploymentRevisionEvent `json:"projectLatestDeploymentRevisionEvent"`
 }

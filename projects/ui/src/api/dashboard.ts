@@ -40,7 +40,7 @@ export function getProjectSummaries(org: Signal<Organization | undefined>) {
 export interface DeploymentRevisionSummary extends DeploymentRevision {
   project: Project;
   author: UserAccount;
-  projectLatestDeploymentRevisionEvent: DeploymentRevisionEvent | undefined;
+  projectLatestDeploymentRevisionEvent?: DeploymentRevisionEvent;
 }
 
 export function getRecentDeployments(org: Signal<Organization | undefined>) {
