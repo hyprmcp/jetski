@@ -1,4 +1,4 @@
-import { computed, inject, Injectable, Signal } from '@angular/core';
+import { computed, inject, Injectable, signal, Signal } from '@angular/core';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { combineLatestWith, filter, map } from 'rxjs';
@@ -10,7 +10,9 @@ import { getContext } from '../../api/context';
   providedIn: 'root',
 })
 export class ContextService {
-  readonly context = getContext();
+  private readonly createdProjects = signal<Project[]>([]);
+
+  readonly context = getContext(this.createdProjects);
   readonly projects = computed(
     () => (this.context.value()?.projects as Project[]) ?? [],
   );
@@ -48,6 +50,10 @@ export class ContextService {
       ),
     ),
   );
+
+  public registerCreatedProject(project: Project) {
+    this.createdProjects.update((val) => [...val, project]);
+  }
 
   private getFirstPathParam(
     route: ActivatedRoute,

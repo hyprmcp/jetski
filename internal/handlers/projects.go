@@ -62,6 +62,10 @@ func postProjectHandler() http.HandlerFunc {
 			return
 		}
 
+		if ok := validateName(w, projectReq.Name); !ok {
+			return
+		}
+
 		if userInOrg, _, err := db.IsUserPartOfOrg(ctx, user.ID, projectReq.OrganizationID); err != nil {
 			HandleInternalServerError(w, r, err, "check user org error")
 			return
