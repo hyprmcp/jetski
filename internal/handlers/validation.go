@@ -18,11 +18,11 @@ func validateName(w http.ResponseWriter, name string) bool {
 
 func validateNameE(name string) error {
 	if strings.TrimSpace(name) == "" {
-		return errors.New("Empty name is not allowed.")
+		return errors.New("empty name is not allowed")
 	}
 
 	if matched, _ := regexp.MatchString("^[a-z0-9]+(-[a-z0-9]+)*$", name); !matched {
-		return errors.New("Name is invalid.")
+		return errors.New("name is invalid")
 	}
 
 	return nil
