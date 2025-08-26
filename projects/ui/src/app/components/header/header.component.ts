@@ -4,9 +4,11 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
+  lucideChevronDown,
   lucideChevronsUpDown,
   lucideMonitor,
   lucideMoon,
+  lucidePlus,
   lucideSun,
 } from '@ng-icons/lucide';
 import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
@@ -47,6 +49,8 @@ import { ContextService } from '../../services/context.service';
       lucideMoon,
       lucideMonitor,
       lucideChevronsUpDown,
+      lucideChevronDown,
+      lucidePlus,
     }),
   ],
   template: `
@@ -117,14 +121,6 @@ import { ContextService } from '../../services/context.service';
                   </hlm-sub-menu>
                 </ng-template>
               }
-
-              <a
-                routerLink="/organizations/new"
-                class="cursor-pointer"
-                hlmMenuItem
-              >
-                Create New Organization
-              </a>
             </hlm-menu-group>
           </hlm-menu>
         </ng-template>
@@ -132,20 +128,65 @@ import { ContextService } from '../../services/context.service';
         <!-- Right side -->
         <div class="flex items-center space-x-4">
           <!-- Feedback -->
-          <button
+          <a
+            href="mailto:founders@glasskube.com?subject=Hyprmcp%20Feedback"
             class="text-sm text-muted-foreground hover:text-foreground transition-colors"
           >
             Feedback
-          </button>
+          </a>
 
           <!-- Theme switcher -->
           <button
             (click)="toggleTheme()"
-            class="p-2 hover:bg-muted rounded-md transition-colors text-muted-foreground hover:text-foreground leading-none"
+            class="flex items-center p-2 hover:bg-muted rounded-md transition-colors text-muted-foreground hover:text-foreground"
             [attr.aria-label]="themeLabel()"
           >
             <ng-icon [name]="themeIcon()" size="16" />
           </button>
+
+          <!-- "Add new…" dropdown -->
+          <button
+            class="flex items-center gap-2 py-2 px-3 bg-foreground text-sm text-background font-medium rounded-md transition-colors cursor-pointer"
+            [brnMenuTriggerFor]="addNewMenu"
+            align="end"
+          >
+            Add new&hellip;
+            <ng-icon name="lucideChevronDown" size="16" />
+          </button>
+
+          <ng-template #addNewMenu>
+            <hlm-menu>
+              <hlm-menu-group>
+                <a
+                  hlmMenuItem
+                  class="w-full cursor-pointer"
+                  routerLink="/organizations/new"
+                >
+                  New organization
+                </a>
+              </hlm-menu-group>
+
+              @if (contextService.selectedOrg(); as o) {
+                <hlm-menu-separator />
+                <hlm-menu-group>
+                  <a
+                    hlmMenuItem
+                    class="w-full cursor-pointer"
+                    [routerLink]="['/' + o.name, 'new']"
+                  >
+                    New project in {{ o.name }}
+                  </a>
+                  <a
+                    hlmMenuItem
+                    class="w-full cursor-pointer"
+                    [routerLink]="['/' + o.name, 'settings', 'members']"
+                  >
+                    Invite someone to {{ o.name }}
+                  </a>
+                </hlm-menu-group>
+              }
+            </hlm-menu>
+          </ng-template>
 
           <!-- User menu -->
           <div class="relative">

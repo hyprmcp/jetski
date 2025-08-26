@@ -15,6 +15,7 @@ import { OrganizationSettingsComponent } from './pages/organization-settings/org
 import { OrganizationSettingsGeneralComponent } from './pages/organization-settings/organization-settings-general.component';
 import { OrganizationSettingsMembersComponent } from './pages/organization-settings/organization-settings-members.component';
 import { ProjectDeploymentsComponent } from './components/deployments/project-deployments.component';
+import { NewProjectComponent } from './pages/new-project/new-project.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -126,6 +127,7 @@ export const authenticatedRoutes: Routes = [
               },
             ],
           },
+          { path: 'new', component: NewProjectComponent },
           {
             path: 'project',
             children: [
