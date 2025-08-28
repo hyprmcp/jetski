@@ -143,7 +143,11 @@ func (req *request) GetGatewayConfig() (*gatewayconfig.Config, error) {
 		Authorization: gatewayconfig.Authorization{
 			Server:                           env.OIDCUrl(),
 			ServerMetadataProxyEnabled:       true,
-			DynamicClientRegistrationEnabled: true,
+			DynamicClientRegistrationEnabled: util.PtrTo(true),
+			DynamicClientRegistration: &gatewayconfig.DynamicClientRegistration{
+				Enabled:      true,
+				PublicClient: req.Parent.Spec.Authorization.DynamicClientRegistration.PublicClient,
+			},
 		},
 		DexGRPCClient: &gatewayconfig.DexGRPCClient{Addr: env.DexGRPCAddr()},
 	}

@@ -222,7 +222,7 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 			ps.LatestDeploymentRevisionID = &dr.ID
 			ps.LatestDeploymentRevision = &dr
 
-			var gatewayProjects []v1alpha1.MCPGatewayProject
+			var gatewayProjects []v1alpha1.ProjectSpec
 			if pss, err := db.GetProjectSummaries(ctx, ps.OrganizationID); err != nil {
 				HandleInternalServerError(w, r, err, "failed to retrieve project summaries after settings update")
 				return err
@@ -231,7 +231,7 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 					if ps.LatestDeploymentRevisionID == nil {
 						continue
 					}
-					gatewayProjects = append(gatewayProjects, v1alpha1.MCPGatewayProject{
+					gatewayProjects = append(gatewayProjects, v1alpha1.ProjectSpec{
 						ProjectID:            ps.ID.String(),
 						ProjectName:          ps.Name,
 						DeploymentRevisionID: ps.LatestDeploymentRevision.ID.String(),
@@ -256,7 +256,12 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 					Spec: v1alpha1.MCPGatewaySpec{
 						OrganizationID:   ps.OrganizationID.String(),
 						OrganizationName: ps.Organization.Name,
-						Projects:         gatewayProjects,
+						Authorization: v1alpha1.AuthorizationSpec{
+							DynamicClientRegistration: v1alpha1.DynamicClientRegistrationSpec{
+								PublicClient: ps.Organization.Settings.Authorization.DCRPublicClient,
+							},
+						},
+						Projects: gatewayProjects,
 					},
 				},
 				client.Apply,

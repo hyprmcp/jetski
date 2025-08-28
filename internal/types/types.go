@@ -7,9 +7,18 @@ import (
 )
 
 type Organization struct {
-	ID        uuid.UUID `db:"id" json:"id"`
-	CreatedAt time.Time `db:"created_at" json:"createdAt"`
-	Name      string    `db:"name" json:"name"`
+	ID        uuid.UUID            `db:"id" json:"id"`
+	CreatedAt time.Time            `db:"created_at" json:"createdAt"`
+	Name      string               `db:"name" json:"name"`
+	Settings  OrganizationSettings `json:"settings"`
+}
+
+type OrganizationSettings struct {
+	Authorization OrganizationAuthorizationSettings `json:"authorization"`
+}
+
+type OrganizationAuthorizationSettings struct {
+	DCRPublicClient bool `json:"dcrPublicClient"`
 }
 
 type UserAccount struct {

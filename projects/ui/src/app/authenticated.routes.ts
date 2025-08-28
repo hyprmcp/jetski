@@ -1,21 +1,23 @@
-import { CanActivateFn, Router, Routes } from '@angular/router';
-import { OrganizationDashboardComponent } from './pages/organization-dashboard/organization-dashboard.component';
-import { MonitoringComponent } from './pages/monitoring/monitoring.component';
-import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
-import { HomeComponent } from './pages/home/home.component';
 import { inject, ResourceStatus, Signal } from '@angular/core';
-import { ContextService } from './services/context.service';
-import { LogsComponent } from './pages/project/logs/logs.component';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { CanActivateFn, Router, Routes } from '@angular/router';
 import { filter, firstValueFrom } from 'rxjs';
 import { AppShellComponent } from './app-shell.component';
-import { SettingsComponent } from './pages/settings/settings.component';
+import { ProjectDeploymentsComponent } from './components/deployments/project-deployments.component';
+import { HomeComponent } from './pages/home/home.component';
+import { MonitoringComponent } from './pages/monitoring/monitoring.component';
+import { NewProjectComponent } from './pages/new-project/new-project.component';
 import { OnboardingComponent } from './pages/onboarding/onboarding.component';
-import { OrganizationSettingsComponent } from './pages/organization-settings/organization-settings.component';
+import { OrganizationDashboardComponent } from './pages/organization-dashboard/organization-dashboard.component';
+import { OrganizationSettingsAuthorizationComponent } from './pages/organization-settings/organization-settings-authorization.component';
 import { OrganizationSettingsGeneralComponent } from './pages/organization-settings/organization-settings-general.component';
 import { OrganizationSettingsMembersComponent } from './pages/organization-settings/organization-settings-members.component';
-import { ProjectDeploymentsComponent } from './components/deployments/project-deployments.component';
-import { NewProjectComponent } from './pages/new-project/new-project.component';
+import { OrganizationSettingsComponent } from './pages/organization-settings/organization-settings.component';
+import { ProjectSettingsGeneralComponent } from './pages/project-settings/project-settings-general.component';
+import { ProjectSettingsComponent } from './pages/project-settings/project-settings.component';
+import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
+import { LogsComponent } from './pages/project/logs/logs.component';
+import { ContextService } from './services/context.service';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -122,6 +124,10 @@ export const authenticatedRoutes: Routes = [
                 component: OrganizationSettingsGeneralComponent,
               },
               {
+                path: 'authorization',
+                component: OrganizationSettingsAuthorizationComponent,
+              },
+              {
                 path: 'members',
                 component: OrganizationSettingsMembersComponent,
               },
@@ -152,7 +158,14 @@ export const authenticatedRoutes: Routes = [
                   },
                   {
                     path: 'settings',
-                    component: SettingsComponent,
+                    component: ProjectSettingsComponent,
+                    children: [
+                      {
+                        path: '',
+                        pathMatch: 'full',
+                        component: ProjectSettingsGeneralComponent,
+                      },
+                    ],
                   },
                 ],
               },

@@ -1,29 +1,15 @@
-import { Component } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideBell,
-  lucidePalette,
-  lucideSettings,
-  lucideShield,
-  lucideUser,
-  lucideUsers,
-} from '@ng-icons/lucide';
+import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideKeyRound, lucideSettings, lucideUsers } from '@ng-icons/lucide';
 
 @Component({
   selector: 'app-organization-settings',
   standalone: true,
   imports: [CommonModule, NgIcon, RouterOutlet, RouterLink, RouterLinkActive],
   viewProviders: [
-    provideIcons({
-      lucideUser,
-      lucideBell,
-      lucideShield,
-      lucidePalette,
-      lucideUsers,
-      lucideSettings,
-    }),
+    provideIcons({ lucideUsers, lucideSettings, lucideKeyRound }),
   ],
 
   template: `
@@ -48,6 +34,14 @@ import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
             >
               <ng-icon name="lucideSettings" class="h-4 w-4"></ng-icon>
               <span>General</span>
+            </a>
+            <a
+              routerLink="authorization"
+              routerLinkActive="bg-accent text-accent-foreground"
+              class="flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-md text-foreground hover:bg-accent hover:text-accent-foreground"
+            >
+              <ng-icon name="lucideKeyRound" class="h-4 w-4"></ng-icon>
+              <span>Authorization</span>
             </a>
             <a
               routerLink="members"

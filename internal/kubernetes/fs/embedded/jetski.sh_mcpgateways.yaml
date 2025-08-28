@@ -41,6 +41,14 @@ spec:
           spec:
             description: MCPGatewaySpec defines the desired state of MCPGateway
             properties:
+              authorization:
+                properties:
+                  dynamicClientRegistration:
+                    properties:
+                      publicClient:
+                        type: boolean
+                    type: object
+                type: object
               organizationId:
                 type: string
               organizationName:

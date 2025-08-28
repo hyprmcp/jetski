@@ -19,9 +19,30 @@ type Config struct {
 }
 
 type Authorization struct {
-	Server                           string `yaml:"server" json:"server"`
-	ServerMetadataProxyEnabled       bool   `yaml:"serverMetadataProxyEnabled" json:"serverMetadataProxyEnabled"`
-	DynamicClientRegistrationEnabled bool   `yaml:"dynamicClientRegistrationEnabled" json:"dynamicClientRegistrationEnabled"`
+	Server                     string `yaml:"server" json:"server"`
+	ServerMetadataProxyEnabled bool   `yaml:"serverMetadataProxyEnabled" json:"serverMetadataProxyEnabled"`
+	AuthorizationProxyEnabled  bool   `yaml:"authorizationProxyEnabled" json:"authorizationProxyEnabled"`
+	// DynamicClientRegistrationEnabled
+	//
+	// Deprecated: use DynamicClientRegistration instead
+	DynamicClientRegistrationEnabled *bool                      `yaml:"dynamicClientRegistrationEnabled" json:"dynamicClientRegistrationEnabled"`
+	DynamicClientRegistration        *DynamicClientRegistration `yaml:"dynamicClientRegistration" json:"dynamicClientRegistration"`
+}
+
+func (c *Authorization) GetDynamicClientRegistration() DynamicClientRegistration {
+	if c.DynamicClientRegistration != nil {
+		return *c.DynamicClientRegistration
+	} else if c.DynamicClientRegistrationEnabled != nil && *c.DynamicClientRegistrationEnabled {
+		return DynamicClientRegistration{true, true}
+	} else {
+		return DynamicClientRegistration{false, false}
+	}
+
+}
+
+type DynamicClientRegistration struct {
+	Enabled      bool `yaml:"enabled" json:"enabled"`
+	PublicClient bool `yaml:"publicClient" json:"publicClient"`
 }
 
 type DexGRPCClient struct {
@@ -122,7 +143,7 @@ func (c *Config) Validate() error {
 		return fmt.Errorf("authorization server is required")
 	}
 
-	if c.Authorization.DynamicClientRegistrationEnabled {
+	if c.Authorization.GetDynamicClientRegistration().Enabled {
 		if !c.Authorization.ServerMetadataProxyEnabled {
 			return fmt.Errorf("serverMetadataProxyEnabled must be true when dynamicClientRegistrationEnabled is true")
 		}

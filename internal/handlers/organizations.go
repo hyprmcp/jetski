@@ -23,6 +23,7 @@ func OrganizationsRouter(r chi.Router) {
 	r.Get("/", getOrganizations)
 	r.Post("/", postOrganizationHandler())
 	r.Route("/{organizationId}", func(r chi.Router) {
+		r.Put("/", putOrganizationHandler())
 		r.Route("/members", func(r chi.Router) {
 			r.Get("/", getOrganizationMembers)
 			r.Put("/", putOrganizationMember())
@@ -87,6 +88,43 @@ func getOrganizationMembers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RespondJSON(w, users)
+}
+
+func putOrganizationHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+
+		org := getOrganizationIfAllowed(w, r, pathParam)
+		if org == nil {
+			return
+		}
+
+		var request struct {
+			Settings struct {
+				Authorization *types.OrganizationAuthorizationSettings
+			}
+		}
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			Handle4XXError(w, http.StatusBadRequest)
+			return
+		}
+
+		updateNeeded := false
+
+		if request.Settings.Authorization != nil {
+			updateNeeded = true
+			org.Settings.Authorization = *request.Settings.Authorization
+		}
+
+		if updateNeeded {
+			if err := db.UpdateOrganization(ctx, org); err != nil {
+				HandleInternalServerError(w, r, err, "error updating organization")
+				return
+			}
+		}
+
+		RespondJSON(w, org)
+	}
 }
 
 func putOrganizationMember() http.HandlerFunc {
