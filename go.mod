@@ -11,7 +11,7 @@ require (
 	github.com/exaring/otelpgx v0.9.3
 	github.com/getsentry/sentry-go v0.35.1
 	github.com/getsentry/sentry-go/otel v0.35.1
-	github.com/go-chi/chi/v5 v5.2.2
+	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-chi/httprate v0.15.0
 	github.com/go-logr/zapr v1.3.0
 	github.com/golang-migrate/migrate/v4 v4.18.3
