@@ -143,6 +143,7 @@ func (req *request) GetGatewayConfig() (*gatewayconfig.Config, error) {
 		Authorization: gatewayconfig.Authorization{
 			Server:                           env.OIDCUrl(),
 			ServerMetadataProxyEnabled:       true,
+			AuthorizationProxyEnabled:        true,
 			DynamicClientRegistrationEnabled: util.PtrTo(true),
 			DynamicClientRegistration: &gatewayconfig.DynamicClientRegistration{
 				Enabled:      true,
