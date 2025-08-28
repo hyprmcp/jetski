@@ -70,7 +70,7 @@ func ApiRouter(
 		)
 
 		r.Route("/context", handlers.ContextRouter)
-		r.Route("/organizations", handlers.OrganizationsRouter)
+		r.Route("/organizations", handlers.OrganizationsRouter(k8sClient))
 		r.Route("/projects", handlers.ProjectsRouter(k8sClient))
 		r.Route("/dashboard", handlers.DashboardRouter)
 	})
