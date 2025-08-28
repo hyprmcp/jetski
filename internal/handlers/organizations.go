@@ -10,25 +10,30 @@ import (
 	"github.com/getsentry/sentry-go"
 	"github.com/google/uuid"
 	"github.com/hyprmcp/jetski/internal/apierrors"
+	"github.com/hyprmcp/jetski/internal/kubernetes/apply"
 	"github.com/hyprmcp/jetski/internal/mailsending"
 	"github.com/hyprmcp/jetski/internal/types"
 	"go.uber.org/zap"
+	"sigs.k8s.io/controller-runtime/pkg/client"
 
 	"github.com/go-chi/chi/v5"
 	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/hyprmcp/jetski/internal/db"
 )
 
-func OrganizationsRouter(r chi.Router) {
-	r.Get("/", getOrganizations)
-	r.Post("/", postOrganizationHandler())
-	r.Route("/{organizationId}", func(r chi.Router) {
-		r.Route("/members", func(r chi.Router) {
-			r.Get("/", getOrganizationMembers)
-			r.Put("/", putOrganizationMember())
-			r.Delete("/{userId}", deleteOrganizationMember())
+func OrganizationsRouter(k8sClient client.Client) func(r chi.Router) {
+	return func(r chi.Router) {
+		r.Get("/", getOrganizations)
+		r.Post("/", postOrganizationHandler())
+		r.Route("/{organizationId}", func(r chi.Router) {
+			r.Put("/", putOrganizationHandler(k8sClient))
+			r.Route("/members", func(r chi.Router) {
+				r.Get("/", getOrganizationMembers)
+				r.Put("/", putOrganizationMember())
+				r.Delete("/{userId}", deleteOrganizationMember())
+			})
 		})
-	})
+	}
 }
 
 func getOrganizations(w http.ResponseWriter, r *http.Request) {
@@ -87,6 +92,50 @@ func getOrganizationMembers(w http.ResponseWriter, r *http.Request) {
 	}
 
 	RespondJSON(w, users)
+}
+
+func putOrganizationHandler(k8sClient client.Client) http.HandlerFunc {
+	gatewayApplier := apply.MCPGateway(k8sClient)
+
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		log := internalctx.GetLogger(ctx)
+
+		org := getOrganizationIfAllowed(w, r, pathParam)
+		if org == nil {
+			return
+		}
+
+		var request struct {
+			Settings struct {
+				Authorization *types.OrganizationAuthorizationSettings
+			}
+		}
+		if err := json.NewDecoder(r.Body).Decode(&request); err != nil {
+			Handle4XXError(w, http.StatusBadRequest)
+			return
+		}
+
+		updateNeeded := false
+
+		if request.Settings.Authorization != nil {
+			updateNeeded = true
+			org.Settings.Authorization = *request.Settings.Authorization
+		}
+
+		if updateNeeded {
+			if err := db.UpdateOrganization(ctx, org); err != nil {
+				HandleInternalServerError(w, r, err, "error updating organization")
+				return
+			}
+		}
+
+		if err := gatewayApplier.Apply(ctx, *org); err != nil {
+			log.Error("failed to create MCPGateway resource", zap.Error(err))
+		}
+
+		RespondJSON(w, org)
+	}
 }
 
 func putOrganizationMember() http.HandlerFunc {

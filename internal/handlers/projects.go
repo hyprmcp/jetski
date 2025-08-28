@@ -13,13 +13,10 @@ import (
 	"github.com/hyprmcp/jetski/internal/analytics"
 	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/hyprmcp/jetski/internal/db"
-	"github.com/hyprmcp/jetski/internal/env"
-	"github.com/hyprmcp/jetski/internal/kubernetes/api/v1alpha1"
+	"github.com/hyprmcp/jetski/internal/kubernetes/apply"
 	"github.com/hyprmcp/jetski/internal/lists"
 	"github.com/hyprmcp/jetski/internal/types"
-	"github.com/hyprmcp/jetski/internal/util"
 	"go.uber.org/zap"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -133,6 +130,8 @@ func getDeploymentRevisionsForProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
+	gatewayApplier := apply.MCPGateway(k8sClient)
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		log := internalctx.GetLogger(ctx)
@@ -222,47 +221,7 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 			ps.LatestDeploymentRevisionID = &dr.ID
 			ps.LatestDeploymentRevision = &dr
 
-			var gatewayProjects []v1alpha1.MCPGatewayProject
-			if pss, err := db.GetProjectSummaries(ctx, ps.OrganizationID); err != nil {
-				HandleInternalServerError(w, r, err, "failed to retrieve project summaries after settings update")
-				return err
-			} else {
-				for _, ps := range pss {
-					if ps.LatestDeploymentRevisionID == nil {
-						continue
-					}
-					gatewayProjects = append(gatewayProjects, v1alpha1.MCPGatewayProject{
-						ProjectID:            ps.ID.String(),
-						ProjectName:          ps.Name,
-						DeploymentRevisionID: ps.LatestDeploymentRevision.ID.String(),
-						Authenticated:        ps.LatestDeploymentRevision.Authenticated,
-						Telemetry:            ps.LatestDeploymentRevision.Telemetry,
-						ProxyURL:             ps.LatestDeploymentRevision.ProxyURL,
-					})
-				}
-			}
-
-			err = k8sClient.Patch(
-				r.Context(),
-				&v1alpha1.MCPGateway{
-					TypeMeta: metav1.TypeMeta{
-						APIVersion: v1alpha1.GroupVersion.Identifier(),
-						Kind:       "MCPGateway",
-					},
-					ObjectMeta: metav1.ObjectMeta{
-						Name:      ps.Organization.Name,
-						Namespace: env.GatewayNamespace(),
-					},
-					Spec: v1alpha1.MCPGatewaySpec{
-						OrganizationID:   ps.OrganizationID.String(),
-						OrganizationName: ps.Organization.Name,
-						Projects:         gatewayProjects,
-					},
-				},
-				client.Apply,
-				&client.PatchOptions{Force: util.PtrTo(true), FieldManager: "jetski"},
-			)
-			if err != nil {
+			if err := gatewayApplier.Apply(ctx, ps.Organization); err != nil {
 				log.Error("failed to create MCPGateway resource", zap.Error(err))
 			}
 

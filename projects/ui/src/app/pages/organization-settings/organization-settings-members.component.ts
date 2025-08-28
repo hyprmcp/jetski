@@ -1,14 +1,6 @@
-import { Component, inject, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import {
-  lucideBell,
-  lucidePalette,
-  lucidePlus,
-  lucideShield,
-  lucideTrash,
-  lucideUser,
-} from '@ng-icons/lucide';
+import { HttpClient } from '@angular/common/http';
+import { Component, inject, signal, viewChild } from '@angular/core';
 import {
   FormControl,
   FormGroup,
@@ -16,19 +8,20 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ContextService } from '../../services/context.service';
-import { getOrganizationMembers } from '../../../api/organization';
-import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucidePlus, lucideTrash } from '@ng-icons/lucide';
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { toast } from 'ngx-sonner';
 import {
   HlmDialogComponent,
   HlmDialogImports,
 } from '../../../../libs/ui/ui-dialog-helm/src';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
-import { BrnDialogImports } from '@spartan-ng/brain/dialog';
-import { HttpClient } from '@angular/common/http';
+import { getOrganizationMembers } from '../../../api/organization';
 import { UserAccount } from '../../../api/user-account';
-import { toast } from 'ngx-sonner';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-organization-settings-members',
@@ -44,23 +37,19 @@ import { toast } from 'ngx-sonner';
     BrnDialogImports,
     ReactiveFormsModule,
   ],
-  viewProviders: [
-    provideIcons({
-      lucideUser,
-      lucideBell,
-      lucideShield,
-      lucidePalette,
-      lucidePlus,
-      lucideTrash,
-    }),
-  ],
+  viewProviders: [provideIcons({ lucidePlus, lucideTrash })],
 
   template: `
     <div>
       <div class="flex">
         <h3 hlmH3 class="grow">Organization Members</h3>
         <hlm-dialog #inviteDialogRef>
-          <button hlmBtn brnDialogTrigger variant="outline">
+          <button
+            hlmBtn
+            brnDialogTrigger
+            variant="outline"
+            class="flex items-center gap-1"
+          >
             <ng-icon name="lucidePlus" hlm size="sm"></ng-icon>
             Invite
           </button>

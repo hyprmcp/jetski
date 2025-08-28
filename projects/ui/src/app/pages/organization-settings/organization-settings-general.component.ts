@@ -1,19 +1,8 @@
 import { Component, inject } from '@angular/core';
-import { provideIcons } from '@ng-icons/core';
-import {
-  lucideBell,
-  lucidePalette,
-  lucideShield,
-  lucideUser,
-} from '@ng-icons/lucide';
 import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-organization-settings-general',
-  viewProviders: [
-    provideIcons({ lucideUser, lucideBell, lucideShield, lucidePalette }),
-  ],
-
   template: `
     <h2 class="text-lg font-semibold text-foreground mb-6">
       General Organization Settings

@@ -4,7 +4,18 @@ import { httpResource } from '@angular/common/http';
 import { UserAccount } from './user-account';
 
 export interface Organization extends Base {
+  id: string;
+  createdAt: string;
   name: string;
+  settings: OrganizationSettings;
+}
+
+export interface OrganizationSettings {
+  authorization: OrganizationSettingsAuthorization;
+}
+
+export interface OrganizationSettingsAuthorization {
+  dcrPublicClient: boolean;
 }
 
 export function getOrganizationMembers(org: Signal<Organization | undefined>) {
