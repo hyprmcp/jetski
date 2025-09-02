@@ -21,6 +21,7 @@ const (
 		o.created_at,
 		o.name,
 		ROW(
+			o.settings_custom_domain,
 			ROW(
 				o.settings_authorization_dcr_public_client
 			)
@@ -75,11 +76,13 @@ func UpdateOrganization(ctx context.Context, org *types.Organization) error {
 	rows, err := db.Query(
 		ctx,
 		`UPDATE Organization AS o
-			SET settings_authorization_dcr_public_client = @settings_authorization_dcr_public_client
+			SET settings_custom_domain = @settings_custom_domain,
+				settings_authorization_dcr_public_client = @settings_authorization_dcr_public_client
 		WHERE id = @id
 		RETURNING `+organizationOutputExpr,
 		pgx.NamedArgs{
-			"id": org.ID,
+			"id":                     org.ID,
+			"settings_custom_domain": org.Settings.CustomDomain,
 			"settings_authorization_dcr_public_client": org.Settings.Authorization.DCRPublicClient,
 		},
 	)
@@ -117,4 +120,38 @@ func GetOrganizationMembers(ctx context.Context, orgID uuid.UUID) ([]types.UserA
 	} else {
 		return result, nil
 	}
+}
+
+func ExistsOrganizationWithName(ctx context.Context, name string) (bool, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(ctx, "SELECT true FROM Organization WHERE name = @name", pgx.NamedArgs{"name": name})
+	if err != nil {
+		return false, err
+	}
+
+	exists, err := pgx.CollectExactlyOneRow(rows, pgx.RowTo[bool])
+	if errors.Is(err, pgx.ErrNoRows) {
+		err = nil
+	}
+
+	return exists, err
+}
+
+func ExistsOrganizationWithCustomDomain(ctx context.Context, domain string) (bool, error) {
+	db := internalctx.GetDb(ctx)
+	rows, err := db.Query(
+		ctx,
+		"SELECT true FROM Organization WHERE settings_custom_domain = @settings_custom_domain",
+		pgx.NamedArgs{"settings_custom_domain": domain},
+	)
+	if err != nil {
+		return false, err
+	}
+
+	exists, err := pgx.CollectExactlyOneRow(rows, pgx.RowTo[bool])
+	if errors.Is(err, pgx.ErrNoRows) {
+		err = nil
+	}
+
+	return exists, err
 }

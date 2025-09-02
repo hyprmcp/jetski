@@ -4,12 +4,11 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"net/http"
 	"syscall"
 
 	"github.com/go-logr/zapr"
 	"github.com/hyprmcp/jetski/internal/buildconfig"
-	"github.com/hyprmcp/jetski/internal/kubernetes/webhook"
+	"github.com/hyprmcp/jetski/internal/handlers/webhook"
 	"github.com/hyprmcp/jetski/internal/mail"
 	"github.com/hyprmcp/jetski/internal/migrations"
 	"github.com/hyprmcp/jetski/internal/routing"
@@ -109,21 +108,27 @@ func (r *Registry) Shutdown(ctx context.Context) error {
 	return nil
 }
 
-func (r *Registry) GetRouter() http.Handler {
-	return routing.NewRouter(
-		r.GetLogger(),
-		r.GetDbPool(),
-		r.GetTracers(),
-		r.GetJwkSet(),
-		r.GetMailer(),
-		r.GetK8SClient(),
+func (r *Registry) GetServer() server.Server {
+	return server.NewServer(
+		routing.NewRouter(
+			r.GetLogger(),
+			r.GetDbPool(),
+			r.GetTracers(),
+			r.GetJwkSet(),
+			r.GetMailer(),
+			r.GetK8SClient(),
+		),
+		r.GetLogger().With(zap.String("server", "main")),
 	)
 }
 
-func (r *Registry) GetServer() server.Server {
-	return server.NewServer(r.GetRouter(), r.logger.With(zap.String("server", "main")))
-}
-
 func (r *Registry) GetWebhookServer() server.Server {
-	return server.NewServer(webhook.NewHandler(), r.logger.With(zap.String("server", "webhook")))
+	return server.NewServer(
+		webhook.NewRouter(
+			r.GetLogger(),
+			r.GetDbPool(),
+			r.GetMailer(),
+		),
+		r.GetLogger().With(zap.String("server", "webhook")),
+	)
 }

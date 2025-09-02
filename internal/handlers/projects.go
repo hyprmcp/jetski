@@ -59,7 +59,7 @@ func postProjectHandler() http.HandlerFunc {
 			return
 		}
 
-		if ok := validateName(w, projectReq.Name); !ok {
+		if ok := validate(w, validateName(projectReq.Name)); !ok {
 			return
 		}
 

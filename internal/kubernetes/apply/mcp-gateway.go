@@ -55,6 +55,7 @@ func (a *mcpGatewayApplier) Apply(ctx context.Context, org types.Organization) e
 			Spec: v1alpha1.MCPGatewaySpec{
 				OrganizationID:   org.ID.String(),
 				OrganizationName: org.Name,
+				CustomDomain:     org.Settings.CustomDomain,
 				Authorization: v1alpha1.AuthorizationSpec{
 					DynamicClientRegistration: v1alpha1.DynamicClientRegistrationSpec{
 						PublicClient: org.Settings.Authorization.DCRPublicClient,

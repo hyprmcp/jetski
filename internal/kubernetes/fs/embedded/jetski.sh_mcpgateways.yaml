@@ -49,6 +49,8 @@ spec:
                         type: boolean
                     type: object
                 type: object
+              customDomain:
+                type: string
               organizationId:
                 type: string
               organizationName:

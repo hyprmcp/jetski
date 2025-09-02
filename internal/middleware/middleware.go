@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/hyprmcp/jetski/internal/db/queryable"
 	"github.com/hyprmcp/jetski/internal/mail"
 
 	"github.com/getsentry/sentry-go"
@@ -16,7 +17,6 @@ import (
 	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/hyprmcp/jetski/internal/db"
 	"github.com/hyprmcp/jetski/internal/types"
-	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/lestrrat-go/jwx/v3/jwk"
 	"github.com/lestrrat-go/jwx/v3/jwt"
 	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
@@ -25,7 +25,7 @@ import (
 )
 
 func ContextInjectorMiddleware(
-	db *pgxpool.Pool,
+	db queryable.Queryable,
 	mailer mail.Mailer,
 ) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

@@ -1,16 +1,12 @@
-package webhook
+package kubernetes
 
 import (
 	"encoding/json"
 	"net/http"
-
-	"github.com/go-chi/chi/v5"
 )
 
-func NewHandler() http.Handler {
-	r := chi.NewMux()
-
-	r.Post("/sync", func(w http.ResponseWriter, r *http.Request) {
+func NewHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
 		var req request
 
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -30,7 +26,5 @@ func NewHandler() http.Handler {
 		}
 
 		_ = json.NewEncoder(w).Encode(resp)
-	})
-
-	return r
+	}
 }
