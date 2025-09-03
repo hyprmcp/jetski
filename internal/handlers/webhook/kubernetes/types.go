@@ -122,7 +122,7 @@ func (req *request) GetDesiredChildren() ([]client.Object, error) {
 							Backend: networkingv1.IngressBackend{
 								Service: &networkingv1.IngressServiceBackend{
 									Name: gatewayName,
-									Port: networkingv1.ServiceBackendPort{Name: "http"},
+									Port: networkingv1.ServiceBackendPort{Number: 9000},
 								},
 							},
 						}},
