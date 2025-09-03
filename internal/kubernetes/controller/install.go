@@ -29,8 +29,12 @@ func Install(ctx context.Context, logger *zap.Logger, client ctrlclient.Client) 
 				zap.String("kind", obj.GetObjectKind().GroupVersionKind().Kind),
 				zap.String("name", obj.GetName()))
 
+			// TODO: Use client.Apply instead but the metacontroller API objects don't provide
+			// first-party apply configuration yet.
 			if err := client.Patch(
-				ctx, obj, ctrlclient.Apply,
+				ctx,
+				obj,
+				ctrlclient.Apply, //nolint:staticcheck
 				&ctrlclient.PatchOptions{Force: util.PtrTo(true), FieldManager: "jetski"},
 			); err != nil {
 				return err
