@@ -17,8 +17,9 @@ run = "go mod tidy"
 
 [tasks.controller-gen]
 run = [
-  'controller-gen object paths="./..."',
-  'controller-gen crd paths="./..." output:crd:artifacts:config=internal/kubernetes/fs/embedded',
+  'controller-gen object paths="./internal/kubernetes/api/..."',
+  'controller-gen applyconfiguration paths="./internal/kubernetes/api/..."',
+  'controller-gen crd paths="./internal/kubernetes/api/..." output:crd:artifacts:config=internal/kubernetes/fs/embedded',
 ]
 
 [tasks.lint]
