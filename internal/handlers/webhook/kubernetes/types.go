@@ -1,4 +1,4 @@
-package webhook
+package kubernetes
 
 import (
 	"crypto/sha256"
@@ -102,34 +102,41 @@ func (req *request) GetDesiredChildren() ([]client.Object, error) {
 				Ports:    []corev1.ServicePort{{Name: "http", Port: 9000}},
 			},
 		},
-		&networkingv1.Ingress{
-			TypeMeta: metav1.TypeMeta{APIVersion: "networking.k8s.io/v1", Kind: "Ingress"},
-			ObjectMeta: metav1.ObjectMeta{
-				Name:        req.Parent.Name,
-				Namespace:   req.Parent.Namespace,
-				Annotations: env.GatewayIngressAnnotations(),
-			},
-			Spec: networkingv1.IngressSpec{
-				Rules: []networkingv1.IngressRule{{
-					Host: fmt.Sprintf(env.GatewayHostFormat(), req.Parent.Spec.OrganizationName),
-					IngressRuleValue: networkingv1.IngressRuleValue{
-						HTTP: &networkingv1.HTTPIngressRuleValue{
-							Paths: []networkingv1.HTTPIngressPath{{
-								Path:     "/",
-								PathType: util.PtrTo(networkingv1.PathTypePrefix),
-								Backend: networkingv1.IngressBackend{
-									Service: &networkingv1.IngressServiceBackend{
-										Name: gatewayName,
-										Port: networkingv1.ServiceBackendPort{Name: "http"},
-									},
+	}
+
+	ingress := &networkingv1.Ingress{
+		TypeMeta: metav1.TypeMeta{APIVersion: "networking.k8s.io/v1", Kind: "Ingress"},
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        req.Parent.Name,
+			Namespace:   req.Parent.Namespace,
+			Annotations: env.GatewayIngressAnnotations(),
+		},
+		Spec: networkingv1.IngressSpec{
+			Rules: []networkingv1.IngressRule{{
+				Host: req.GetEffectiveGatewayHost(),
+				IngressRuleValue: networkingv1.IngressRuleValue{
+					HTTP: &networkingv1.HTTPIngressRuleValue{
+						Paths: []networkingv1.HTTPIngressPath{{
+							Path:     "/",
+							PathType: util.PtrTo(networkingv1.PathTypePrefix),
+							Backend: networkingv1.IngressBackend{
+								Service: &networkingv1.IngressServiceBackend{
+									Name: gatewayName,
+									Port: networkingv1.ServiceBackendPort{Name: "http"},
 								},
-							}},
-						},
+							},
+						}},
 					},
-				}},
-			},
+				},
+			}},
 		},
 	}
+
+	if ingressClass := env.GatewayIngressClass(); ingressClass != "" {
+		ingress.Spec.IngressClassName = &ingressClass
+	}
+
+	result = append(result, ingress)
 
 	return result, nil
 }
@@ -138,7 +145,7 @@ func (req *request) GetGatewayConfig() (*gatewayconfig.Config, error) {
 	cfg := &gatewayconfig.Config{
 		Host: &gatewayconfig.URL{
 			Scheme: env.GatewayHostScheme(),
-			Host:   fmt.Sprintf(env.GatewayHostFormat(), req.Parent.Spec.OrganizationName),
+			Host:   req.GetEffectiveGatewayHost(),
 		},
 		Authorization: gatewayconfig.Authorization{
 			Server:                           env.OIDCUrl(),
@@ -186,6 +193,15 @@ func (req *request) GetGatewayConfig() (*gatewayconfig.Config, error) {
 	}
 
 	return cfg, nil
+}
+
+func (req *request) GetEffectiveGatewayHost() string {
+	if req.Parent.Spec.CustomDomain != nil {
+		return *req.Parent.Spec.CustomDomain
+	} else {
+		return fmt.Sprintf(env.GatewayHostFormat(), req.Parent.Spec.OrganizationName)
+	}
+
 }
 
 func (req *request) GetStatus() *v1alpha1.MCPGatewayStatus {

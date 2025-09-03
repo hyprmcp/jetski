@@ -63,7 +63,7 @@ func postOrganizationHandler() http.HandlerFunc {
 			return
 		}
 		orgReq.Name = strings.TrimSpace(orgReq.Name)
-		if ok := validateName(w, orgReq.Name); !ok {
+		if ok := validate(w, validateName(orgReq.Name)); !ok {
 			return
 		}
 		if org, err := db.CreateOrganization(ctx, orgReq.Name); errors.Is(err, apierrors.ErrAlreadyExists) {
@@ -108,6 +108,7 @@ func putOrganizationHandler(k8sClient client.Client) http.HandlerFunc {
 
 		var request struct {
 			Settings struct {
+				CustomDomain  *string
 				Authorization *types.OrganizationAuthorizationSettings
 			}
 		}
@@ -117,6 +118,18 @@ func putOrganizationHandler(k8sClient client.Client) http.HandlerFunc {
 		}
 
 		updateNeeded := false
+
+		if request.Settings.CustomDomain != nil {
+			updateNeeded = true
+			if *request.Settings.CustomDomain != "" {
+				if ok := validate(w, validateDomainName(*request.Settings.CustomDomain)); !ok {
+					return
+				}
+				org.Settings.CustomDomain = request.Settings.CustomDomain
+			} else {
+				org.Settings.CustomDomain = nil
+			}
+		}
 
 		if request.Settings.Authorization != nil {
 			updateNeeded = true

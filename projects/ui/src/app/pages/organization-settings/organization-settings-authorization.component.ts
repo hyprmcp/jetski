@@ -1,4 +1,3 @@
-import { HttpClient } from '@angular/common/http';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BrnSelectImports } from '@spartan-ng/brain/select';
@@ -6,7 +5,7 @@ import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { toast } from 'ngx-sonner';
 import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
-import { Organization } from '../../../api/organization';
+import { Organization, OrganizationService } from '../../../api/organization';
 import { ContextService } from '../../services/context.service';
 
 @Component({
@@ -65,7 +64,7 @@ import { ContextService } from '../../services/context.service';
 export class OrganizationSettingsAuthorizationComponent implements OnInit {
   readonly contextService = inject(ContextService);
   private readonly fb = inject(FormBuilder).nonNullable;
-  private readonly httpClient = inject(HttpClient);
+  private readonly organizationService = inject(OrganizationService);
   protected readonly form = this.fb.group({
     dcrClientType: this.fb.control<'public' | 'private'>(
       'private',
@@ -90,12 +89,10 @@ export class OrganizationSettingsAuthorizationComponent implements OnInit {
       return;
     }
 
-    this.httpClient
-      .put<Organization>(`/api/v1/organizations/${orgId}`, {
-        settings: {
-          authorization: {
-            dcrPublicClient: this.form.value.dcrClientType === 'public',
-          },
+    this.organizationService
+      .updateSettings(orgId, {
+        authorization: {
+          dcrPublicClient: this.form.value.dcrClientType === 'public',
         },
       })
       .subscribe({

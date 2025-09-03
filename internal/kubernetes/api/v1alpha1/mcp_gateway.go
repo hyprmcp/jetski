@@ -26,6 +26,7 @@ type AuthorizationSpec struct {
 type MCPGatewaySpec struct {
 	OrganizationID   string            `json:"organizationId"`
 	OrganizationName string            `json:"organizationName"`
+	CustomDomain     *string           `json:"customDomain,omitempty"`
 	Authorization    AuthorizationSpec `json:"authorization,omitempty,omitzero"`
 	Projects         []ProjectSpec     `json:"projects,omitempty"`
 }

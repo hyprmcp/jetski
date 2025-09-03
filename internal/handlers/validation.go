@@ -7,23 +7,38 @@ import (
 	"strings"
 )
 
-func validateName(w http.ResponseWriter, name string) bool {
-	if err := validateNameE(name); err != nil {
-		Handle4XXErrorWithStatusText(w, http.StatusBadRequest, err.Error())
-		return false
-	} else {
-		return true
+type validationFunc func() error
+
+func validate(w http.ResponseWriter, fns ...validationFunc) bool {
+	for _, fn := range fns {
+		if err := fn(); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return false
+		}
+	}
+	return true
+}
+
+func validateName(name string) validationFunc {
+	return func() error {
+		if strings.TrimSpace(name) == "" {
+			return errors.New("empty name is not allowed")
+		}
+
+		if matched, _ := regexp.MatchString("^[a-z0-9]+(-[a-z0-9]+)*$", name); !matched {
+			return errors.New("name is invalid")
+		}
+
+		return nil
 	}
 }
 
-func validateNameE(name string) error {
-	if strings.TrimSpace(name) == "" {
-		return errors.New("empty name is not allowed")
-	}
+func validateDomainName(domain string) validationFunc {
+	return func() error {
+		if matched, _ := regexp.MatchString(`^([a-z0-9]+\.)+[a-z0-9]+$`, domain); !matched {
+			return errors.New("domain is invalid")
+		}
 
-	if matched, _ := regexp.MatchString("^[a-z0-9]+(-[a-z0-9]+)*$", name); !matched {
-		return errors.New("name is invalid")
+		return nil
 	}
-
-	return nil
 }

@@ -36,7 +36,11 @@ description = '''
 run = "go test ./..."
 
 [tasks.generate]
+depends = ["migrate"]
 run = "go run . generate"
+
+[tasks.migrate]
+run = "go run . migrate"
 
 [tasks.purge]
 run = "go run . migrate --down"

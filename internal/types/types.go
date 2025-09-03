@@ -14,6 +14,7 @@ type Organization struct {
 }
 
 type OrganizationSettings struct {
+	CustomDomain  *string                           `json:"customDomain"`
 	Authorization OrganizationAuthorizationSettings `json:"authorization"`
 }
 

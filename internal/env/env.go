@@ -32,6 +32,7 @@ var (
 	gatewayContainerImageTag      string
 	gatewayWebhookURL             string
 	gatewayNamespace              string
+	gatewayIngressClass           string
 	gatewayIngressAnnotations     map[string]string
 	gatewayHostFormat             string
 	gatewayPathFormat             string
@@ -80,6 +81,7 @@ func Initialize() {
 	)
 	gatewayWebhookURL = envutil.GetEnvOrDefault("GATEWAY_WEBHOOK_URL", "http://host.minikube.internal:8085/sync")
 	gatewayNamespace = envutil.GetEnvOrDefault("GATEWAY_NAMESPACE", "default")
+	gatewayIngressClass = envutil.GetEnv("GATEWAY_INGRESS_CLASS")
 	gatewayIngressAnnotations = envutil.GetEnvParsedOrDefault(
 		"GATEWAY_INGRESS_ANNOTATIONS",
 		parseYAMLMap,
@@ -184,6 +186,10 @@ func GatewayNamespace() string {
 
 func GatewayWebhookURL() string {
 	return gatewayWebhookURL
+}
+
+func GatewayIngressClass() string {
+	return gatewayIngressClass
 }
 
 func GatewayIngressAnnotations() map[string]string {

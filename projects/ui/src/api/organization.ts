@@ -1,7 +1,8 @@
 import { Base } from './base';
-import { Signal } from '@angular/core';
-import { httpResource } from '@angular/common/http';
+import { inject, Injectable, Signal } from '@angular/core';
+import { HttpClient, httpResource } from '@angular/common/http';
 import { UserAccount } from './user-account';
+import { Observable } from 'rxjs';
 
 export interface Organization extends Base {
   id: string;
@@ -10,9 +11,16 @@ export interface Organization extends Base {
   settings: OrganizationSettings;
 }
 
-export interface OrganizationSettings {
+export interface OrganizationDomainSettings {
+  customDomain?: string;
+}
+
+export interface OrganizationAuthSettings {
   authorization: OrganizationSettingsAuthorization;
 }
+
+export type OrganizationSettings = OrganizationDomainSettings &
+  OrganizationAuthSettings;
 
 export interface OrganizationSettingsAuthorization {
   dcrPublicClient: boolean;
@@ -33,4 +41,26 @@ export function getOrganizationMembers(org: Signal<Organization | undefined>) {
       parse: (value) => value as UserAccount[],
     },
   );
+}
+
+@Injectable({ providedIn: 'root' })
+export class OrganizationService {
+  private readonly httpClient = inject(HttpClient);
+
+  public updateSettings(
+    id: string,
+    settings: Required<OrganizationDomainSettings>,
+  ): Observable<Organization>;
+  public updateSettings(
+    id: string,
+    settings: OrganizationAuthSettings,
+  ): Observable<Organization>;
+  public updateSettings(
+    id: string,
+    settings: unknown,
+  ): Observable<Organization> {
+    return this.httpClient.put<Organization>(`/api/v1/organizations/${id}`, {
+      settings,
+    });
+  }
 }
