@@ -19,7 +19,7 @@ import {
   HlmSelectTriggerComponent,
   HlmSelectOptionComponent,
 } from '@spartan-ng/helm/select';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 import { BaseChartDirective } from 'ng2-charts';
@@ -39,7 +39,7 @@ Chart.register(...registerables);
     HlmSelectContentDirective,
     HlmSelectTriggerComponent,
     HlmSelectOptionComponent,
-    HlmIconDirective,
+    HlmIcon,
     FormsModule,
     RelativeDatePipe,
     BaseChartDirective,

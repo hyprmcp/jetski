@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { HlmCheckboxComponent } from '@spartan-ng/helm/checkbox';
+import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import {
   CellContext,
   HeaderContext,
@@ -7,7 +7,7 @@ import {
 } from '@tanstack/angular-table';
 
 @Component({
-  imports: [HlmCheckboxComponent],
+  imports: [HlmCheckbox],
   template: `
     <hlm-checkbox
       [checked]="_checkedState()"
@@ -35,7 +35,7 @@ export class TableHeadSelectionComponent<T> {
 }
 
 @Component({
-  imports: [HlmCheckboxComponent],
+  imports: [HlmCheckbox],
   template: `
     <hlm-checkbox
       type="checkbox"

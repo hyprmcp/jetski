@@ -3,13 +3,13 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import { toast } from 'ngx-sonner';
+import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
 import { Organization, OrganizationService } from '../../../api/organization';
 import { validateDomain } from '../../../vaildators/name';
 import { ContextService } from '../../services/context.service';
-import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
 
 @Component({
-  imports: [ReactiveFormsModule, HlmButtonDirective, HlmLabelDirective],
+  imports: [ReactiveFormsModule, HlmButtonDirective, HlmLabel],
   template: `
     <h2 class="text-lg font-semibold text-foreground mb-6">
       General Organization Settings

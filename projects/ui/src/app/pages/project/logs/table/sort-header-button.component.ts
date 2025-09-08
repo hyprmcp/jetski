@@ -11,14 +11,14 @@ import {
   lucideArrowUpDown,
 } from '@ng-icons/lucide';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import {
   HeaderContext,
   injectFlexRenderContext,
 } from '@tanstack/angular-table';
 
 @Component({
-  imports: [HlmButtonDirective, NgIcon, HlmIconDirective],
+  imports: [HlmButtonDirective, NgIcon, HlmIcon],
   providers: [
     provideIcons({ lucideArrowUpDown, lucideArrowUp, lucideArrowDown }),
   ],

@@ -12,7 +12,7 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePlus, lucideTrash } from '@ng-icons/lucide';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmH3Directive } from '@spartan-ng/helm/typography';
 import { toast } from 'ngx-sonner';
 import {
@@ -33,7 +33,7 @@ import { ContextService } from '../../services/context.service';
     HlmButtonDirective,
     NgIcon,
     HlmDialogImports,
-    HlmIconDirective,
+    HlmIcon,
     BrnDialogImports,
     ReactiveFormsModule,
   ],

@@ -17,7 +17,7 @@ import {
   lucideChevronLeft,
   lucideChevronRight,
 } from '@ng-icons/lucide';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
 import { ToolAnalytics, McpTool, ToolArgument } from './tool-analytics';
 import { ColorPipe } from '../../../../pipes/color-pipe';
@@ -201,7 +201,7 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
     HlmSelectOptionComponent,
     FormsModule,
     NgIcon,
-    HlmIconDirective,
+    HlmIcon,
     ColorPipe,
   ],
   providers: [

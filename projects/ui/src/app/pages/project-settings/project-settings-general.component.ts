@@ -1,21 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
-import { HlmCheckboxComponent } from '@spartan-ng/helm/checkbox';
+import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { toast } from 'ngx-sonner';
-import { HlmLabelDirective } from '../../../../libs/ui/ui-label-helm/src';
+import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
 import { ProjectSummary } from '../../../api/dashboard';
 import { ProjectService } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
-import { RouterLink } from '@angular/router';
 
 @Component({
   imports: [
     CommonModule,
     HlmButtonDirective,
-    HlmCheckboxComponent,
-    HlmLabelDirective,
+    HlmCheckbox,
+    HlmLabel,
     ReactiveFormsModule,
     RouterLink,
   ],

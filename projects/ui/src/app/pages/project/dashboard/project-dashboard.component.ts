@@ -22,7 +22,7 @@ import {
   lucideUsers,
   lucideZap,
 } from '@ng-icons/lucide';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
 import { RelativeDatePipe } from '../../../pipes/relative-date-pipe';
 import { type Overview } from './analytics/overview';
@@ -175,7 +175,7 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
     HlmSelectOptionComponent,
     FormsModule,
     NgIcon,
-    HlmIconDirective,
+    HlmIcon,
     RelativeDatePipe,
     OverviewComponent,
     ToolsPerformanceComponent,

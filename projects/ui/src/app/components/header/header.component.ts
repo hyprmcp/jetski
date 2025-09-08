@@ -11,7 +11,7 @@ import {
   lucidePlus,
   lucideSun,
 } from '@ng-icons/lucide';
-import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
+import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
 import { HlmButtonDirective } from '@spartan-ng/helm/button';
 import {
   HlmMenuComponent,
@@ -23,8 +23,8 @@ import {
   HlmSubMenuComponent,
 } from '@spartan-ng/helm/menu';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { ThemeService } from '../../services/theme.service';
 import { ContextService } from '../../services/context.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
@@ -40,7 +40,7 @@ import { ContextService } from '../../services/context.service';
     HlmMenuGroupComponent,
     HlmMenuItemSubIndicatorComponent,
     HlmSubMenuComponent,
-    BrnMenuTriggerDirective,
+    BrnMenuTrigger,
     NgIcon,
   ],
   viewProviders: [
