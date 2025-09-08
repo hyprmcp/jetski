@@ -7,13 +7,13 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronRight } from '@ng-icons/lucide';
 import { hlm } from '@spartan-ng/brain/core';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { ClassValue } from 'clsx';
 
 @Component({
   selector: 'hlm-menu-item-sub-indicator',
   providers: [provideIcons({ lucideChevronRight })],
-  imports: [NgIcon, HlmIconDirective],
+  imports: [NgIcon, HlmIcon],
   template: `
     <ng-icon
       hlm
@@ -27,7 +27,7 @@ import { ClassValue } from 'clsx';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HlmMenuItemSubIndicatorComponent {
+export class HlmMenuItemSubIndicator {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected readonly _computedClass = computed(() =>
     hlm('ml-auto size-4', this.userClass()),

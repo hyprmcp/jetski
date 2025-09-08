@@ -8,7 +8,7 @@ import {
 import { ContextService } from '../../services/context.service';
 import { HttpClient } from '@angular/common/http';
 import { ActivatedRoute, Router } from '@angular/router';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { map, startWith } from 'rxjs';
 import { AsyncPipe } from '@angular/common';
@@ -86,7 +86,7 @@ import { validateResourceName } from '../../../vaildators/name';
       </div>
     </div>
   `,
-  imports: [ReactiveFormsModule, HlmButtonDirective, AsyncPipe],
+  imports: [ReactiveFormsModule, HlmButton, AsyncPipe],
 })
 export class OnboardingComponent {
   readonly contextService = inject(ContextService);

@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { HlmH3 } from '@spartan-ng/helm/typography';
 import { getDeploymentsForProject } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
 import { DeploymentRevisionComponent } from './deployment-revision.component';
@@ -40,7 +40,7 @@ import { DeploymentRevisionComponent } from './deployment-revision.component';
       </div>
     }
   `,
-  imports: [HlmH3Directive, DeploymentRevisionComponent],
+  imports: [HlmH3, DeploymentRevisionComponent],
 })
 export class ProjectDeploymentsComponent {
   readonly contextService = inject(ContextService);

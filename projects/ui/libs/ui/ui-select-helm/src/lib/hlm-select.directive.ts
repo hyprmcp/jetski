@@ -8,7 +8,7 @@ import type { ClassValue } from 'clsx';
     '[class]': '_computedClass()',
   },
 })
-export class HlmSelectDirective {
+export class HlmSelect {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected readonly _computedClass = computed(() =>
     hlm('space-y-2', this.userClass()),

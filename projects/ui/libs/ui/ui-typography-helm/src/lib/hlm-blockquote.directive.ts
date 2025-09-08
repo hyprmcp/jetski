@@ -10,7 +10,7 @@ export const hlmBlockquote = 'mt-6 border-border border-l-2 pl-6 italic';
     '[class]': '_computedClass()',
   },
 })
-export class HlmBlockquoteDirective {
+export class HlmBlockquote {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(hlmBlockquote, this.userClass()),

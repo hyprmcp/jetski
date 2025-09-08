@@ -11,12 +11,12 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePlus, lucideTrash } from '@ng-icons/lucide';
 import { BrnDialogImports } from '@spartan-ng/brain/dialog';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
-import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { HlmH3 } from '@spartan-ng/helm/typography';
 import { toast } from 'ngx-sonner';
 import {
-  HlmDialogComponent,
+  HlmDialog,
   HlmDialogImports,
 } from '../../../../libs/ui/ui-dialog-helm/src';
 import { getOrganizationMembers } from '../../../api/organization';
@@ -29,11 +29,11 @@ import { ContextService } from '../../services/context.service';
   imports: [
     CommonModule,
     FormsModule,
-    HlmH3Directive,
-    HlmButtonDirective,
+    HlmH3,
+    HlmButton,
     NgIcon,
     HlmDialogImports,
-    HlmIconDirective,
+    HlmIcon,
     BrnDialogImports,
     ReactiveFormsModule,
   ],
@@ -173,7 +173,7 @@ export class OrganizationSettingsMembersComponent {
   loading = signal<boolean>(false);
   removeLoading = signal<boolean>(false);
   error = signal<string | undefined>(undefined);
-  inviteDialogRef = viewChild<HlmDialogComponent>('inviteDialogRef');
+  inviteDialogRef = viewChild<HlmDialog>('inviteDialogRef');
   readonly form = new FormGroup({
     email: new FormControl<string>('', [Validators.required, Validators.email]),
   });
@@ -209,12 +209,12 @@ export class OrganizationSettingsMembersComponent {
       });
   }
 
-  closeRemoveDialog(ref: HlmDialogComponent) {
+  closeRemoveDialog(ref: HlmDialog) {
     this.error.set(undefined);
     ref.close();
   }
 
-  removeUser(user: UserAccount, ref: HlmDialogComponent) {
+  removeUser(user: UserAccount, ref: HlmDialog) {
     if (this.removeLoading()) {
       return;
     }

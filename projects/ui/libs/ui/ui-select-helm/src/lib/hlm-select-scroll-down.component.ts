@@ -7,12 +7,12 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
 import { hlm } from '@spartan-ng/brain/core';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { ClassValue } from 'clsx';
 
 @Component({
   selector: 'hlm-select-scroll-down',
-  imports: [NgIcon, HlmIconDirective],
+  imports: [NgIcon, HlmIcon],
   providers: [provideIcons({ lucideChevronDown })],
   host: {
     '[class]': '_computedClass()',
@@ -20,7 +20,7 @@ import { ClassValue } from 'clsx';
   template: ` <ng-icon hlm size="sm" class="ml-2" name="lucideChevronDown" /> `,
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HlmSelectScrollDownComponent {
+export class HlmSelectScrollDown {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected readonly _computedClass = computed(() =>
     hlm(

@@ -1,10 +1,7 @@
 import { Component, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-} from '@spartan-ng/helm/card';
-import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { HlmCardContent, HlmCard } from '@spartan-ng/helm/card';
+import { HlmH3 } from '@spartan-ng/helm/typography';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 import { getProjectSummaries, ProjectSummary } from '../../../api/dashboard';
 import { Organization } from '../../../api/organization';
@@ -15,9 +12,9 @@ import { RouterLink } from '@angular/router';
   standalone: true,
   imports: [
     CommonModule,
-    HlmCardDirective,
-    HlmCardContentDirective,
-    HlmH3Directive,
+    HlmCard,
+    HlmCardContent,
+    HlmH3,
     RelativeDatePipe,
     RouterLink,
   ],

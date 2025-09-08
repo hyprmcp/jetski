@@ -41,11 +41,11 @@ type InputVariants = VariantProps<typeof inputVariants>;
   providers: [
     {
       provide: BrnFormFieldControl,
-      useExisting: forwardRef(() => HlmInputDirective),
+      useExisting: forwardRef(() => HlmInput),
     },
   ],
 })
-export class HlmInputDirective implements BrnFormFieldControl, DoCheck {
+export class HlmInput implements BrnFormFieldControl, DoCheck {
   public readonly error = input<InputVariants['error']>('auto');
 
   protected readonly state = linkedSignal(() => ({ error: this.error() }));

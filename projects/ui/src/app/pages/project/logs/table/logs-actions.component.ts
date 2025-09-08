@@ -1,23 +1,20 @@
+import { DatePipe, JsonPipe } from '@angular/common';
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEllipsis, lucideEye } from '@ng-icons/lucide';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
-import { MCPServerLog } from '../../../../../api/mcp-server-log';
-import {
-  BrnDialogContentDirective,
-  BrnDialogImports,
-} from '@spartan-ng/brain/dialog';
+import { BrnDialogContent, BrnDialogImports } from '@spartan-ng/brain/dialog';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmDialogImports } from '../../../../../../libs/ui/ui-dialog-helm/src';
-import { DatePipe, JsonPipe } from '@angular/common';
+import { MCPServerLog } from '../../../../../api/mcp-server-log';
 
 @Component({
   selector: 'app-logs-actions',
   imports: [
-    HlmButtonDirective,
+    HlmButton,
     NgIcon,
-    HlmIconDirective,
-    BrnDialogContentDirective,
+    HlmIcon,
+    BrnDialogContent,
     HlmDialogImports,
     BrnDialogImports,
     JsonPipe,

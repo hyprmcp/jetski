@@ -1,6 +1,6 @@
 import { Directive, computed, input } from '@angular/core';
 import { hlm } from '@spartan-ng/brain/core';
-import { BrnMenuItemDirective } from '@spartan-ng/brain/menu';
+import { BrnMenuItem } from '@spartan-ng/brain/menu';
 import type { ClassValue } from 'clsx';
 
 @Directive({
@@ -8,9 +8,9 @@ import type { ClassValue } from 'clsx';
   host: {
     '[class]': '_computedClass()',
   },
-  hostDirectives: [BrnMenuItemDirective],
+  hostDirectives: [BrnMenuItem],
 })
-export class HlmMenuBarItemDirective {
+export class HlmMenuBarItem {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(

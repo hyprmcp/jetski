@@ -1,9 +1,9 @@
 import { Component, Input } from '@angular/core';
 import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-  HlmCardHeaderDirective,
-  HlmCardTitleDirective,
+  HlmCardContent,
+  HlmCard,
+  HlmCardHeader,
+  HlmCardTitle,
 } from '@spartan-ng/helm/card';
 import { formatDistance } from 'date-fns';
 import { RelativeDatePipe } from '../../../../pipes/relative-date-pipe';
@@ -63,10 +63,10 @@ import { RecentSessions } from './recent-sessions';
     </div>
   `,
   imports: [
-    HlmCardDirective,
-    HlmCardContentDirective,
-    HlmCardHeaderDirective,
-    HlmCardTitleDirective,
+    HlmCard,
+    HlmCardContent,
+    HlmCardHeader,
+    HlmCardTitle,
     RelativeDatePipe,
   ],
 })

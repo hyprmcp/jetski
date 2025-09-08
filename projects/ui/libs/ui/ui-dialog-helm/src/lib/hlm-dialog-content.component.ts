@@ -11,23 +11,17 @@ import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideX } from '@ng-icons/lucide';
 import { hlm } from '@spartan-ng/brain/core';
 import {
-  BrnDialogCloseDirective,
+  BrnDialogClose,
   BrnDialogRef,
   injectBrnDialogContext,
 } from '@spartan-ng/brain/dialog';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import type { ClassValue } from 'clsx';
-import { HlmDialogCloseDirective } from './hlm-dialog-close.directive';
+import { HlmDialogClose } from './hlm-dialog-close.directive';
 
 @Component({
   selector: 'hlm-dialog-content',
-  imports: [
-    NgComponentOutlet,
-    BrnDialogCloseDirective,
-    HlmDialogCloseDirective,
-    NgIcon,
-    HlmIconDirective,
-  ],
+  imports: [NgComponentOutlet, BrnDialogClose, HlmDialogClose, NgIcon, HlmIcon],
   providers: [provideIcons({ lucideX })],
   host: {
     '[class]': '_computedClass()',
@@ -48,7 +42,7 @@ import { HlmDialogCloseDirective } from './hlm-dialog-close.directive';
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
 })
-export class HlmDialogContentComponent {
+export class HlmDialogContent {
   private readonly _dialogRef = inject(BrnDialogRef);
   private readonly _dialogContext = injectBrnDialogContext({ optional: true });
 

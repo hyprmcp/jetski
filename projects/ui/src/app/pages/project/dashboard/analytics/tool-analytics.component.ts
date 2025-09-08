@@ -1,15 +1,15 @@
 import { Component, Input, OnInit } from '@angular/core';
 import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-  HlmCardHeaderDirective,
-  HlmCardTitleDirective,
+  HlmCardContent,
+  HlmCard,
+  HlmCardHeader,
+  HlmCardTitle,
 } from '@spartan-ng/helm/card';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
-  HlmSelectContentDirective,
-  HlmSelectOptionComponent,
-  HlmSelectTriggerComponent,
+  HlmSelectContent,
+  HlmSelectOption,
+  HlmSelectTrigger,
 } from '@spartan-ng/helm/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -17,7 +17,7 @@ import {
   lucideChevronLeft,
   lucideChevronRight,
 } from '@ng-icons/lucide';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
 import { ToolAnalytics, McpTool, ToolArgument } from './tool-analytics';
 import { ColorPipe } from '../../../../pipes/color-pipe';
@@ -191,17 +191,17 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
     </div>
   `,
   imports: [
-    HlmCardDirective,
-    HlmCardContentDirective,
-    HlmCardHeaderDirective,
-    HlmCardTitleDirective,
+    HlmCard,
+    HlmCardContent,
+    HlmCardHeader,
+    HlmCardTitle,
     BrnSelectModule,
-    HlmSelectContentDirective,
-    HlmSelectTriggerComponent,
-    HlmSelectOptionComponent,
+    HlmSelectContent,
+    HlmSelectTrigger,
+    HlmSelectOption,
     FormsModule,
     NgIcon,
-    HlmIconDirective,
+    HlmIcon,
     ColorPipe,
   ],
   providers: [

@@ -1,10 +1,7 @@
 import { Component, computed, inject, input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-} from '@spartan-ng/helm/card';
-import { HlmH3Directive } from '@spartan-ng/helm/typography';
+import { HlmCardContent, HlmCard } from '@spartan-ng/helm/card';
+import { HlmH3 } from '@spartan-ng/helm/typography';
 import { Organization } from '../../../api/organization';
 import { getUsage, Usage } from '../../../api/dashboard';
 import { ContextService } from '../../services/context.service';
@@ -13,12 +10,7 @@ import { HttpResourceRef } from '@angular/common/http';
 @Component({
   selector: 'app-usage-card',
   standalone: true,
-  imports: [
-    CommonModule,
-    HlmCardDirective,
-    HlmCardContentDirective,
-    HlmH3Directive,
-  ],
+  imports: [CommonModule, HlmCard, HlmCardContent, HlmH3],
   template: `
     <h3 hlmH3>Usage</h3>
     <section hlmCard>

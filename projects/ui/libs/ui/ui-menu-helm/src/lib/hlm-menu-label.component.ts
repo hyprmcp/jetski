@@ -18,7 +18,7 @@ import { ClassValue } from 'clsx';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HlmMenuLabelComponent {
+export class HlmMenuLabel {
   public readonly inset = input<boolean, BooleanInput>(false, {
     transform: booleanAttribute,
   });

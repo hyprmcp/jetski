@@ -1,20 +1,20 @@
 import { NgModule } from '@angular/core';
 
-import { HlmMenuBarItemDirective } from './lib/hlm-menu-bar-item.directive';
-import { HlmMenuBarComponent } from './lib/hlm-menu-bar.component';
-import { HlmMenuGroupComponent } from './lib/hlm-menu-group.component';
-import { HlmMenuItemCheckComponent } from './lib/hlm-menu-item-check.component';
-import { HlmMenuItemCheckboxDirective } from './lib/hlm-menu-item-checkbox.directive';
-import { HlmMenuItemIconDirective } from './lib/hlm-menu-item-icon.directive';
-import { HlmMenuItemRadioComponent } from './lib/hlm-menu-item-radio.component';
-import { HlmMenuItemRadioDirective } from './lib/hlm-menu-item-radio.directive';
-import { HlmMenuItemSubIndicatorComponent } from './lib/hlm-menu-item-sub-indicator.component';
-import { HlmMenuItemDirective } from './lib/hlm-menu-item.directive';
-import { HlmMenuLabelComponent } from './lib/hlm-menu-label.component';
-import { HlmMenuSeparatorComponent } from './lib/hlm-menu-separator.component';
-import { HlmMenuShortcutComponent } from './lib/hlm-menu-shortcut.component';
-import { HlmMenuComponent } from './lib/hlm-menu.component';
-import { HlmSubMenuComponent } from './lib/hlm-sub-menu.component';
+import { HlmMenuBarItem } from './lib/hlm-menu-bar-item.directive';
+import { HlmMenuBar } from './lib/hlm-menu-bar.component';
+import { HlmMenuGroup } from './lib/hlm-menu-group.component';
+import { HlmMenuItemCheck } from './lib/hlm-menu-item-check.component';
+import { HlmMenuItemCheckbox } from './lib/hlm-menu-item-checkbox.directive';
+import { HlmMenuItemIcon } from './lib/hlm-menu-item-icon.directive';
+import { HlmMenuItemRadioIndicator } from './lib/hlm-menu-item-radio.component';
+import { HlmMenuItemRadio } from './lib/hlm-menu-item-radio.directive';
+import { HlmMenuItemSubIndicator } from './lib/hlm-menu-item-sub-indicator.component';
+import { HlmMenuItem } from './lib/hlm-menu-item.directive';
+import { HlmMenuLabel } from './lib/hlm-menu-label.component';
+import { HlmMenuSeparator } from './lib/hlm-menu-separator.component';
+import { HlmMenuShortcut } from './lib/hlm-menu-shortcut.component';
+import { HlmMenu } from './lib/hlm-menu.component';
+import { HlmSubMenu } from './lib/hlm-sub-menu.component';
 
 export * from './lib/hlm-menu-bar-item.directive';
 export * from './lib/hlm-menu-bar.component';
@@ -33,30 +33,30 @@ export * from './lib/hlm-menu.component';
 export * from './lib/hlm-sub-menu.component';
 
 export const HlmMenuItemImports = [
-  HlmMenuItemDirective,
-  HlmMenuItemIconDirective,
-  HlmMenuGroupComponent,
-  HlmMenuItemSubIndicatorComponent,
-  HlmMenuItemRadioComponent,
-  HlmMenuItemCheckComponent,
-  HlmMenuShortcutComponent,
-  HlmMenuItemCheckboxDirective,
-  HlmMenuItemRadioDirective,
+  HlmMenuItem,
+  HlmMenuItemIcon,
+  HlmMenuGroup,
+  HlmMenuItemSubIndicator,
+  HlmMenuItemRadioIndicator,
+  HlmMenuItemCheck,
+  HlmMenuShortcut,
+  HlmMenuItemCheckbox,
+  HlmMenuItemRadio,
 ];
 export const HlmMenuStructureImports = [
-  HlmMenuLabelComponent,
-  HlmMenuSeparatorComponent,
+  HlmMenuLabel,
+  HlmMenuSeparator,
 ] as const;
 export const HlmMenuImports = [
   ...HlmMenuItemImports,
   ...HlmMenuStructureImports,
-  HlmMenuComponent,
-  HlmSubMenuComponent,
+  HlmMenu,
+  HlmSubMenu,
 ] as const;
 export const HlmMenuBarImports = [
   ...HlmMenuImports,
-  HlmMenuBarComponent,
-  HlmMenuBarItemDirective,
+  HlmMenuBar,
+  HlmMenuBarItem,
 ] as const;
 
 @NgModule({

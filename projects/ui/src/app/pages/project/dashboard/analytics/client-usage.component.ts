@@ -9,10 +9,10 @@ import {
   effect,
 } from '@angular/core';
 import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-  HlmCardHeaderDirective,
-  HlmCardTitleDirective,
+  HlmCardContent,
+  HlmCard,
+  HlmCardHeader,
+  HlmCardTitle,
 } from '@spartan-ng/helm/card';
 import { Chart, registerables } from 'chart.js';
 import { DecimalPipe } from '@angular/common';
@@ -85,13 +85,7 @@ import { ThemeService } from '../../../../services/theme.service';
       </div>
     </div>
   `,
-  imports: [
-    HlmCardDirective,
-    HlmCardContentDirective,
-    HlmCardHeaderDirective,
-    HlmCardTitleDirective,
-    DecimalPipe,
-  ],
+  imports: [HlmCard, HlmCardContent, HlmCardHeader, HlmCardTitle, DecimalPipe],
 })
 export class ClientUsageComponent implements AfterViewInit, OnDestroy {
   @Input() data!: ClientUsage;

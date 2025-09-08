@@ -6,9 +6,9 @@ import {
 } from '../../../../api/project';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
-  HlmSelectContentDirective,
-  HlmSelectOptionComponent,
-  HlmSelectTriggerComponent,
+  HlmSelectContent,
+  HlmSelectOption,
+  HlmSelectTrigger,
 } from '@spartan-ng/helm/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -22,7 +22,7 @@ import {
   lucideUsers,
   lucideZap,
 } from '@ng-icons/lucide';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
 import { RelativeDatePipe } from '../../../pipes/relative-date-pipe';
 import { type Overview } from './analytics/overview';
@@ -170,12 +170,12 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
   `,
   imports: [
     BrnSelectModule,
-    HlmSelectContentDirective,
-    HlmSelectTriggerComponent,
-    HlmSelectOptionComponent,
+    HlmSelectContent,
+    HlmSelectTrigger,
+    HlmSelectOption,
     FormsModule,
     NgIcon,
-    HlmIconDirective,
+    HlmIcon,
     RelativeDatePipe,
     OverviewComponent,
     ToolsPerformanceComponent,

@@ -1,12 +1,12 @@
+import { httpResource } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
-import { HlmButtonModule } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideRotateCcw } from '@ng-icons/lucide';
-import { formatDuration, intervalToDuration } from 'date-fns';
-import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmButtonModule } from '@spartan-ng/helm/button';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmMenuModule } from '@spartan-ng/helm/menu';
 import { HlmSelectModule } from '@spartan-ng/helm/select';
 import { HlmTableImports } from '@spartan-ng/helm/table';
@@ -22,25 +22,25 @@ import {
   PaginationState,
   SortingState,
 } from '@tanstack/angular-table';
-import { httpResource } from '@angular/common/http';
-import { JsonRpcRequest, MCPServerLog } from '../../../../api/mcp-server-log';
-import { TimestampCellComponent } from './timestamp-cell.component';
-import { LogsActionsComponent } from './table/logs-actions.component';
+import { formatDuration, intervalToDuration } from 'date-fns';
 import { combineLatestWith, distinctUntilChanged, map, tap } from 'rxjs';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { TableHeadSortButtonComponent } from './table/sort-header-button.component';
+import { JsonRpcRequest, MCPServerLog } from '../../../../api/mcp-server-log';
 import { ContextService } from '../../../services/context.service';
+import { LogsActionsComponent } from './table/logs-actions.component';
+import { TableHeadSortButtonComponent } from './table/sort-header-button.component';
+import { TimestampCellComponent } from './timestamp-cell.component';
+import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
 
 @Component({
   selector: 'app-logs-component',
   imports: [
     FlexRenderDirective,
     FormsModule,
-    BrnMenuTriggerDirective,
+    BrnMenuTrigger,
     HlmMenuModule,
     HlmButtonModule,
     NgIcon,
-    HlmIconDirective,
+    HlmIcon,
     BrnSelectModule,
     HlmSelectModule,
     ...HlmTableImports,

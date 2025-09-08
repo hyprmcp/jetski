@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideActivity,
@@ -15,11 +15,11 @@ import { ContextService } from '../../services/context.service';
 import { getDeploymentsForProject } from '../../../api/project';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
-  HlmSelectContentDirective,
-  HlmSelectTriggerComponent,
-  HlmSelectOptionComponent,
+  HlmSelectContent,
+  HlmSelectTrigger,
+  HlmSelectOption,
 } from '@spartan-ng/helm/select';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { FormsModule } from '@angular/forms';
 import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 import { BaseChartDirective } from 'ng2-charts';
@@ -33,13 +33,13 @@ Chart.register(...registerables);
   standalone: true,
   imports: [
     CommonModule,
-    HlmButtonDirective,
+    HlmButton,
     NgIcon,
     BrnSelectModule,
-    HlmSelectContentDirective,
-    HlmSelectTriggerComponent,
-    HlmSelectOptionComponent,
-    HlmIconDirective,
+    HlmSelectContent,
+    HlmSelectTrigger,
+    HlmSelectOption,
+    HlmIcon,
     FormsModule,
     RelativeDatePipe,
     BaseChartDirective,

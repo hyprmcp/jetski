@@ -1,7 +1,7 @@
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { hlm } from '@spartan-ng/brain/core';
-import { BrnMenuItemDirective } from '@spartan-ng/brain/menu';
+import { BrnMenuItem } from '@spartan-ng/brain/menu';
 import { ClassValue } from 'clsx';
 
 @Directive({
@@ -13,13 +13,13 @@ import { ClassValue } from 'clsx';
   },
   hostDirectives: [
     {
-      directive: BrnMenuItemDirective,
+      directive: BrnMenuItem,
       inputs: ['disabled: disabled'],
       outputs: ['triggered: triggered'],
     },
   ],
 })
-export class HlmMenuItemDirective {
+export class HlmMenuItem {
   public readonly variant = input<'default' | 'destructive'>('default');
 
   public readonly inset = input<boolean, BooleanInput>(false, {

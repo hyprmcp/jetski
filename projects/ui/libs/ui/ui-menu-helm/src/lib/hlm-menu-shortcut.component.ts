@@ -15,7 +15,7 @@ import type { ClassValue } from 'clsx';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HlmMenuShortcutComponent {
+export class HlmMenuShortcut {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(

@@ -11,36 +11,36 @@ import {
   lucidePlus,
   lucideSun,
 } from '@ng-icons/lucide';
-import { BrnMenuTriggerDirective } from '@spartan-ng/brain/menu';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
+import { HlmButton } from '@spartan-ng/helm/button';
 import {
-  HlmMenuComponent,
-  HlmMenuGroupComponent,
-  HlmMenuItemDirective,
-  HlmMenuItemSubIndicatorComponent,
-  HlmMenuLabelComponent,
-  HlmMenuSeparatorComponent,
-  HlmSubMenuComponent,
+  HlmMenu,
+  HlmMenuGroup,
+  HlmMenuItem,
+  HlmMenuItemSubIndicator,
+  HlmMenuLabel,
+  HlmMenuSeparator,
+  HlmSubMenu,
 } from '@spartan-ng/helm/menu';
 import { OAuthService } from 'angular-oauth2-oidc';
-import { ThemeService } from '../../services/theme.service';
 import { ContextService } from '../../services/context.service';
+import { ThemeService } from '../../services/theme.service';
 
 @Component({
   selector: 'app-header',
   imports: [
     CommonModule,
     FormsModule,
-    HlmButtonDirective,
+    HlmButton,
     RouterLink,
-    HlmMenuComponent,
-    HlmMenuItemDirective,
-    HlmMenuLabelComponent,
-    HlmMenuSeparatorComponent,
-    HlmMenuGroupComponent,
-    HlmMenuItemSubIndicatorComponent,
-    HlmSubMenuComponent,
-    BrnMenuTriggerDirective,
+    HlmMenu,
+    HlmMenuItem,
+    HlmMenuLabel,
+    HlmMenuSeparator,
+    HlmMenuGroup,
+    HlmMenuItemSubIndicator,
+    HlmSubMenu,
+    BrnMenuTrigger,
     NgIcon,
   ],
   viewProviders: [

@@ -7,13 +7,13 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircle } from '@ng-icons/lucide';
 import { hlm } from '@spartan-ng/brain/core';
-import { HlmIconDirective } from '@spartan-ng/helm/icon';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import type { ClassValue } from 'clsx';
 
 @Component({
   selector: 'hlm-menu-item-radio',
   providers: [provideIcons({ lucideCircle })],
-  imports: [NgIcon, HlmIconDirective],
+  imports: [NgIcon, HlmIcon],
   template: `
     <!-- Using 0.5rem for size to mimick h-2 w-2 -->
     <ng-icon hlm size="0.5rem" class="*:*:fill-current" name="lucideCircle" />
@@ -23,7 +23,7 @@ import type { ClassValue } from 'clsx';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HlmMenuItemRadioComponent {
+export class HlmMenuItemRadioIndicator {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(

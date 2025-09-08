@@ -1,6 +1,6 @@
 import { Directive, computed, input } from '@angular/core';
 import { hlm } from '@spartan-ng/brain/core';
-import { BrnMenuItemCheckboxDirective } from '@spartan-ng/brain/menu';
+import { BrnMenuItemCheckbox } from '@spartan-ng/brain/menu';
 import type { ClassValue } from 'clsx';
 
 @Directive({
@@ -10,13 +10,13 @@ import type { ClassValue } from 'clsx';
   },
   hostDirectives: [
     {
-      directive: BrnMenuItemCheckboxDirective,
+      directive: BrnMenuItemCheckbox,
       inputs: ['disabled: disabled', 'checked: checked'],
       outputs: ['triggered: triggered'],
     },
   ],
 })
-export class HlmMenuItemCheckboxDirective {
+export class HlmMenuItemCheckbox {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(
