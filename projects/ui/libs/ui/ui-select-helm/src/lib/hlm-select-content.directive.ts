@@ -14,7 +14,7 @@ import type { ClassValue } from 'clsx';
     '[attr.data-side]': '_sideProvider?.side() ?? "bottom"',
   },
 })
-export class HlmSelectContentDirective {
+export class HlmSelectContent {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   public readonly stickyLabels = input<boolean>(false);
   protected readonly _stateProvider = injectExposesStateProvider({

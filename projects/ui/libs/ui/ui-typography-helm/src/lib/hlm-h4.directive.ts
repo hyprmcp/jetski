@@ -10,7 +10,7 @@ export const hlmH4 = 'scroll-m-20 text-xl font-semibold tracking-tight';
     '[class]': '_computedClass()',
   },
 })
-export class HlmH4Directive {
+export class HlmH4 {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() => hlm(hlmH4, this.userClass()));
 }

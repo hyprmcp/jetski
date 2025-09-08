@@ -12,15 +12,15 @@ import {
   lucideSun,
 } from '@ng-icons/lucide';
 import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import {
-  HlmMenuComponent,
-  HlmMenuGroupComponent,
-  HlmMenuItemDirective,
-  HlmMenuItemSubIndicatorComponent,
-  HlmMenuLabelComponent,
-  HlmMenuSeparatorComponent,
-  HlmSubMenuComponent,
+  HlmMenu,
+  HlmMenuGroup,
+  HlmMenuItem,
+  HlmMenuItemSubIndicator,
+  HlmMenuLabel,
+  HlmMenuSeparator,
+  HlmSubMenu,
 } from '@spartan-ng/helm/menu';
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ContextService } from '../../services/context.service';
@@ -31,15 +31,15 @@ import { ThemeService } from '../../services/theme.service';
   imports: [
     CommonModule,
     FormsModule,
-    HlmButtonDirective,
+    HlmButton,
     RouterLink,
-    HlmMenuComponent,
-    HlmMenuItemDirective,
-    HlmMenuLabelComponent,
-    HlmMenuSeparatorComponent,
-    HlmMenuGroupComponent,
-    HlmMenuItemSubIndicatorComponent,
-    HlmSubMenuComponent,
+    HlmMenu,
+    HlmMenuItem,
+    HlmMenuLabel,
+    HlmMenuSeparator,
+    HlmMenuGroup,
+    HlmMenuItemSubIndicator,
+    HlmSubMenu,
     BrnMenuTrigger,
     NgIcon,
   ],

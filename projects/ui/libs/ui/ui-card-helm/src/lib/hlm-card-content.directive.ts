@@ -15,7 +15,7 @@ export type CardContentVariants = VariantProps<typeof cardContentVariants>;
     '[class]': '_computedClass()',
   },
 })
-export class HlmCardContentDirective {
+export class HlmCardContent {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(cardContentVariants(), this.userClass()),

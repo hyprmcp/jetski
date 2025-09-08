@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { toast } from 'ngx-sonner';
 import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
@@ -13,7 +13,7 @@ import { ContextService } from '../../services/context.service';
 @Component({
   imports: [
     CommonModule,
-    HlmButtonDirective,
+    HlmButton,
     HlmCheckbox,
     HlmLabel,
     ReactiveFormsModule,

@@ -10,7 +10,7 @@ export const hlmMuted = 'text-sm text-muted-foreground';
     '[class]': '_computedClass()',
   },
 })
-export class HlmMutedDirective {
+export class HlmMuted {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() => hlm(hlmMuted, this.userClass()));
 }

@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import { toast } from 'ngx-sonner';
 import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
 import { Organization, OrganizationService } from '../../../api/organization';
@@ -9,7 +9,7 @@ import { validateDomain } from '../../../vaildators/name';
 import { ContextService } from '../../services/context.service';
 
 @Component({
-  imports: [ReactiveFormsModule, HlmButtonDirective, HlmLabel],
+  imports: [ReactiveFormsModule, HlmButton, HlmLabel],
   template: `
     <h2 class="text-lg font-semibold text-foreground mb-6">
       General Organization Settings

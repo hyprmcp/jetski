@@ -22,7 +22,7 @@ export type CardFooterVariants = VariantProps<typeof cardFooterVariants>;
     '[class]': '_computedClass()',
   },
 })
-export class HlmCardFooterDirective {
+export class HlmCardFooter {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(cardFooterVariants({ direction: this.direction() }), this.userClass()),

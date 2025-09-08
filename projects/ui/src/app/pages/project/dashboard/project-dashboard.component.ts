@@ -6,9 +6,9 @@ import {
 } from '../../../../api/project';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
-  HlmSelectContentDirective,
-  HlmSelectOptionComponent,
-  HlmSelectTriggerComponent,
+  HlmSelectContent,
+  HlmSelectOption,
+  HlmSelectTrigger,
 } from '@spartan-ng/helm/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -170,9 +170,9 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
   `,
   imports: [
     BrnSelectModule,
-    HlmSelectContentDirective,
-    HlmSelectTriggerComponent,
-    HlmSelectOptionComponent,
+    HlmSelectContent,
+    HlmSelectTrigger,
+    HlmSelectOption,
     FormsModule,
     NgIcon,
     HlmIcon,

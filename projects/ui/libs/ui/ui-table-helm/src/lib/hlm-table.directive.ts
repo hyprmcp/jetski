@@ -64,7 +64,7 @@ export function injectHlmTableConfig(): HlmTableVariant {
     '[class]': '_computedClass()',
   },
 })
-export class HlmTableDirective {
+export class HlmTable {
   /** Input to configure the variant of the table, this input has the highest priority. */
   public readonly userVariant = input<Partial<HlmTableVariant> | string>(
     {},
@@ -103,7 +103,7 @@ export class HlmTableDirective {
 
 /**
  * Directive to apply Shadcn-like styling to a <thead> element
- * within an HlmTableDirective context.
+ * within an HlmTable context.
  */
 @Directive({
   selector: 'thead[hlmTHead]',
@@ -112,7 +112,7 @@ export class HlmTableDirective {
     '[class]': '_computedClass()',
   },
 })
-export class HlmTHeadDirective {
+export class HlmTHead {
   private readonly _globalOrDefaultConfig = injectHlmTableConfig();
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
@@ -128,7 +128,7 @@ export class HlmTHeadDirective {
 
 /**
  * Directive to apply Shadcn-like styling to a <tbody> element
- * within an HlmTableDirective context.
+ * within an HlmTable context.
  */
 @Directive({
   selector: 'tbody[hlmTBody]',
@@ -137,7 +137,7 @@ export class HlmTHeadDirective {
     '[class]': '_computedClass()',
   },
 })
-export class HlmTBodyDirective {
+export class HlmTBody {
   private readonly _globalOrDefaultConfig = injectHlmTableConfig();
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
@@ -153,7 +153,7 @@ export class HlmTBodyDirective {
 
 /**
  * Directive to apply Shadcn-like styling to a <tfoot> element
- * within an HlmTableDirective context.
+ * within an HlmTable context.
  */
 @Directive({
   selector: 'tfoot[hlmTFoot]',
@@ -162,7 +162,7 @@ export class HlmTBodyDirective {
     '[class]': '_computedClass()',
   },
 })
-export class HlmTFootDirective {
+export class HlmTFoot {
   private readonly _globalOrDefaultConfig = injectHlmTableConfig();
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
@@ -178,7 +178,7 @@ export class HlmTFootDirective {
 
 /**
  * Directive to apply Shadcn-like styling to a <tr> element
- * within an HlmTableDirective context.
+ * within an HlmTable context.
  */
 @Directive({
   selector: 'tr[hlmTr]',
@@ -187,7 +187,7 @@ export class HlmTFootDirective {
     '[class]': '_computedClass()',
   },
 })
-export class HlmTrDirective {
+export class HlmTr {
   private readonly _globalOrDefaultConfig = injectHlmTableConfig();
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
@@ -201,7 +201,7 @@ export class HlmTrDirective {
 
 /**
  * Directive to apply Shadcn-like styling to a <th> element
- * within an HlmTableDirective context.
+ * within an HlmTable context.
  */
 @Directive({
   selector: 'th[hlmTh]',
@@ -210,7 +210,7 @@ export class HlmTrDirective {
     '[class]': '_computedClass()',
   },
 })
-export class HlmThDirective {
+export class HlmTh {
   private readonly _globalOrDefaultConfig = injectHlmTableConfig();
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
@@ -224,7 +224,7 @@ export class HlmThDirective {
 
 /**
  * Directive to apply Shadcn-like styling to a <td> element
- * within an HlmTableDirective context.
+ * within an HlmTable context.
  */
 @Directive({
   selector: 'td[hlmTd]',
@@ -233,7 +233,7 @@ export class HlmThDirective {
     '[class]': '_computedClass()',
   },
 })
-export class HlmTdDirective {
+export class HlmTd {
   private readonly _globalOrDefaultConfig = injectHlmTableConfig();
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
@@ -247,7 +247,7 @@ export class HlmTdDirective {
 
 /**
  * Directive to apply Shadcn-like styling to a <caption> element
- * within an HlmTableDirective context.
+ * within an HlmTable context.
  */
 @Directive({
   selector: 'caption[hlmCaption]',
@@ -256,7 +256,7 @@ export class HlmTdDirective {
     '[class]': '_computedClass()',
   },
 })
-export class HlmCaptionDirective {
+export class HlmCaption {
   private readonly _globalOrDefaultConfig = injectHlmTableConfig();
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
 

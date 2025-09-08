@@ -1,27 +1,27 @@
 import { NgModule } from '@angular/core';
 
 import {
-  HlmCaptionDirective,
-  HlmTableDirective,
-  HlmTBodyDirective,
-  HlmTdDirective,
-  HlmTFootDirective,
-  HlmThDirective,
-  HlmTHeadDirective,
-  HlmTrDirective,
+  HlmCaption,
+  HlmTable,
+  HlmTBody,
+  HlmTd,
+  HlmTFoot,
+  HlmTh,
+  HlmTHead,
+  HlmTr,
 } from './lib/hlm-table.directive';
 
 export * from './lib/hlm-table.directive';
 
 export const HlmTableImports = [
-  HlmCaptionDirective,
-  HlmTableDirective,
-  HlmTBodyDirective,
-  HlmTdDirective,
-  HlmTFootDirective,
-  HlmThDirective,
-  HlmTHeadDirective,
-  HlmTrDirective,
+  HlmCaption,
+  HlmTable,
+  HlmTBody,
+  HlmTd,
+  HlmTFoot,
+  HlmTh,
+  HlmTHead,
+  HlmTr,
 ] as const;
 
 @NgModule({

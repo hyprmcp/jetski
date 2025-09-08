@@ -3,21 +3,21 @@ import {
   Component,
   forwardRef,
   ViewEncapsulation,
-} from "@angular/core";
+} from '@angular/core';
 import {
   BrnDialog,
   BrnDialogOverlay,
   provideBrnDialogDefaultOptions,
-} from "@spartan-ng/brain/dialog";
-import { HlmDialogOverlayDirective } from "./hlm-dialog-overlay.directive";
+} from '@spartan-ng/brain/dialog';
+import { HlmDialogOverlay } from './hlm-dialog-overlay.directive';
 
 @Component({
-  selector: "hlm-dialog",
-  imports: [BrnDialogOverlay, HlmDialogOverlayDirective],
+  selector: 'hlm-dialog',
+  imports: [BrnDialogOverlay, HlmDialogOverlay],
   providers: [
     {
       provide: BrnDialog,
-      useExisting: forwardRef(() => HlmDialogComponent),
+      useExisting: forwardRef(() => HlmDialog),
     },
     provideBrnDialogDefaultOptions({
       // add custom options here
@@ -29,6 +29,6 @@ import { HlmDialogOverlayDirective } from "./hlm-dialog-overlay.directive";
   `,
   changeDetection: ChangeDetectionStrategy.OnPush,
   encapsulation: ViewEncapsulation.None,
-  exportAs: "hlmDialog",
+  exportAs: 'hlmDialog',
 })
-export class HlmDialogComponent extends BrnDialog {}
+export class HlmDialog extends BrnDialog {}

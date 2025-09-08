@@ -1,8 +1,5 @@
 import { Component, Input } from '@angular/core';
-import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-} from '@spartan-ng/helm/card';
+import { HlmCardContent, HlmCard } from '@spartan-ng/helm/card';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -173,8 +170,8 @@ import { Overview } from './overview';
     </div>
   `,
   imports: [
-    HlmCardDirective,
-    HlmCardContentDirective,
+    HlmCard,
+    HlmCardContent,
     BrnSelectModule,
     FormsModule,
     NgIcon,

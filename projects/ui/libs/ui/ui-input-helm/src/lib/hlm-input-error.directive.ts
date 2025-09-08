@@ -15,7 +15,7 @@ export type InputErrorVariants = VariantProps<typeof inputErrorVariants>;
     '[class]': '_computedClass()',
   },
 })
-export class HlmInputErrorDirective {
+export class HlmInputError {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() =>
     hlm(inputErrorVariants(), this.userClass()),

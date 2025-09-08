@@ -1,4 +1,4 @@
-import { BooleanInput } from "@angular/cdk/coercion";
+import { BooleanInput } from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -9,15 +9,15 @@ import {
   model,
   output,
   signal,
-} from "@angular/core";
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from "@angular/forms";
-import { NgIcon, provideIcons } from "@ng-icons/core";
-import { lucideCheck } from "@ng-icons/lucide";
-import { BrnCheckbox } from "@spartan-ng/brain/checkbox";
-import { hlm } from "@spartan-ng/brain/core";
-import type { ChangeFn, TouchFn } from "@spartan-ng/brain/forms";
-import { HlmIcon } from "@spartan-ng/helm/icon";
-import type { ClassValue } from "clsx";
+} from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCheck } from '@ng-icons/lucide';
+import { BrnCheckbox } from '@spartan-ng/brain/checkbox';
+import { hlm } from '@spartan-ng/brain/core';
+import type { ChangeFn, TouchFn } from '@spartan-ng/brain/forms';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import type { ClassValue } from 'clsx';
 
 export const HLM_CHECKBOX_VALUE_ACCESSOR = {
   provide: NG_VALUE_ACCESSOR,
@@ -26,7 +26,7 @@ export const HLM_CHECKBOX_VALUE_ACCESSOR = {
 };
 
 @Component({
-  selector: "hlm-checkbox",
+  selector: 'hlm-checkbox',
   imports: [BrnCheckbox, NgIcon, HlmIcon],
   template: `
     <brn-checkbox
@@ -52,25 +52,25 @@ export const HLM_CHECKBOX_VALUE_ACCESSOR = {
     </brn-checkbox>
   `,
   host: {
-    class: "contents peer",
-    "[attr.id]": "null",
-    "[attr.aria-label]": "null",
-    "[attr.aria-labelledby]": "null",
-    "[attr.aria-describedby]": "null",
-    "[attr.data-disabled]": '_state().disabled() ? "" : null',
+    class: 'contents peer',
+    '[attr.id]': 'null',
+    '[attr.aria-label]': 'null',
+    '[attr.aria-labelledby]': 'null',
+    '[attr.aria-describedby]': 'null',
+    '[attr.data-disabled]': '_state().disabled() ? "" : null',
   },
   providers: [HLM_CHECKBOX_VALUE_ACCESSOR],
   viewProviders: [provideIcons({ lucideCheck })],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HlmCheckbox implements ControlValueAccessor {
-  public readonly userClass = input<ClassValue>("", { alias: "class" });
+  public readonly userClass = input<ClassValue>('', { alias: 'class' });
 
   protected readonly _computedClass = computed(() =>
     hlm(
-      "border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs peer size-4 shrink-0 cursor-default rounded-[4px] border outline-none transition-shadow focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50",
+      'border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive shadow-xs peer size-4 shrink-0 cursor-default rounded-[4px] border outline-none transition-shadow focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50',
       this.userClass(),
-      this._state().disabled() ? "cursor-not-allowed opacity-50" : "",
+      this._state().disabled() ? 'cursor-not-allowed opacity-50' : '',
     ),
   );
 
@@ -79,17 +79,17 @@ export class HlmCheckbox implements ControlValueAccessor {
 
   /** Used to set the aria-label attribute on the underlying brn element. */
   public readonly ariaLabel = input<string | null>(null, {
-    alias: "aria-label",
+    alias: 'aria-label',
   });
 
   /** Used to set the aria-labelledby attribute on the underlying brn element. */
   public readonly ariaLabelledby = input<string | null>(null, {
-    alias: "aria-labelledby",
+    alias: 'aria-labelledby',
   });
 
   /** Used to set the aria-describedby attribute on the underlying brn element. */
   public readonly ariaDescribedby = input<string | null>(null, {
-    alias: "aria-describedby",
+    alias: 'aria-describedby',
   });
 
   /** The checked state of the checkbox. */
@@ -122,7 +122,7 @@ export class HlmCheckbox implements ControlValueAccessor {
 
     const previousChecked = this.checked();
     this.checked.set(
-      previousChecked === "indeterminate" ? true : !previousChecked,
+      previousChecked === 'indeterminate' ? true : !previousChecked,
     );
     this._onChange?.(!previousChecked);
     this.changed.emit(!previousChecked);
@@ -146,4 +146,4 @@ export class HlmCheckbox implements ControlValueAccessor {
   }
 }
 
-type CheckboxValue = boolean | "indeterminate";
+type CheckboxValue = boolean | 'indeterminate';

@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { BrnSelectImports } from '@spartan-ng/brain/select';
-import { HlmButtonDirective } from '@spartan-ng/helm/button';
+import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { toast } from 'ngx-sonner';
 import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
@@ -15,7 +15,7 @@ import { ContextService } from '../../services/context.service';
     HlmSelectImports,
     HlmLabel,
     ReactiveFormsModule,
-    HlmButtonDirective,
+    HlmButton,
   ],
   template: `
     <h2 class="text-lg font-semibold text-foreground mb-6">

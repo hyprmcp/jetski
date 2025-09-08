@@ -1,11 +1,11 @@
 import { Component, Input } from '@angular/core';
 import {
-  HlmCardContentDirective,
-  HlmCardDirective,
-  HlmCardHeaderDirective,
-  HlmCardTitleDirective,
+  HlmCardContent,
+  HlmCard,
+  HlmCardHeader,
+  HlmCardTitle,
 } from '@spartan-ng/helm/card';
-import { HlmH4Directive } from '@spartan-ng/helm/typography';
+import { HlmH4 } from '@spartan-ng/helm/typography';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideTriangleAlert } from '@ng-icons/lucide';
 import { DecimalPipe } from '@angular/common';
@@ -112,11 +112,11 @@ import { ToolsPerformance } from './tools-performance';
     </div>
   `,
   imports: [
-    HlmH4Directive,
-    HlmCardDirective,
-    HlmCardContentDirective,
-    HlmCardHeaderDirective,
-    HlmCardTitleDirective,
+    HlmH4,
+    HlmCard,
+    HlmCardContent,
+    HlmCardHeader,
+    HlmCardTitle,
     NgIcon,
     DecimalPipe,
   ],

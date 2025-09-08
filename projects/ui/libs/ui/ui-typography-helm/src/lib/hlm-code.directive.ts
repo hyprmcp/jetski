@@ -11,7 +11,7 @@ export const hlmCode =
     '[class]': '_computedClass()',
   },
 })
-export class HlmCodeDirective {
+export class HlmCode {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected _computedClass = computed(() => hlm(hlmCode, this.userClass()));
 }

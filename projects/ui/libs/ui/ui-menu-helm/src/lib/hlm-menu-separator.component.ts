@@ -15,7 +15,7 @@ import { ClassValue } from 'clsx';
   },
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HlmMenuSeparatorComponent {
+export class HlmMenuSeparator {
   public readonly userClass = input<ClassValue>('', { alias: 'class' });
   protected readonly _computedClass = computed(() =>
     hlm('block bg-border -mx-1 my-1 h-px', this.userClass()),
