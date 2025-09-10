@@ -181,21 +181,17 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 	// Convert to slice for sorting
 	allTools := make([]types.PerformingTool, 0, len(toolStats))
 	for toolName, stats := range toolStats {
-		successRate := 0.0
-		if stats.calls > 0 {
-			successRate = float64(stats.successfulCalls) / float64(stats.calls) * 100
-		}
-
-		avgLatency := 0
-		if stats.calls > 0 {
-			avgLatency = int(stats.totalDuration.Milliseconds()) / stats.calls
-		}
-
 		tool := types.PerformingTool{
-			Name:        toolName,
-			Calls:       stats.successfulCalls, // Use successful calls for sorting
-			SuccessRate: successRate,
-			AvgLatency:  avgLatency,
+			Name:  toolName,
+			Calls: stats.successfulCalls, // Use successful calls for sorting
+		}
+
+		if stats.calls > 0 {
+			tool.SuccessRate = float64(stats.successfulCalls) / float64(stats.calls) * 100
+		}
+
+		if stats.calls > 0 {
+			tool.AvgLatency = time.Duration(stats.totalDuration.Milliseconds()/stats.calls) * time.Millisecond
 		}
 
 		allTools = append(allTools, tool)
@@ -210,9 +206,8 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 	})
 
 	// Restore original calls count after sorting
-	for i := range allTools {
-		toolName := allTools[i].Name
-		allTools[i].Calls = toolStats[toolName].calls
+	for i, tool := range allTools {
+		allTools[i].Calls = toolStats[tool.Name].calls
 	}
 
 	var topPerforming []types.PerformingTool
@@ -230,10 +225,7 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 		needingAttention = allTools[totalTools-25:]
 	}
 
-	// Reverse the needingAttention array so worst performing appear first
-	for i, j := 0, len(needingAttention)-1; i < j; i, j = i+1, j-1 {
-		needingAttention[i], needingAttention[j] = needingAttention[j], needingAttention[i]
-	}
+	slices.Reverse(needingAttention)
 
 	return types.ToolsPerformance{
 		TopPerformingTools:      topPerforming,
@@ -401,8 +393,8 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 // Helper types and functions
 
 type toolPerformanceStats struct {
-	calls           int
-	successfulCalls int
+	calls           int64
+	successfulCalls int64
 	totalDuration   time.Duration
 }
 

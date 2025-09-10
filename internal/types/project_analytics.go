@@ -31,10 +31,10 @@ type ToolsPerformance struct {
 }
 
 type PerformingTool struct {
-	Name        string  `json:"name"`
-	Calls       int     `json:"calls"`
-	SuccessRate float64 `json:"successRate"`
-	AvgLatency  int     `json:"avgLatency"`
+	Name        string        `json:"name"`
+	Calls       int64         `json:"calls"`
+	SuccessRate float64       `json:"successRate"`
+	AvgLatency  time.Duration `json:"avgLatency"`
 }
 
 // ToolAnalytics represents detailed tool usage analytics
