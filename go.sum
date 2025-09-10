@@ -174,8 +174,8 @@ github.com/fxamacker/cbor/v2 v2.9.0 h1:NpKPmjDBgUfBms6tr6JZkTHtfFGcMKsw3eGcmD/sa
 github.com/fxamacker/cbor/v2 v2.9.0/go.mod h1:vM4b+DJCtHn+zz7h3FFp/hDAI9WNWCsZj23V5ytsSxQ=
 github.com/getsentry/sentry-go v0.35.2 h1:jKuujpRwa8FFRYMIwwZpu83Xh0voll9bmvyc6310WBM=
 github.com/getsentry/sentry-go v0.35.2/go.mod h1:mdL49ixwT2yi57k5eh7mpnDyPybixPzlzEJFu0Z76QA=
-github.com/getsentry/sentry-go/otel v0.35.1 h1:vw9mMaEUnbJ053o7PawTAzTFISsShfIi9A1shpTfFt8=
-github.com/getsentry/sentry-go/otel v0.35.1/go.mod h1:c/tH1DVjCl6XyhicQBpUcMCuBN+1h+Fwf6vvqNQ7aF8=
+github.com/getsentry/sentry-go/otel v0.35.2 h1:R6vNi+GLwWtiAdSJVv671fQj5R3T2F9ks4mRWxDyOf0=
+github.com/getsentry/sentry-go/otel v0.35.2/go.mod h1:GnNdbDdGu9bxJXL5aGv0qBR4c9vPiZutXoseKFx9Yqk=
 github.com/ghodss/yaml v1.0.0/go.mod h1:4dBDuWmgqj2HViK6kFavaiC9ZROes6MMH2rRYeMEF04=
 github.com/go-chi/chi/v5 v5.2.3 h1:WQIt9uxdsAbgIYgid+BpYc+liqQZGMHRaUwp0JUcvdE=
 github.com/go-chi/chi/v5 v5.2.3/go.mod h1:L2yAIGWB3H+phAw1NxKwWM+7eUH/lU8pOMm5hHcoops=
