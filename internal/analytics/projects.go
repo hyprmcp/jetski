@@ -179,7 +179,6 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 	// Convert to slice for sorting
 	allTools := make([]types.PerformingTool, 0, len(toolStats))
 	toolsNeedingAttention := make([]types.PerformingTool, 0)
-	topPerforming := make([]types.PerformingTool, 0)
 
 	for toolName, stats := range toolStats {
 		tool := types.PerformingTool{
@@ -203,6 +202,7 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 	slices.SortFunc(allTools, func(a, b types.PerformingTool) int { return int(b.TotalCalls) - int(a.TotalCalls) })
 	slices.SortFunc(toolsNeedingAttention, func(a, b types.PerformingTool) int { return int(a.ErrorRate*100) - int(b.ErrorRate*100) })
 
+	var topPerforming []types.PerformingTool
 	if len(allTools) < 5 {
 		topPerforming = allTools[:]
 	} else {
