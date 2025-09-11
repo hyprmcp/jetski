@@ -264,14 +264,14 @@ func getAnalytics(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Parse startedAt query parameter
-	var startAt *time.Time
+	var startAt time.Time
 	if startAtStr := r.URL.Query().Get("startedAt"); startAtStr != "" {
 		if startAtInt, err := strconv.ParseInt(startAtStr, 10, 64); err != nil {
 			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid startedAt timestamp")
 			return
 		} else {
 			t := time.Unix(startAtInt, 0)
-			startAt = &t
+			startAt = t
 		}
 	}
 

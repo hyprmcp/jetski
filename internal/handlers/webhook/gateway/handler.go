@@ -11,21 +11,22 @@ import (
 	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/hyprmcp/jetski/internal/db"
 	"github.com/hyprmcp/jetski/internal/types"
+	"github.com/sourcegraph/jsonrpc2"
 	"go.uber.org/zap"
 )
 
 type webhookPayload struct {
-	Subject         string        `json:"subject"`
-	SubjectEmail    string        `json:"subjectEmail"`
-	MCPSessionID    string        `json:"mcpSessionId"`
-	StartedAt       time.Time     `json:"startedAt"`
-	Duration        time.Duration `json:"duration"`
-	AuthTokenDigest string        `json:"authTokenDigest"`
-	MCPRequest      any           `json:"mcpRequest,omitempty"`
-	MCPResponse     any           `json:"mcpResponse,omitempty"`
-	UserAgent       string        `json:"userAgent"`
-	HttpStatusCode  int           `json:"httpStatusCode,omitempty"`
-	HttpError       string        `json:"httpError,omitempty"`
+	Subject         string             `json:"subject"`
+	SubjectEmail    string             `json:"subjectEmail"`
+	MCPSessionID    string             `json:"mcpSessionId"`
+	StartedAt       time.Time          `json:"startedAt"`
+	Duration        time.Duration      `json:"duration"`
+	AuthTokenDigest string             `json:"authTokenDigest"`
+	MCPRequest      *jsonrpc2.Request  `json:"mcpRequest,omitempty"`
+	MCPResponse     *jsonrpc2.Response `json:"mcpResponse,omitempty"`
+	UserAgent       string             `json:"userAgent"`
+	HttpStatusCode  int                `json:"httpStatusCode,omitempty"`
+	HttpError       string             `json:"httpError,omitempty"`
 }
 
 func NewHandler() http.HandlerFunc {

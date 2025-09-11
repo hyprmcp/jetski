@@ -225,13 +225,13 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							Duration:             time.Duration(rand.Intn(1300)) * time.Millisecond,
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
-							MCPRequest: jsonrpc2.Request{
+							MCPRequest: &jsonrpc2.Request{
 								Method: fmt.Sprintf("method-%v", i%5),
 								Params: nil,
 								ID:     jsonrpc2.ID{Num: uint64(i)},
 								Notif:  false,
 							},
-							MCPResponse: jsonrpc2.Response{
+							MCPResponse: &jsonrpc2.Response{
 								ID:     jsonrpc2.ID{Num: uint64(i)},
 								Result: nil,
 								Error:  &jsonrpc2.Error{},
@@ -289,13 +289,13 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							Duration:             time.Duration(rand.Intn(500)+100) * time.Millisecond,
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
-							MCPRequest: jsonrpc2.Request{
+							MCPRequest: &jsonrpc2.Request{
 								Method: logData.Method,
 								Params: (*json.RawMessage)(&paramsBytes),
 								ID:     jsonrpc2.ID{Num: uint64(j + 1000)},
 								Notif:  false,
 							},
-							MCPResponse: jsonrpc2.Response{
+							MCPResponse: &jsonrpc2.Response{
 								ID:     jsonrpc2.ID{Num: uint64(j + 1000)},
 								Result: nil,
 								Error:  &jsonrpc2.Error{},

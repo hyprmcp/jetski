@@ -1,18 +1,18 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input } from "@angular/core";
 import {
   HlmCardContent,
   HlmCard,
   HlmCardHeader,
   HlmCardTitle,
-} from '@spartan-ng/helm/card';
-import { HlmH4 } from '@spartan-ng/helm/typography';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideTriangleAlert } from '@ng-icons/lucide';
-import { DecimalPipe } from '@angular/common';
-import { ToolsPerformance } from './tools-performance';
+} from "@spartan-ng/helm/card";
+import { HlmH4 } from "@spartan-ng/helm/typography";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideTriangleAlert } from "@ng-icons/lucide";
+import { DecimalPipe, PercentPipe } from "@angular/common";
+import { ToolsPerformance } from "./tools-performance";
 
 @Component({
-  selector: 'app-tools-performance',
+  selector: "app-tools-performance",
   template: `
     <!-- Tools Performance Chart -->
     <div hlmCard>
@@ -55,9 +55,11 @@ import { ToolsPerformance } from './tools-performance';
                 </div>
                 <div class="flex items-center space-x-6">
                   <div class="text-right">
-                    <p class="font-medium">{{ tool.calls | number }} calls</p>
+                    <p class="font-medium">
+                      {{ tool.totalCalls | number }} calls
+                    </p>
                     <p class="text-sm text-muted-foreground">
-                      {{ tool.successRate }}% success
+                      {{ 1 - tool.errorRate | percent }} success rate
                     </p>
                   </div>
                   <div class="text-right">
@@ -94,9 +96,11 @@ import { ToolsPerformance } from './tools-performance';
                 </div>
                 <div class="flex items-center space-x-6">
                   <div class="text-right">
-                    <p class="font-medium">{{ tool.calls | number }} calls</p>
+                    <p class="font-medium">
+                      {{ tool.totalCalls | number }} calls
+                    </p>
                     <p class="text-sm text-red-600 font-medium">
-                      {{ tool.successRate }}% success
+                      {{ tool.errorRate | percent }} error rate
                     </p>
                   </div>
                   <div class="text-right">
@@ -119,6 +123,7 @@ import { ToolsPerformance } from './tools-performance';
     HlmCardTitle,
     NgIcon,
     DecimalPipe,
+    PercentPipe,
   ],
   providers: [
     provideIcons({
@@ -131,19 +136,19 @@ export class ToolsPerformanceComponent {
 
   getRankingBadgeClass(index: number): string {
     const classes = [
-      'bg-yellow-100', // 1st place
-      'bg-gray-100', // 2nd place
-      'bg-orange-100', // 3rd place
+      "bg-yellow-100", // 1st place
+      "bg-gray-100", // 2nd place
+      "bg-orange-100", // 3rd place
     ];
-    return classes[index] || 'bg-gray-100';
+    return classes[index] || "bg-gray-100";
   }
 
   getRankingTextClass(index: number): string {
     const classes = [
-      'text-yellow-600', // 1st place
-      'text-gray-600', // 2nd place
-      'text-orange-600', // 3rd place
+      "text-yellow-600", // 1st place
+      "text-gray-600", // 2nd place
+      "text-orange-600", // 3rd place
     ];
-    return classes[index] || 'text-gray-600';
+    return classes[index] || "text-gray-600";
   }
 }

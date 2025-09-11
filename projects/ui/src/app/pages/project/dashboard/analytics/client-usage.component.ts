@@ -7,20 +7,20 @@ import {
   OnDestroy,
   inject,
   effect,
-} from '@angular/core';
+} from "@angular/core";
 import {
   HlmCardContent,
   HlmCard,
   HlmCardHeader,
   HlmCardTitle,
-} from '@spartan-ng/helm/card';
-import { Chart, registerables } from 'chart.js';
-import { DecimalPipe } from '@angular/common';
-import { ClientUsage } from './client-usage';
-import { ThemeService } from '../../../../services/theme.service';
+} from "@spartan-ng/helm/card";
+import { Chart, registerables } from "chart.js";
+import { DecimalPipe } from "@angular/common";
+import { ClientUsage, ClientUsageData } from "./client-usage";
+import { ThemeService } from "../../../../services/theme.service";
 
 @Component({
-  selector: 'app-client-usage',
+  selector: "app-client-usage",
   template: `
     <!-- Client Usage -->
     <div hlmCard class="overflow-hidden">
@@ -65,7 +65,7 @@ import { ThemeService } from '../../../../services/theme.service';
                         {{ getDisplayName(client.name) }}
                       </div>
                       <div class="text-xs text-muted-foreground">
-                        {{ client.sessions | number }} sessions
+                        {{ client.requests | number }} requests
                       </div>
                     </div>
                   </div>
@@ -90,7 +90,7 @@ import { ThemeService } from '../../../../services/theme.service';
 export class ClientUsageComponent implements AfterViewInit, OnDestroy {
   @Input() data!: ClientUsage;
 
-  @ViewChild('pieChart', { static: false })
+  @ViewChild("pieChart", { static: false })
   pieChartCanvas!: ElementRef<HTMLCanvasElement>;
 
   private pieChart: Chart | null = null;
@@ -120,17 +120,17 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
 
   getDisplayName(name: string): string {
     const displayNames: Record<string, string> = {
-      cursor: 'Cursor',
-      chatgpt: 'ChatGPT',
-      claude_pro: 'Claude Pro',
-      other: 'Other',
+      cursor: "Cursor",
+      chatgpt: "ChatGPT",
+      claude_pro: "Claude Pro",
+      other: "Other",
     };
     return displayNames[name] || name;
   }
 
-  getPercentage(client: { sessions: number }): number {
+  getPercentage(client: ClientUsageData): number {
     if (this.data.totalSessions === 0) return 0;
-    return Math.round((client.sessions / this.data.totalSessions) * 100);
+    return Math.round((client.requests / this.data.totalSessions) * 100);
   }
 
   getModernColor(index: number): string {
@@ -138,25 +138,25 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
 
     // Modern color palette inspired by Vercel
     const lightColors = [
-      '#0070f3', // Blue
-      '#00d9ff', // Cyan
-      '#7928ca', // Purple
-      '#ff0080', // Pink
-      '#ff4500', // Orange
-      '#00a870', // Green
-      '#f5a623', // Yellow
-      '#50e3c2', // Teal
+      "#0070f3", // Blue
+      "#00d9ff", // Cyan
+      "#7928ca", // Purple
+      "#ff0080", // Pink
+      "#ff4500", // Orange
+      "#00a870", // Green
+      "#f5a623", // Yellow
+      "#50e3c2", // Teal
     ];
 
     const darkColors = [
-      '#0096ff', // Bright Blue
-      '#00e5ff', // Bright Cyan
-      '#a855f7', // Bright Purple
-      '#ff0080', // Bright Pink
-      '#ff6b6b', // Coral
-      '#00d68f', // Bright Green
-      '#ffd93d', // Bright Yellow
-      '#6bcf7f', // Bright Teal
+      "#0096ff", // Bright Blue
+      "#00e5ff", // Bright Cyan
+      "#a855f7", // Bright Purple
+      "#ff0080", // Bright Pink
+      "#ff6b6b", // Coral
+      "#00d68f", // Bright Green
+      "#ffd93d", // Bright Yellow
+      "#6bcf7f", // Bright Teal
     ];
 
     const colors = isDark ? darkColors : lightColors;
@@ -174,24 +174,24 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
         (_, index) => this.getModernColor(index),
       );
       this.pieChart.data.datasets[0].borderColor = isDark
-        ? '#1a1a1a'
-        : '#ffffff';
+        ? "#1a1a1a"
+        : "#ffffff";
     }
 
     // Update tooltip styles
     if (this.pieChart.options?.plugins?.tooltip) {
       this.pieChart.options.plugins.tooltip.backgroundColor = isDark
-        ? '#1a1a1a'
-        : '#ffffff';
+        ? "#1a1a1a"
+        : "#ffffff";
       this.pieChart.options.plugins.tooltip.titleColor = isDark
-        ? '#ffffff'
-        : '#000000';
+        ? "#ffffff"
+        : "#000000";
       this.pieChart.options.plugins.tooltip.bodyColor = isDark
-        ? '#ffffff'
-        : '#000000';
+        ? "#ffffff"
+        : "#000000";
       this.pieChart.options.plugins.tooltip.borderColor = isDark
-        ? '#333333'
-        : '#e5e7eb';
+        ? "#333333"
+        : "#e5e7eb";
     }
 
     this.pieChart.update();
@@ -200,16 +200,16 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
   private initializeChart() {
     try {
       if (!this.pieChartCanvas?.nativeElement) {
-        console.warn('Pie chart canvas element not found');
+        console.warn("Pie chart canvas element not found");
         return;
       }
 
       Chart.register(...registerables);
 
-      const ctx = this.pieChartCanvas.nativeElement.getContext('2d');
+      const ctx = this.pieChartCanvas.nativeElement.getContext("2d");
 
       if (!ctx) {
-        console.error('Could not get 2D context from canvas');
+        console.error("Could not get 2D context from canvas");
         return;
       }
 
@@ -220,7 +220,7 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
       const isDark = this.themeService.isDark();
 
       this.pieChart = new Chart(ctx, {
-        type: 'doughnut', // Changed to doughnut for modern look
+        type: "doughnut", // Changed to doughnut for modern look
         data: {
           labels: this.data.clients.map((client) =>
             this.getDisplayName(client.name),
@@ -234,7 +234,7 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
                 this.getModernColor(index),
               ),
               borderWidth: 2,
-              borderColor: isDark ? '#1a1a1a' : '#ffffff',
+              borderColor: isDark ? "#1a1a1a" : "#ffffff",
               borderRadius: 0,
               spacing: 2,
             },
@@ -243,22 +243,22 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
         options: {
           responsive: true,
           maintainAspectRatio: true,
-          cutout: '70%', // Creates the donut hole
+          cutout: "70%", // Creates the donut hole
           animation: {
             animateRotate: true,
             animateScale: false,
             duration: 1000,
-            easing: 'easeInOutQuart',
+            easing: "easeInOutQuart",
           },
           plugins: {
             legend: {
               display: false,
             },
             tooltip: {
-              backgroundColor: isDark ? '#1a1a1a' : '#ffffff',
-              titleColor: isDark ? '#ffffff' : '#000000',
-              bodyColor: isDark ? '#ffffff' : '#000000',
-              borderColor: isDark ? '#333333' : '#e5e7eb',
+              backgroundColor: isDark ? "#1a1a1a" : "#ffffff",
+              titleColor: isDark ? "#ffffff" : "#000000",
+              bodyColor: isDark ? "#ffffff" : "#000000",
+              borderColor: isDark ? "#333333" : "#e5e7eb",
               borderWidth: 1,
               padding: 12,
               displayColors: true,
@@ -267,7 +267,7 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
               caretSize: 0,
               callbacks: {
                 label: function (context) {
-                  const label = context.label || '';
+                  const label = context.label || "";
                   const value = context.parsed;
                   return `${label}: ${value}%`;
                 },
@@ -277,9 +277,9 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
         },
       });
 
-      console.log('Client usage donut chart initialized successfully');
+      console.log("Client usage donut chart initialized successfully");
     } catch (error) {
-      console.error('Error initializing client usage chart:', error);
+      console.error("Error initializing client usage chart:", error);
     }
   }
 }

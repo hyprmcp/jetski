@@ -1,7 +1,7 @@
 export interface PerformingTool {
   name: string;
-  calls: number;
-  successRate: number;
+  totalCalls: number;
+  errorRate: number;
   avgLatency: number;
 }
 

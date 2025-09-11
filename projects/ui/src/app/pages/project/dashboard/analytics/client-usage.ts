@@ -1,6 +1,6 @@
 export interface ClientUsageData {
   name: string;
-  sessions: number;
+  requests: number;
 }
 
 export interface ClientUsage {
