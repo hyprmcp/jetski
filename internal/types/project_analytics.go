@@ -1,11 +1,16 @@
 package types
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type ProjectAnalytics struct {
 	Overview         Overview         `json:"overview"`
 	ToolsPerformance ToolsPerformance `json:"toolsPerformance"`
 	ToolAnalytics    ToolAnalytics    `json:"toolAnalytics"`
+	PromptAnalytics  PromptAnalytics  `json:"promptAnalytics"`
 	ClientUsage      ClientUsage      `json:"clientUsage"`
 	RecentSessions   RecentSessions   `json:"recentSessions"`
 }
@@ -40,6 +45,16 @@ type PerformingTool struct {
 // ToolAnalytics represents detailed tool usage analytics
 type ToolAnalytics struct {
 	Tools []McpTool `json:"tools"`
+}
+
+type PromptAnalytics struct {
+	Prompts []MCPPrompt `json:"prompts"`
+}
+
+type MCPPrompt struct {
+	ID       uuid.UUID `json:"id"`
+	ToolName string    `json:"toolName"`
+	Prompt   string    `json:"prompt"`
 }
 
 type McpTool struct {

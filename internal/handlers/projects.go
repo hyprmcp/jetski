@@ -290,18 +290,7 @@ func getAnalytics(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Parse buildNumber query parameter
-	var buildNumber *int
-	if buildNumberStr := r.URL.Query().Get("buildNumber"); buildNumberStr != "" {
-		if bn, err := strconv.Atoi(buildNumberStr); err != nil {
-			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid buildNumber")
-			return
-		} else {
-			buildNumber = &bn
-		}
-	}
-
-	if analyticsData, err := analytics.GetProjectAnalytics(ctx, projectID, startAt, buildNumber); err != nil {
+	if analyticsData, err := analytics.GetProjectAnalytics(ctx, projectID, startAt); err != nil {
 		HandleInternalServerError(w, r, err, "failed to get analytics for project")
 	} else {
 		RespondJSON(w, analyticsData)

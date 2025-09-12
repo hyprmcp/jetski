@@ -2,7 +2,6 @@ import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideArrowRight } from '@ng-icons/lucide';
-import { HlmButtonModule } from '@spartan-ng/helm/button';
 import {
   HlmCard,
   HlmCardContent,
@@ -82,15 +81,10 @@ import { RecentSessions } from './recent-sessions';
     HlmCardHeader,
     HlmCardTitle,
     RelativeDatePipe,
-    HlmButtonModule,
     RouterLink,
     NgIcon,
   ],
-  providers: [
-    provideIcons({
-      lucideArrowRight,
-    }),
-  ],
+  providers: [provideIcons({ lucideArrowRight })],
 })
 export class RecentSessionsComponent {
   @Input() data!: RecentSessions;
