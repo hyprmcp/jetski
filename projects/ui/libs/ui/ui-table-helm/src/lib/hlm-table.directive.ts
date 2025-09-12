@@ -7,7 +7,7 @@ import {
   input,
   ValueProvider,
 } from '@angular/core';
-import { hlm } from '@spartan-ng/brain/core';
+import { hlm } from '@spartan-ng/helm/utils';
 import type { ClassValue } from 'clsx';
 
 // Configuration Interface and InjectionToken

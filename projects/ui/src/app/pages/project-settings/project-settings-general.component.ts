@@ -5,7 +5,7 @@ import { RouterLink } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { toast } from 'ngx-sonner';
-import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
+import { HlmLabel } from '@spartan-ng/helm/label';
 import { ProjectSummary } from '../../../api/dashboard';
 import { ProjectService } from '../../../api/project';
 import { ContextService } from '../../services/context.service';

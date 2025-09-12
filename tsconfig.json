@@ -11,15 +11,7 @@
     "experimentalDecorators": true,
     "importHelpers": true,
     "target": "ES2022",
-    "module": "preserve",
-    "paths": {
-      "@spartan-ng/helm/checkbox": [
-        "./projects/ui/libs/ui/ui-checkbox-helm/src/index.ts"
-      ],
-      "@spartan-ng/helm/label": [
-        "./projects/ui/libs/ui/ui-label-helm/src/index.ts"
-      ]
-    }
+    "module": "preserve"
   },
   "angularCompilerOptions": {
     "enableI18nLegacyMessageIdFormat": false,

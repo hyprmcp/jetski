@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { HeaderComponent } from './components/header/header.component';
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { RouterOutlet } from '@angular/router';
-import { HlmToasterImports } from '../../libs/ui/ui-sonner-helm/src';
+import { HlmToasterImports } from '@spartan-ng/helm/sonner';
 import { ThemeService } from './services/theme.service';
 
 @Component({
