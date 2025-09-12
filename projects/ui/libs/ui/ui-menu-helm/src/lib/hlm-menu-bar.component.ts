@@ -4,7 +4,7 @@ import {
   computed,
   input,
 } from '@angular/core';
-import { hlm } from '@spartan-ng/brain/core';
+import { hlm } from '@spartan-ng/helm/utils';
 import { BrnMenuBar } from '@spartan-ng/brain/menu';
 import type { ClassValue } from 'clsx';
 
