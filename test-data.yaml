@@ -112,6 +112,7 @@ organizations:
                 userAgent: node
                 httpStatus: 200
                 parameters: []
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -120,6 +121,7 @@ organizations:
                     arguments:
                       - name: city
                         value: Vienna
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -132,6 +134,7 @@ organizations:
                         value: 2025-08-02
                       - name: end_date
                         value: 2025-08-03
+                success: false
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -142,6 +145,7 @@ organizations:
                         value: new_york
                       - name: time
                         value: today
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -152,6 +156,7 @@ organizations:
                         value: javascript
                       - name: framework
                         value: react
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -162,6 +167,7 @@ organizations:
                         value: sentiment
                       - name: language
                         value: english
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -172,6 +178,7 @@ organizations:
                         value: read
                       - name: file_type
                         value: json
+                success: false
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -182,6 +189,7 @@ organizations:
                         value: select
                       - name: database
                         value: postgresql
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -192,6 +200,7 @@ organizations:
                         value: san_francisco
                       - name: temperature_unit
                         value: celsius
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -202,6 +211,7 @@ organizations:
                         value: python
                       - name: complexity
                         value: medium
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -212,6 +222,7 @@ organizations:
                         value: get
                       - name: api_type
                         value: rest
+                success: false
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -222,6 +233,7 @@ organizations:
                         value: resize
                       - name: format
                         value: jpeg
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -232,6 +244,7 @@ organizations:
                         value: bar_chart
                       - name: data_source
                         value: csv
+                success: true
             events:
               - type: progressing
                 ago: 25h
@@ -252,6 +265,7 @@ organizations:
                         value: keywords
                       - name: text_length
                         value: medium_100_500
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -262,6 +276,7 @@ organizations:
                         value: typescript
                       - name: framework
                         value: angular
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -272,6 +287,7 @@ organizations:
                         value: write
                       - name: file_type
                         value: text_files
+                success: false
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -282,6 +298,7 @@ organizations:
                         value: insert
                       - name: table_size
                         value: medium_1k_100k
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -292,6 +309,7 @@ organizations:
                         value: berlin
                       - name: time
                         value: tomorrow
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -302,6 +320,7 @@ organizations:
                         value: post
                       - name: response_format
                         value: json
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -312,6 +331,7 @@ organizations:
                         value: crop
                       - name: quality
                         value: high
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -322,6 +342,7 @@ organizations:
                         value: line_chart
                       - name: theme
                         value: dark
+                success: false
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -332,6 +353,7 @@ organizations:
                         value: summarization
                       - name: confidence_level
                         value: high_90
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -342,6 +364,7 @@ organizations:
                         value: go
                       - name: component_type
                         value: api_endpoint
+                success: true
             events:
               - type: progressing
                 ago: 24h
@@ -362,6 +385,7 @@ organizations:
                         value: delete
                       - name: file_type
                         value: images
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -372,6 +396,7 @@ organizations:
                         value: update
                       - name: database
                         value: mysql
+                success: false
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -382,6 +407,7 @@ organizations:
                         value: new_york
                       - name: temperature_unit
                         value: fahrenheit
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -392,6 +418,7 @@ organizations:
                         value: put
                       - name: api_type
                         value: graphql
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -402,6 +429,7 @@ organizations:
                         value: filter
                       - name: size
                         value: large_5mb
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -412,6 +440,7 @@ organizations:
                         value: translation
                       - name: language
                         value: spanish
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -422,6 +451,7 @@ organizations:
                         value: pie_chart
                       - name: output_format
                         value: svg
+                success: false
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -432,6 +462,7 @@ organizations:
                         value: javascript
                       - name: component_type
                         value: utility_function
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -442,6 +473,7 @@ organizations:
                         value: delete
                       - name: database
                         value: mongodb
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -452,6 +484,7 @@ organizations:
                         value: delete
                       - name: response_format
                         value: xml
+                success: true
             events:
               - type: progressing
                 ago: 20h
@@ -466,6 +499,7 @@ organizations:
                 userAgent: chatgpt
                 httpStatus: 200
                 parameters: []
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -476,6 +510,7 @@ organizations:
                         value: san_francisco
                       - name: time
                         value: next_week
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -486,6 +521,7 @@ organizations:
                         value: sentiment
                       - name: output_format
                         value: csv
+                success: false
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -496,6 +532,7 @@ organizations:
                         value: python
                       - name: framework
                         value: vue
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -506,6 +543,7 @@ organizations:
                         value: read
                       - name: file_type
                         value: json
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -516,6 +554,7 @@ organizations:
                         value: convert
                       - name: format
                         value: png
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -526,6 +565,7 @@ organizations:
                         value: scatter_plot
                       - name: interactivity
                         value: interactive
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -536,6 +576,7 @@ organizations:
                         value: select
                       - name: table_size
                         value: large_100k
+                success: false
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -546,6 +587,7 @@ organizations:
                         value: get
                       - name: api_type
                         value: websocket
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -556,6 +598,7 @@ organizations:
                         value: keywords
                       - name: language
                         value: french
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -566,6 +609,7 @@ organizations:
                         value: typescript
                       - name: complexity
                         value: complex
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -576,6 +620,7 @@ organizations:
                         value: resize
                       - name: quality
                         value: medium
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -586,6 +631,7 @@ organizations:
                         value: heatmap
                       - name: size
                         value: small
+                success: false
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -596,6 +642,7 @@ organizations:
                         value: write
                       - name: file_type
                         value: text_files
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -606,6 +653,7 @@ organizations:
                         value: insert
                       - name: database
                         value: postgresql
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -616,6 +664,7 @@ organizations:
                         value: berlin
                       - name: temperature_unit
                         value: celsius
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -626,6 +675,7 @@ organizations:
                         value: summarization
                       - name: text_length
                         value: long_500_chars
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -636,6 +686,7 @@ organizations:
                         value: post
                       - name: response_format
                         value: text
+                success: false
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -646,6 +697,7 @@ organizations:
                         value: javascript
                       - name: framework
                         value: svelte
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -656,6 +708,7 @@ organizations:
                         value: crop
                       - name: format
                         value: webp
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -766,6 +819,7 @@ organizations:
                         value: select
                       - name: database
                         value: mysql
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -776,6 +830,7 @@ organizations:
                         value: read
                       - name: file_type
                         value: json
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -786,6 +841,7 @@ organizations:
                         value: san_francisco
                       - name: temperature_unit
                         value: fahrenheit
+                success: false
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -796,6 +852,7 @@ organizations:
                         value: sentiment
                       - name: output_format
                         value: json
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -806,6 +863,7 @@ organizations:
                         value: python
                       - name: complexity
                         value: simple
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -816,6 +874,7 @@ organizations:
                         value: convert
                       - name: quality
                         value: low
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -826,6 +885,7 @@ organizations:
                         value: pie_chart
                       - name: output_format
                         value: pdf
+                success: false
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -836,6 +896,7 @@ organizations:
                         value: put
                       - name: response_format
                         value: json
+                success: true
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -846,6 +907,7 @@ organizations:
                         value: delete
                       - name: database
                         value: mongodb
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -856,6 +918,7 @@ organizations:
                         value: write
                       - name: file_type
                         value: text_files
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -866,6 +929,7 @@ organizations:
                         value: translation
                       - name: text_length
                         value: short_100_chars
+                success: true
               - method: tools/call
                 userAgent: cursor
                 httpStatus: 200
@@ -876,6 +940,7 @@ organizations:
                         value: berlin
                       - name: time
                         value: tomorrow
+                success: false
               - method: tools/call
                 userAgent: claude_pro
                 httpStatus: 200
@@ -886,6 +951,7 @@ organizations:
                         value: typescript
                       - name: framework
                         value: react
+                success: true
               - method: tools/call
                 userAgent: chatgpt
                 httpStatus: 200
@@ -896,6 +962,7 @@ organizations:
                         value: resize
                       - name: format
                         value: jpeg
+                success: true
               - method: tools/call
                 userAgent: other
                 httpStatus: 200
@@ -906,6 +973,7 @@ organizations:
                         value: scatter_plot
                       - name: interactivity
                         value: animated
+                success: true
             events:
               - type: progressing
                 ago: 18h
