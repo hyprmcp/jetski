@@ -42,7 +42,7 @@ func (reg *Registry) createDBPool(ctx context.Context) (*pgxpool.Pool, error) {
 		typeNames := []string{"DEPLOYMENT_REVISION_EVENT_TYPE", "CONTEXT_PROPERTY_TYPE"}
 		for _, typeName := range typeNames {
 			if pgType, err := conn.LoadType(ctx, typeName); err != nil {
-				return err
+				reg.logger.Error("failed to load type", zap.String("type", typeName), zap.Error(err))
 			} else {
 				conn.TypeMap().RegisterType(pgType)
 			}

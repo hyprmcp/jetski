@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/hyprmcp/jetski/internal/lists"
 
@@ -64,18 +65,30 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 	return nil
 }
 
-func GetLogsForProject(ctx context.Context, projectId uuid.UUID, pagination lists.Pagination, sorting lists.Sorting) ([]types.MCPServerLog, error) {
+func GetLogsForProject(
+	ctx context.Context,
+	projectId uuid.UUID,
+	pagination lists.Pagination,
+	sorting lists.Sorting,
+	id *uuid.UUID,
+	mcpSessionID *string,
+) ([]types.MCPServerLog, error) {
 	db := internalctx.GetDb(ctx)
 	offset := pagination.Count * pagination.Page
+	filters := []string{"deployment_revision_id IN (SELECT id FROM DeploymentRevision WHERE project_id = @projectId)"}
+	if id != nil {
+		filters = append(filters, "id = @id")
+	}
+	if mcpSessionID != nil {
+		filters = append(filters, "mcp_session_id = @mcpSessionId")
+	}
 	query := fmt.Sprintf(`
 		SELECT * FROM MCPServerLog
-		WHERE deployment_revision_id IN (
-			SELECT id FROM DeploymentRevision WHERE project_id = @projectId
-		)
+		WHERE %s
 		ORDER BY %s %s
 		LIMIT @count OFFSET @offset
-	`, sorting.SortBy, sorting.SortOrder)
-	rows, err := db.Query(ctx, query, pgx.NamedArgs{"projectId": projectId, "count": pagination.Count, "offset": offset})
+	`, strings.Join(filters, " AND "), sorting.SortBy, sorting.SortOrder)
+	rows, err := db.Query(ctx, query, pgx.NamedArgs{"projectId": projectId, "count": pagination.Count, "offset": offset, "id": id, "mcpSessionId": mcpSessionID})
 	if err != nil {
 		return nil, err
 	}

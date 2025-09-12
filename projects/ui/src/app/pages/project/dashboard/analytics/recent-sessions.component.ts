@@ -1,7 +1,11 @@
 import { Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideArrowRight } from '@ng-icons/lucide';
+import { HlmButtonModule } from '@spartan-ng/helm/button';
 import {
-  HlmCardContent,
   HlmCard,
+  HlmCardContent,
   HlmCardHeader,
   HlmCardTitle,
 } from '@spartan-ng/helm/card';
@@ -32,6 +36,7 @@ import { RecentSessions } from './recent-sessions';
                 <th class="text-left py-3 px-4 font-medium">Errors</th>
                 <th class="text-left py-3 px-4 font-medium">Last Tool Call</th>
                 <th class="text-left py-3 px-4 font-medium">Started</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -54,6 +59,15 @@ import { RecentSessions } from './recent-sessions';
                   <td class="py-3 px-4">
                     {{ session.startedAt | relativeDate }}
                   </td>
+                  <td>
+                    <a
+                      [routerLink]="['logs']"
+                      [queryParams]="{ mcpSessionId: session.sessionId }"
+                      class="text-foreground border border-foreground rounded-sm px-2 py-2 flex items-center"
+                    >
+                      <ng-icon name="lucideArrowRight" />
+                    </a>
+                  </td>
                 </tr>
               }
             </tbody>
@@ -68,6 +82,14 @@ import { RecentSessions } from './recent-sessions';
     HlmCardHeader,
     HlmCardTitle,
     RelativeDatePipe,
+    HlmButtonModule,
+    RouterLink,
+    NgIcon,
+  ],
+  providers: [
+    provideIcons({
+      lucideArrowRight,
+    }),
   ],
 })
 export class RecentSessionsComponent {

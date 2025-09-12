@@ -41,7 +41,7 @@ func getAllLogsWithComparison(ctx context.Context, projectID uuid.UUID, startAt 
 		SortOrder: lists.SortOrderAsc,
 	}
 
-	logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting)
+	logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting, nil, nil)
 	if err != nil {
 		return nil, nil, err
 	}

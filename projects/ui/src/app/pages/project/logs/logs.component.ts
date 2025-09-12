@@ -30,6 +30,7 @@ import { LogsActionsComponent } from './table/logs-actions.component';
 import { TableHeadSortButtonComponent } from './table/sort-header-button.component';
 import { TimestampCellComponent } from './timestamp-cell.component';
 import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-logs-component',
@@ -307,6 +308,8 @@ export class LogsComponent {
     this.defaultPagination,
   );
 
+  private readonly route = inject(ActivatedRoute);
+
   private readonly contextService = inject(ContextService);
 
   readonly query = toSignal(
@@ -319,9 +322,11 @@ export class LogsComponent {
       combineLatestWith(
         toObservable(this._pagination),
         toObservable(this._sorting),
+        this.route.queryParams.pipe(map((params) => params['id'])),
+        this.route.queryParams.pipe(map((params) => params['mcpSessionId'])),
       ),
-      map(([projectId, pagination, sorting]) => {
-        return { projectId, pagination, sorting };
+      map(([projectId, pagination, sorting, id, mcpSessionId]) => {
+        return { projectId, pagination, sorting, id, mcpSessionId };
       }),
     ),
   );
@@ -330,16 +335,26 @@ export class LogsComponent {
     () => {
       const query = this.query();
       if (query?.projectId) {
-        const { projectId, pagination, sorting } = query;
+        const { projectId, pagination, sorting, id, mcpSessionId } = query;
+        const params: Record<string, string | number> = {
+          page: pagination?.pageIndex,
+          count: pagination?.pageSize,
+          sortOrder: (sorting?.[0]?.desc ?? false) ? 'desc' : 'asc',
+          sortBy: sorting?.[0]?.id ?? '',
+        };
+
+        if (id) {
+          params['id'] = id;
+        }
+
+        if (mcpSessionId) {
+          params['mcpSessionId'] = mcpSessionId;
+        }
+
         return {
           url: `/api/v1/projects/${projectId}/logs`,
           method: 'GET',
-          params: {
-            page: pagination?.pageIndex,
-            count: pagination?.pageSize,
-            sortOrder: (sorting?.[0]?.desc ?? false) ? 'desc' : 'asc',
-            sortBy: sorting?.[0]?.id ?? '',
-          },
+          params,
         };
       } else {
         return undefined;

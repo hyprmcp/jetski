@@ -109,7 +109,22 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 		AllowedSortBy:    []string{"started_at", "duration", "http_status_code"},
 	})
 
-	if logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting); err != nil {
+	var id *uuid.UUID
+	if s := r.URL.Query().Get("id"); s != "" {
+		if u, err := uuid.Parse(s); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		} else {
+			id = &u
+		}
+	}
+
+	var mcpSessionID *string
+	if s := r.URL.Query().Get("mcpSessionId"); s != "" {
+		mcpSessionID = &s
+	}
+
+	if logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting, id, mcpSessionID); err != nil {
 		HandleInternalServerError(w, r, err, "failed to get logs for project")
 	} else {
 		RespondJSON(w, logs)
