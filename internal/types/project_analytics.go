@@ -31,10 +31,10 @@ type ToolsPerformance struct {
 }
 
 type PerformingTool struct {
-	Name        string  `json:"name"`
-	Calls       int     `json:"calls"`
-	SuccessRate float64 `json:"successRate"`
-	AvgLatency  int     `json:"avgLatency"`
+	Name       string  `json:"name"`
+	TotalCalls int64   `json:"totalCalls"`
+	ErrorRate  float64 `json:"errorRate"`
+	AvgLatency int64   `json:"avgLatency"`
 }
 
 // ToolAnalytics represents detailed tool usage analytics
@@ -67,7 +67,7 @@ type ClientUsage struct {
 
 type ClientUsageData struct {
 	Name     string `json:"name"`
-	Sessions int    `json:"sessions"`
+	Requests int    `json:"requests"`
 }
 
 // RecentSessions represents recent session data

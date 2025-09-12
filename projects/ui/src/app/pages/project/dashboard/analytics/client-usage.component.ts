@@ -16,7 +16,7 @@ import {
 } from '@spartan-ng/helm/card';
 import { Chart, registerables } from 'chart.js';
 import { DecimalPipe } from '@angular/common';
-import { ClientUsage } from './client-usage';
+import { ClientUsage, ClientUsageData } from './client-usage';
 import { ThemeService } from '../../../../services/theme.service';
 
 @Component({
@@ -65,7 +65,7 @@ import { ThemeService } from '../../../../services/theme.service';
                         {{ getDisplayName(client.name) }}
                       </div>
                       <div class="text-xs text-muted-foreground">
-                        {{ client.sessions | number }} sessions
+                        {{ client.requests | number }} requests
                       </div>
                     </div>
                   </div>
@@ -128,9 +128,9 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
     return displayNames[name] || name;
   }
 
-  getPercentage(client: { sessions: number }): number {
+  getPercentage(client: ClientUsageData): number {
     if (this.data.totalSessions === 0) return 0;
-    return Math.round((client.sessions / this.data.totalSessions) * 100);
+    return Math.round((client.requests / this.data.totalSessions) * 100);
   }
 
   getModernColor(index: number): string {

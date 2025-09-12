@@ -2,9 +2,10 @@ package analytics
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"maps"
 	"slices"
-	"sort"
 	"strings"
 	"time"
 
@@ -12,10 +13,13 @@ import (
 	"github.com/hyprmcp/jetski/internal/db"
 	"github.com/hyprmcp/jetski/internal/lists"
 	"github.com/hyprmcp/jetski/internal/types"
+	"github.com/hyprmcp/jetski/internal/util"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
+	"github.com/sourcegraph/jsonrpc2"
 )
 
 // GetProjectAnalytics retrieves and aggregates analytics data for a project from the database
-func GetProjectAnalytics(ctx context.Context, projectID uuid.UUID, startAt *time.Time, buildNumber *int) (*types.ProjectAnalytics, error) {
+func GetProjectAnalytics(ctx context.Context, projectID uuid.UUID, startAt time.Time, buildNumber *int) (*types.ProjectAnalytics, error) {
 	// Get current period logs and previous period logs for comparison
 	currentLogs, previousLogs, err := getAllLogsWithComparison(ctx, projectID, startAt, buildNumber)
 	if err != nil {
@@ -28,7 +32,7 @@ func GetProjectAnalytics(ctx context.Context, projectID uuid.UUID, startAt *time
 }
 
 // getAllLogsWithComparison gets logs for current period and previous period for comparison
-func getAllLogsWithComparison(ctx context.Context, projectID uuid.UUID, startAt *time.Time, buildNumber *int) ([]types.MCPServerLog, []types.MCPServerLog, error) {
+func getAllLogsWithComparison(ctx context.Context, projectID uuid.UUID, startAt time.Time, buildNumber *int) ([]types.MCPServerLog, []types.MCPServerLog, error) {
 	// Use a high pagination count to get all logs and sort by started_at ASC
 	pagination := lists.Pagination{Count: 1000000}
 
@@ -42,14 +46,9 @@ func getAllLogsWithComparison(ctx context.Context, projectID uuid.UUID, startAt 
 		return nil, nil, err
 	}
 
-	if startAt == nil {
-		// If no startAt provided, return all logs as current and empty previous
-		return logs, []types.MCPServerLog{}, nil
-	}
-
-	now := time.Now()
-	currentPeriodStart := *startAt
-	periodDuration := now.Sub(currentPeriodStart)
+	curentPeriodEnd := time.Now()
+	currentPeriodStart := startAt
+	periodDuration := curentPeriodEnd.Sub(currentPeriodStart)
 	previousPeriodStart := currentPeriodStart.Add(-periodDuration) // Double the period backwards
 	previousPeriodEnd := currentPeriodStart
 
@@ -57,14 +56,12 @@ func getAllLogsWithComparison(ctx context.Context, projectID uuid.UUID, startAt 
 	previousLogs := make([]types.MCPServerLog, 0)
 
 	for _, log := range logs {
-		if log.StartedAt.After(currentPeriodStart) || log.StartedAt.Equal(currentPeriodStart) {
-			// Current period: from startAt to now
+		if !log.StartedAt.Before(currentPeriodStart) {
+			// Current period: from currentPeriodStart to now
 			currentLogs = append(currentLogs, log)
-		} else if log.StartedAt.After(previousPeriodStart) || log.StartedAt.Equal(previousPeriodStart) {
-			// Previous period: from (startAt - period_duration) to startAt
-			if log.StartedAt.Before(previousPeriodEnd) {
-				previousLogs = append(previousLogs, log)
-			}
+		} else if !log.StartedAt.Before(previousPeriodStart) && log.StartedAt.Before(previousPeriodEnd) {
+			// Previous period: from (currentPeriodStart - periodDuration) to currentPeriodStart
+			previousLogs = append(previousLogs, log)
 		}
 	}
 
@@ -103,7 +100,7 @@ func calculateOverviewWithComparison(currentLogs []types.MCPServerLog, previousL
 	toolCallsChange := calculatePercentageChange(previousTotalToolCalls, currentTotalToolCalls)
 	usersChange := calculatePercentageChange(previousUniqueUsers, currentUniqueUsers)
 	latencyChange := calculatePercentageChange(previousAvgLatency, currentAvgLatency)
-	errorRateChange := calculatePercentageChange(int(previousErrorRate*100), int(currentErrorRate*100))
+	errorRateChange := calculatePercentageChange(previousErrorRate, currentErrorRate)
 
 	return types.Overview{
 		TotalSessionCount:    currentTotalSessions,
@@ -135,20 +132,21 @@ func calculateLatencyAndErrorRate(logs []types.MCPServerLog) (int, float64) {
 	// Calculate error rate
 	errorCount := 0
 	for _, log := range logs {
-		if log.HttpStatusCode != nil && *log.HttpStatusCode >= 400 {
+		if log.IsError() {
 			errorCount++
 		}
 	}
-	errorRate := float64(errorCount) / float64(len(logs)) * 100
+
+	errorRate := float64(errorCount) / float64(len(logs))
 
 	return avgLatency, errorRate
 }
 
 // calculatePercentageChange calculates percentage change between previous and current values
-func calculatePercentageChange(previous, current int) float64 {
+func calculatePercentageChange[T int | float64](previous, current T) float64 {
 	if previous == 0 {
 		if current == 0 {
-			return 0.0
+			return 0
 		}
 		return 1 // If previous was 0 and current > 0, show 100% increase
 	}
@@ -170,75 +168,55 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 		}
 
 		stats := toolStats[toolName]
-		stats.calls++
+		stats.totalCalls++
 		stats.totalDuration += log.Duration
 
-		if log.HttpStatusCode == nil || *log.HttpStatusCode < 400 {
-			stats.successfulCalls++
+		if log.IsError() {
+			stats.errorCalls++
 		}
 	}
 
 	// Convert to slice for sorting
 	allTools := make([]types.PerformingTool, 0, len(toolStats))
+	toolsNeedingAttention := make([]types.PerformingTool, 0)
+
 	for toolName, stats := range toolStats {
-		successRate := 0.0
-		if stats.calls > 0 {
-			successRate = float64(stats.successfulCalls) / float64(stats.calls) * 100
-		}
-
-		avgLatency := 0
-		if stats.calls > 0 {
-			avgLatency = int(stats.totalDuration.Milliseconds()) / stats.calls
-		}
-
 		tool := types.PerformingTool{
-			Name:        toolName,
-			Calls:       stats.successfulCalls, // Use successful calls for sorting
-			SuccessRate: successRate,
-			AvgLatency:  avgLatency,
+			Name:       toolName,
+			TotalCalls: stats.totalCalls,
+		}
+
+		if stats.totalCalls > 0 {
+			tool.ErrorRate = float64(stats.errorCalls) / float64(stats.totalCalls)
+			tool.AvgLatency = stats.totalDuration.Milliseconds() / stats.totalCalls
 		}
 
 		allTools = append(allTools, tool)
+
+		if needsAttention(tool) {
+			toolsNeedingAttention = append(toolsNeedingAttention, tool)
+		}
 	}
 
 	// Sort by successful calls (descending) and then by avg latency (ascending)
-	sort.Slice(allTools, func(i, j int) bool {
-		if allTools[i].Calls != allTools[j].Calls {
-			return allTools[i].Calls > allTools[j].Calls
-		}
-		return allTools[i].AvgLatency < allTools[j].AvgLatency
-	})
-
-	// Restore original calls count after sorting
-	for i := range allTools {
-		toolName := allTools[i].Name
-		allTools[i].Calls = toolStats[toolName].calls
-	}
+	slices.SortFunc(allTools, func(a, b types.PerformingTool) int { return int(b.TotalCalls) - int(a.TotalCalls) })
+	slices.SortFunc(toolsNeedingAttention, func(a, b types.PerformingTool) int { return int(a.ErrorRate*100) - int(b.ErrorRate*100) })
 
 	var topPerforming []types.PerformingTool
-	var needingAttention []types.PerformingTool
-
-	totalTools := len(allTools)
-	if totalTools < 50 {
-		// If less than 50 tools, split in half
-		midPoint := totalTools / 2
-		topPerforming = allTools[:midPoint]
-		needingAttention = allTools[midPoint:]
+	if len(allTools) < 5 {
+		topPerforming = allTools[:]
 	} else {
-		// Take top 25 and bottom 25
-		topPerforming = allTools[:25]
-		needingAttention = allTools[totalTools-25:]
-	}
-
-	// Reverse the needingAttention array so worst performing appear first
-	for i, j := 0, len(needingAttention)-1; i < j; i, j = i+1, j-1 {
-		needingAttention[i], needingAttention[j] = needingAttention[j], needingAttention[i]
+		topPerforming = allTools[:5]
 	}
 
 	return types.ToolsPerformance{
 		TopPerformingTools:      topPerforming,
-		ToolsRequiringAttention: needingAttention,
+		ToolsRequiringAttention: toolsNeedingAttention,
 	}
+}
+
+func needsAttention(tool types.PerformingTool) bool {
+	return tool.ErrorRate > 0.05 || tool.AvgLatency > time.Second.Milliseconds()
 }
 
 // calculateToolAnalytics computes detailed tool usage analytics
@@ -262,8 +240,7 @@ func calculateToolAnalytics(logs []types.MCPServerLog) types.ToolAnalytics {
 		data.calls++
 
 		// Extract arguments from the MCP request
-		args := extractArguments(log.MCPRequest)
-		for argName, argValue := range args {
+		for argName, argValue := range extractArguments(log.MCPRequest) {
 			if _, exists := data.arguments[argName]; !exists {
 				data.arguments[argName] = make(map[string]int)
 			}
@@ -308,37 +285,26 @@ func calculateToolAnalytics(logs []types.MCPServerLog) types.ToolAnalytics {
 
 // calculateClientUsage computes client usage statistics
 func calculateClientUsage(logs []types.MCPServerLog) types.ClientUsage {
-	clientSessions := make(map[string]map[string]bool) // client -> sessions
-
+	clientUsageMap := make(map[string]types.ClientUsageData)
 	for _, log := range logs {
 		if log.UserAgent == nil {
 			continue
 		}
 
-		client := normalizeUserAgent(*log.UserAgent)
-		sessionID := getSessionID(log)
-
-		if _, exists := clientSessions[client]; !exists {
-			clientSessions[client] = make(map[string]bool)
+		client := getNormalizedUserAgent(*log.UserAgent)
+		usage, exists := clientUsageMap[client]
+		if !exists {
+			usage = types.ClientUsageData{Name: client, Requests: 1}
+		} else {
+			usage.Requests++
 		}
-		clientSessions[client][sessionID] = true
-	}
-
-	clients := make([]types.ClientUsageData, 0)
-	totalSessions := 0
-
-	for client, sessions := range clientSessions {
-		sessionCount := len(sessions)
-		totalSessions += sessionCount
-		clients = append(clients, types.ClientUsageData{
-			Name:     client,
-			Sessions: sessionCount,
-		})
+		clientUsageMap[client] = usage
 	}
 
 	return types.ClientUsage{
-		TotalSessions: totalSessions,
-		Clients:       clients,
+		// TODO: Check why this is needed here again, it is calculated twice
+		TotalSessions: countUniqueSessions(logs),
+		Clients:       slices.Collect(maps.Values(clientUsageMap)),
 	}
 }
 
@@ -347,17 +313,21 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 	sessionData := make(map[string]*sessionInfo)
 
 	for _, log := range logs {
-		sessionID := getSessionID(log)
+		sessionID := getNormalizedSessionID(log)
 
-		session, exists := sessionData[sessionID]
+		if sessionID == nil {
+			continue
+		}
+
+		session, exists := sessionData[*sessionID]
 		if !exists {
 			session = &sessionInfo{
-				sessionID:      sessionID,
+				sessionID:      *sessionID,
 				firstStartedAt: log.StartedAt,
 				lastStartedAt:  log.StartedAt,
 				lastDuration:   log.Duration,
 			}
-			sessionData[sessionID] = session
+			sessionData[*sessionID] = session
 		} else if session.lastStartedAt.Add(session.lastDuration).Before(log.StartedAt.Add(log.Duration)) {
 			session.lastStartedAt = log.StartedAt
 			session.lastDuration = log.Duration
@@ -365,7 +335,7 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 
 		session.calls++
 
-		if log.HttpStatusCode != nil && *log.HttpStatusCode >= 400 {
+		if log.IsError() {
 			session.errors++
 		}
 
@@ -384,7 +354,7 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 	for _, session := range sessionData {
 		sessions = append(sessions, types.RecentSession{
 			SessionID:    session.sessionID,
-			User:         normalizeUserAgent(session.userAgent),
+			User:         getNormalizedUserAgent(session.userAgent),
 			Calls:        session.calls,
 			Errors:       session.errors,
 			LastToolCall: session.lastToolCall,
@@ -392,6 +362,10 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 			EndedAt:      session.lastStartedAt.Add(session.lastDuration),
 		})
 	}
+
+	slices.SortFunc(sessions, func(a, b types.RecentSession) int {
+		return int(b.EndedAt.Sub(a.EndedAt).Milliseconds())
+	})
 
 	return types.RecentSessions{
 		Sessions: sessions,
@@ -401,9 +375,9 @@ func calculateRecentSessions(logs []types.MCPServerLog) types.RecentSessions {
 // Helper types and functions
 
 type toolPerformanceStats struct {
-	calls           int
-	successfulCalls int
-	totalDuration   time.Duration
+	totalCalls    int64
+	errorCalls    int64
+	totalDuration time.Duration
 }
 
 type toolAnalyticsData struct {
@@ -423,84 +397,64 @@ type sessionInfo struct {
 }
 
 // extractToolName extracts the tool name from an MCP request
-func extractToolName(mcpRequest any) string {
+func extractToolName(mcpRequest *jsonrpc2.Request) string {
 	if mcpRequest == nil {
 		return ""
 	}
 
-	// Try to parse as JSON and extract method or tool name
-	requestMap, ok := mcpRequest.(map[string]any)
-	if !ok {
-		return ""
-	}
-
-	// Check for method field (for tools/call requests)
-	if method, exists := requestMap["method"]; exists {
-		if methodStr, ok := method.(string); ok {
-			if methodStr == "tools/call" {
-				// Extract tool name from params
-				if params, exists := requestMap["params"]; exists {
-					if paramsMap, ok := params.(map[string]interface{}); ok {
-						if name, exists := paramsMap["name"]; exists {
-							if nameStr, ok := name.(string); ok {
-								return nameStr
-							}
-						}
-					}
-				}
-			}
-			return methodStr
+	if mcpRequest.Method == "tools/call" && mcpRequest.Params != nil {
+		// Extract tool name from params
+		var params mcp.CallToolParams
+		if err := json.Unmarshal(*mcpRequest.Params, &params); err == nil {
+			return params.Name
 		}
 	}
 
-	return ""
+	return mcpRequest.Method
 }
 
 // extractArguments extracts arguments from an MCP request
-func extractArguments(mcpRequest any) map[string]string {
-	args := make(map[string]string)
-
-	if mcpRequest == nil {
-		return args
-	}
-
-	requestMap, ok := mcpRequest.(map[string]any)
-	if !ok {
-		return args
-	}
-
-	// Extract arguments from tools/call request
-	if paramsField, exists := requestMap["params"]; exists {
-		if paramsMap, ok := paramsField.(map[string]any); ok {
-			if arguments, exists := paramsMap["arguments"]; exists {
-				if argsMap, ok := arguments.(map[string]any); ok {
-					for key, value := range argsMap {
-						args[key] = fmt.Sprintf("%v", value)
+func extractArguments(mcpRequest *jsonrpc2.Request) map[string]string {
+	if mcpRequest != nil && mcpRequest.Method == "tools/call" && mcpRequest.Params != nil {
+		var params mcp.CallToolParams
+		if err := json.Unmarshal(*mcpRequest.Params, &params); err == nil {
+			if args, ok := params.Arguments.(map[string]any); ok {
+				strArgs := make(map[string]string, len(args))
+				for key, val := range args {
+					if strVal, ok := val.(string); ok {
+						strArgs[key] = strVal
+					} else if data, err := json.Marshal(val); err != nil {
+						strArgs[key] = fmt.Sprintf("%v", val)
+					} else {
+						strArgs[key] = string(data)
 					}
 				}
+				return strArgs
 			}
 		}
 	}
 
-	return args
+	return nil
 }
 
-// getSessionID extracts or generates a session ID from a log entry
-func getSessionID(log types.MCPServerLog) string {
+// getNormalizedSessionID extracts or generates a session ID from a log entry
+func getNormalizedSessionID(log types.MCPServerLog) *string {
 	if log.MCPSessionID != nil && *log.MCPSessionID != "" {
-		return *log.MCPSessionID
+		return log.MCPSessionID
 	}
 
-	// Generate a session ID based on user and time
-	if log.UserAccountID != nil {
-		return fmt.Sprintf("%s_%d", log.UserAccountID.String()[:8], log.StartedAt.Unix()/3600) // Group by hour
-	}
-
-	return fmt.Sprintf("session_%d", log.StartedAt.Unix()/3600)
+	return nil
 }
 
-// normalizeUserAgent normalizes user agent strings to standard client names
-func normalizeUserAgent(userAgent string) string {
+func getUserIDString(log types.MCPServerLog) *string {
+	if log.UserAccountID != nil {
+		return util.PtrTo(log.UserAccountID.String())
+	}
+	return nil
+}
+
+// getNormalizedUserAgent normalizes user agent strings to standard client names
+func getNormalizedUserAgent(userAgent string) string {
 	ua := strings.ToLower(userAgent)
 
 	if strings.Contains(ua, "cursor") {
@@ -521,21 +475,20 @@ func normalizeUserAgent(userAgent string) string {
 
 // countUniqueSessions counts unique sessions in the logs
 func countUniqueSessions(logs []types.MCPServerLog) int {
-	sessions := make(map[string]bool)
-	for _, log := range logs {
-		sessionID := getSessionID(log)
-		sessions[sessionID] = true
-	}
-	return len(sessions)
+	return countUniqueFunc(logs, getNormalizedSessionID)
 }
 
 // countUniqueUsers counts unique users in the logs
 func countUniqueUsers(logs []types.MCPServerLog) int {
-	users := make(map[string]bool)
-	for _, log := range logs {
-		if log.UserAccountID != nil {
-			users[log.UserAccountID.String()] = true
+	return countUniqueFunc(logs, getUserIDString)
+}
+
+func countUniqueFunc[T any, P comparable](s []T, p func(v T) *P) int {
+	c := make(map[P]struct{})
+	for _, v := range s {
+		if pv := p(v); pv != nil {
+			c[*pv] = struct{}{}
 		}
 	}
-	return len(users)
+	return len(c)
 }

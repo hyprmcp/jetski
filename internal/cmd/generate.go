@@ -72,6 +72,7 @@ type testMCPServerLog struct {
 	UserAgent  string                 `yaml:"userAgent"`
 	HttpStatus int                    `yaml:"httpStatus"`
 	Parameters []testMCPToolParameter `yaml:"parameters"`
+	Success    bool                   `yaml:"success"`
 }
 
 type testMCPToolParameter struct {
@@ -225,13 +226,13 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							Duration:             time.Duration(rand.Intn(1300)) * time.Millisecond,
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
-							MCPRequest: jsonrpc2.Request{
+							MCPRequest: &jsonrpc2.Request{
 								Method: fmt.Sprintf("method-%v", i%5),
 								Params: nil,
 								ID:     jsonrpc2.ID{Num: uint64(i)},
 								Notif:  false,
 							},
-							MCPResponse: jsonrpc2.Response{
+							MCPResponse: &jsonrpc2.Response{
 								ID:     jsonrpc2.ID{Num: uint64(i)},
 								Result: nil,
 								Error:  &jsonrpc2.Error{},
@@ -281,6 +282,12 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 						// Generate random timestamp within last 48 hours
 						randomHours := rand.Float64() * 48
 						randomTimestamp := time.Now().UTC().Add(-time.Duration(randomHours * float64(time.Hour)))
+						var result = json.RawMessage(`"ok"`)
+						var resultError *jsonrpc2.Error = nil
+						if !logData.Success {
+							result = nil
+							resultError = &jsonrpc2.Error{}
+						}
 
 						log := types.MCPServerLog{
 							UserAccountID:        &user.ID,
@@ -289,16 +296,16 @@ func runGenerate(ctx context.Context, opts generateOptions) {
 							Duration:             time.Duration(rand.Intn(500)+100) * time.Millisecond,
 							DeploymentRevisionID: dr.ID,
 							AuthTokenDigest:      nil,
-							MCPRequest: jsonrpc2.Request{
+							MCPRequest: &jsonrpc2.Request{
 								Method: logData.Method,
 								Params: (*json.RawMessage)(&paramsBytes),
 								ID:     jsonrpc2.ID{Num: uint64(j + 1000)},
 								Notif:  false,
 							},
-							MCPResponse: jsonrpc2.Response{
+							MCPResponse: &jsonrpc2.Response{
 								ID:     jsonrpc2.ID{Num: uint64(j + 1000)},
-								Result: nil,
-								Error:  &jsonrpc2.Error{},
+								Result: &result,
+								Error:  resultError,
 							},
 							UserAgent:      util.PtrTo(logData.UserAgent),
 							HttpStatusCode: util.PtrTo(logData.HttpStatus),

@@ -8,7 +8,7 @@ import {
 import { HlmH4 } from '@spartan-ng/helm/typography';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideTriangleAlert } from '@ng-icons/lucide';
-import { DecimalPipe } from '@angular/common';
+import { DecimalPipe, PercentPipe } from '@angular/common';
 import { ToolsPerformance } from './tools-performance';
 
 @Component({
@@ -55,9 +55,11 @@ import { ToolsPerformance } from './tools-performance';
                 </div>
                 <div class="flex items-center space-x-6">
                   <div class="text-right">
-                    <p class="font-medium">{{ tool.calls | number }} calls</p>
+                    <p class="font-medium">
+                      {{ tool.totalCalls | number }} calls
+                    </p>
                     <p class="text-sm text-muted-foreground">
-                      {{ tool.successRate }}% success
+                      {{ 1 - tool.errorRate | percent }} success rate
                     </p>
                   </div>
                   <div class="text-right">
@@ -94,9 +96,11 @@ import { ToolsPerformance } from './tools-performance';
                 </div>
                 <div class="flex items-center space-x-6">
                   <div class="text-right">
-                    <p class="font-medium">{{ tool.calls | number }} calls</p>
+                    <p class="font-medium">
+                      {{ tool.totalCalls | number }} calls
+                    </p>
                     <p class="text-sm text-red-600 font-medium">
-                      {{ tool.successRate }}% success
+                      {{ tool.errorRate | percent }} error rate
                     </p>
                   </div>
                   <div class="text-right">
@@ -119,6 +123,7 @@ import { ToolsPerformance } from './tools-performance';
     HlmCardTitle,
     NgIcon,
     DecimalPipe,
+    PercentPipe,
   ],
   providers: [
     provideIcons({
