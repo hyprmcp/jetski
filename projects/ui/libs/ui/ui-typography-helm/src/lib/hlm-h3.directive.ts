@@ -1,5 +1,5 @@
 import { Directive, computed, input } from '@angular/core';
-import { hlm } from '@spartan-ng/brain/core';
+import { hlm } from '@spartan-ng/helm/utils';
 import type { ClassValue } from 'clsx';
 
 export const hlmH3 = 'scroll-m-20 text-lg font-semibold mb-6 tracking-tight';

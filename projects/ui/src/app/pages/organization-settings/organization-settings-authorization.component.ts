@@ -4,7 +4,7 @@ import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { toast } from 'ngx-sonner';
-import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
+import { HlmLabel } from '@spartan-ng/helm/label';
 import { Organization, OrganizationService } from '../../../api/organization';
 import { ContextService } from '../../services/context.service';
 

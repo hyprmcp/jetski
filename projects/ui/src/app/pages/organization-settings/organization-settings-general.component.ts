@@ -3,7 +3,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { toast } from 'ngx-sonner';
-import { HlmLabel } from '../../../../libs/ui/ui-label-helm/src';
+import { HlmLabel } from '@spartan-ng/helm/label';
 import { Organization, OrganizationService } from '../../../api/organization';
 import { validateDomain } from '../../../vaildators/name';
 import { ContextService } from '../../services/context.service';

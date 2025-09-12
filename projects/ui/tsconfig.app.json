@@ -13,9 +13,13 @@
       "@spartan-ng/helm/input": ["./libs/ui/ui-input-helm/src/index.ts"],
       "@spartan-ng/helm/menu": ["./libs/ui/ui-menu-helm/src/index.ts"],
       "@spartan-ng/helm/select": ["./libs/ui/ui-select-helm/src/index.ts"],
-      "@spartan-ng/helm/sonner": ["./projects/ui/libs/ui/ui-sonner-helm/src/index.ts"],
+      "@spartan-ng/helm/sonner": ["./libs/ui/ui-sonner-helm/src/index.ts"],
       "@spartan-ng/helm/table": ["./libs/ui/ui-table-helm/src/index.ts"],
-      "@spartan-ng/helm/typography": ["./libs/ui/ui-typography-helm/src/index.ts"]
+      "@spartan-ng/helm/typography": [
+        "./libs/ui/ui-typography-helm/src/index.ts"
+      ],
+      "@spartan-ng/helm/label": ["./libs/ui/ui-label-helm/src/index.ts"],
+      "@spartan-ng/helm/utils": ["./libs/ui/ui-utils-helm/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"],
