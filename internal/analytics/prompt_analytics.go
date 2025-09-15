@@ -20,7 +20,7 @@ func calculatePromptAnalytics(logs []types.MCPServerLog) types.PromptAnalytics {
 			}
 
 			if argMap, ok := toolParams.Arguments.(map[string]any); ok {
-				if prompt, ok := argMap["jetskiPromptAnalytics"].(string); ok {
+				if prompt, ok := argMap["hyprmcpPromptAnalytics"].(string); ok {
 					result = append(result, types.MCPPrompt{
 						ID:       log.ID,
 						ToolName: toolParams.Name,
