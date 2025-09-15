@@ -20,7 +20,8 @@ import { RecentSessions } from './recent-sessions';
       <div hlmCardHeader>
         <div hlmCardTitle>Recent Sessions</div>
         <p class="text-sm text-muted-foreground">
-          Latest user sessions with performance metrics
+          Recent user activity with session details and usage statistics. Click
+          the arrow to view individual tool calls for each session
         </p>
       </div>
       <div hlmCardContent>

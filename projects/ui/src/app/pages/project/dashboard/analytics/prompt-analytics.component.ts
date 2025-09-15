@@ -11,7 +11,7 @@ import { HlmCardImports } from '@spartan-ng/helm/card';
     <div hlmCardHeader>
       <div hlmCardTitle>Prompt Analytics</div>
       <p class="text-sm text-muted-foreground">
-        Latest tool calls including prompt telemetry
+        See the prompts that triggered your tools to be called
       </p>
     </div>
     <div hlmCardContent>
