@@ -36,12 +36,15 @@ import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
         <ng-icon hlm size="sm" name="lucideEye" />
       </button>
 
-      <hlm-dialog-content class="md:max-w-3xl" *brnDialogContent="let ctx">
+      <hlm-dialog-content
+        class="md:max-w-3xl overflow-y-auto max-h-screen"
+        *brnDialogContent="let ctx"
+      >
         <hlm-dialog-header>
           <h3 brnDialogTitle>Tool Call Details</h3>
         </hlm-dialog-header>
 
-        <div class="flex flex-col gap-4 py-4">
+        <div class="flex flex-col gap-4 pt-4">
           <div>
             <strong>Timestamp: </strong>
             <span>{{ mcpServerLog().startedAt | date: 'long' }}</span>
@@ -98,9 +101,10 @@ import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
                   @if (getResponseTextContent(response); as content) {
                     <div>
                       <strong>Response Content: </strong>
-                      <pre class="whitespace-pre-wrap text-sm">{{
-                        content
-                      }}</pre>
+                      <pre
+                        class="whitespace-pre-wrap text-sm bg-muted dark:bg-primary-foreground rounded-sm p-2 mt-1"
+                        >{{ content }}</pre
+                      >
                     </div>
                   }
 
@@ -108,7 +112,7 @@ import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
                     <div>
                       <strong>Response Structured Content: </strong>
                       <pre
-                        class="overflow-auto text-sm"
+                        class="overflow-auto text-sm bg-muted dark:bg-primary-foreground rounded-sm p-2 mt-1"
                         [innerHtml]="content | hljson"
                       ></pre>
                     </div>
@@ -124,7 +128,7 @@ import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
                 <strong>Raw Request</strong>
               </summary>
               <pre
-                class="overflow-auto text-sm"
+                class="overflow-auto text-sm bg-muted dark:bg-primary-foreground rounded-sm p-2 mt-1"
                 [innerHtml]="request | hljson"
               ></pre>
             </details>
@@ -136,7 +140,7 @@ import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
                 <strong>Raw Response</strong>
               </summary>
               <pre
-                class="overflow-auto text-sm"
+                class="overflow-auto text-sm bg-muted dark:bg-primary-foreground rounded-sm p-2 mt-1"
                 [innerHtml]="response | hljson"
               ></pre>
             </details>
