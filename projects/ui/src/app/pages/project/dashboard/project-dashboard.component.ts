@@ -141,6 +141,13 @@ import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component
             ></app-project-analytics-overview>
           </div>
 
+          <!-- Prompt Analytics -->
+          <div>
+            <app-prompt-analytics
+              [data]="analytics.promptAnalytics"
+            ></app-prompt-analytics>
+          </div>
+
           <!-- Tools Performance Chart -->
           <div>
             <app-tools-performance
@@ -153,13 +160,6 @@ import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component
             <app-tool-analytics
               [data]="analytics.toolAnalytics"
             ></app-tool-analytics>
-          </div>
-
-          <!-- Prompt Analytics -->
-          <div>
-            <app-prompt-analytics
-              [data]="analytics.promptAnalytics"
-            ></app-prompt-analytics>
           </div>
 
           <!-- Client Usage -->

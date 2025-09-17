@@ -121,6 +121,8 @@ organizations:
                     arguments:
                       - name: city
                         value: Vienna
+                      - name: hyprmcpPromptAnalytics
+                        value: "What's the weather like in Vienna today?"
                 success: true
               - method: tools/call
                 userAgent: cursor
@@ -134,6 +136,8 @@ organizations:
                         value: 2025-08-02
                       - name: end_date
                         value: 2025-08-03
+                      - name: hyprmcpPromptAnalytics
+                        value: "Show me the weather forecast for Tarvis from August 2nd to 3rd, 2025"
                 success: false
               - method: tools/call
                 userAgent: cursor
@@ -145,6 +149,8 @@ organizations:
                         value: new_york
                       - name: time
                         value: today
+                      - name: hyprmcpPromptAnalytics
+                        value: "Get today's weather for New York"
                 success: true
               - method: tools/call
                 userAgent: chatgpt
@@ -156,6 +162,8 @@ organizations:
                         value: javascript
                       - name: framework
                         value: react
+                      - name: hyprmcpPromptAnalytics
+                        value: "Generate a React component in JavaScript for displaying user profiles"
                 success: true
               - method: tools/call
                 userAgent: claude_pro
@@ -178,6 +186,8 @@ organizations:
                         value: read
                       - name: file_type
                         value: json
+                      - name: hyprmcpPromptAnalytics
+                        value: "Read the configuration from the JSON file in the project root"
                 success: false
               - method: tools/call
                 userAgent: other
@@ -200,6 +210,8 @@ organizations:
                         value: san_francisco
                       - name: temperature_unit
                         value: celsius
+                      - name: hyprmcpPromptAnalytics
+                        value: "What's the temperature in San Francisco in Celsius?"
                 success: true
               - method: tools/call
                 userAgent: chatgpt
@@ -222,6 +234,8 @@ organizations:
                         value: get
                       - name: api_type
                         value: rest
+                      - name: hyprmcpPromptAnalytics
+                        value: "Fetch the latest user data from the REST API endpoint"
                 success: false
               - method: tools/call
                 userAgent: cursor
@@ -233,6 +247,8 @@ organizations:
                         value: resize
                       - name: format
                         value: jpeg
+                      - name: hyprmcpPromptAnalytics
+                        value: "Resize all product images to thumbnail size and save as JPEG"
                 success: true
               - method: tools/call
                 userAgent: other
@@ -287,6 +303,8 @@ organizations:
                         value: write
                       - name: file_type
                         value: text_files
+                      - name: hyprmcpPromptAnalytics
+                        value: "Save the generated report to a text file in the reports directory"
                 success: false
               - method: tools/call
                 userAgent: cursor
@@ -298,6 +316,8 @@ organizations:
                         value: insert
                       - name: table_size
                         value: medium_1k_100k
+                      - name: hyprmcpPromptAnalytics
+                        value: "Insert the new customer records into the database"
                 success: true
               - method: tools/call
                 userAgent: other
@@ -309,6 +329,8 @@ organizations:
                         value: berlin
                       - name: time
                         value: tomorrow
+                      - name: hyprmcpPromptAnalytics
+                        value: "Check tomorrow's weather in Berlin"
                 success: true
               - method: tools/call
                 userAgent: chatgpt
@@ -320,6 +342,8 @@ organizations:
                         value: post
                       - name: response_format
                         value: json
+                      - name: hyprmcpPromptAnalytics
+                        value: "Send the processed data to the API and get JSON response"
                 success: true
               - method: tools/call
                 userAgent: claude_pro
@@ -342,6 +366,8 @@ organizations:
                         value: line_chart
                       - name: theme
                         value: dark
+                      - name: hyprmcpPromptAnalytics
+                        value: "Create a line chart with dark theme for monthly sales data"
                 success: false
               - method: tools/call
                 userAgent: other
@@ -396,6 +422,8 @@ organizations:
                         value: update
                       - name: database
                         value: mysql
+                      - name: hyprmcpPromptAnalytics
+                        value: "Update user preferences in the MySQL database"
                 success: false
               - method: tools/call
                 userAgent: chatgpt
@@ -451,6 +479,8 @@ organizations:
                         value: pie_chart
                       - name: output_format
                         value: svg
+                      - name: hyprmcpPromptAnalytics
+                        value: "Generate a pie chart showing market share distribution as SVG"
                 success: false
               - method: tools/call
                 userAgent: other
@@ -521,6 +551,8 @@ organizations:
                         value: sentiment
                       - name: output_format
                         value: csv
+                      - name: hyprmcpPromptAnalytics
+                        value: "Analyze customer reviews sentiment and export as CSV"
                 success: false
               - method: tools/call
                 userAgent: chatgpt
@@ -576,6 +608,8 @@ organizations:
                         value: select
                       - name: table_size
                         value: large_100k
+                      - name: hyprmcpPromptAnalytics
+                        value: "Query all transaction records from the large database table"
                 success: false
               - method: tools/call
                 userAgent: other
@@ -631,6 +665,8 @@ organizations:
                         value: heatmap
                       - name: size
                         value: small
+                      - name: hyprmcpPromptAnalytics
+                        value: "Display correlation matrix as a small heatmap visualization"
                 success: false
               - method: tools/call
                 userAgent: cursor
@@ -686,6 +722,8 @@ organizations:
                         value: post
                       - name: response_format
                         value: text
+                      - name: hyprmcpPromptAnalytics
+                        value: "Send webhook notification and return text response"
                 success: false
               - method: tools/call
                 userAgent: claude_pro
@@ -841,6 +879,8 @@ organizations:
                         value: san_francisco
                       - name: temperature_unit
                         value: fahrenheit
+                      - name: hyprmcpPromptAnalytics
+                        value: "Get San Francisco weather with temperature in Fahrenheit"
                 success: false
               - method: tools/call
                 userAgent: cursor
