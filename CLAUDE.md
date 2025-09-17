@@ -150,33 +150,3 @@ This project uses **pnpm** as the package manager. Make sure to use pnpm for ins
 ### Dex Architecture
 
 This application uses **Dex** as a federated OpenID Connect provider that serves as an authentication proxy. Dex handles user authentication and provides OAuth2/OIDC tokens to the main Angular application.
-
-### Dex UI Customization
-
-Dex UI can be customized through Go templates and Tailwind CSS:
-
-- **Templates Location**: `dex/web/templates/` - Contains Go HTML templates for authentication pages
-  - `login.html` - Login page template
-  - `password.html` - Password input template
-  - `error.html` - Error page template
-  - `header.html` - Common header template
-  - `footer.html` - Common footer template
-  - Additional templates: `approval.html`, `device.html`, `device_success.html`, `oob.html`
-
-- **Static Assets**: `dex/web/static/` - Contains CSS, images, and compiled assets
-  - `static/dist/` - Compiled Tailwind CSS output
-  - `static/img/` - Provider icons (GitHub, Google, Microsoft, etc.)
-  - `static/main.css` - Base CSS styles
-
-### Dex Development Commands
-
-- `pnpm run dex:build` - Build Tailwind CSS for Dex templates (outputs to `./dex/web/static/dist/tailwind.css`)
-
-### Styling Dex Templates
-
-Since Tailwind CSS is already configured, you can use Tailwind utility classes directly in the Dex Go templates to maintain design consistency with the main Angular application. The Dex authentication pages should follow the same design system principles as the main UI.
-
-**Key Integration Points:**
-1. Use the same Tailwind configuration for consistent theming
-2. Maintain light/dark mode compatibility
-3. Follow the minimal, clean aesthetic established in the main application

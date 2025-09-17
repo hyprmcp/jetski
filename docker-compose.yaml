@@ -1,6 +1,6 @@
 services:
   dex:
-    build: dex
+    image: ghcr.io/hyprmcp/dex:2.44.0-alpine
     command: ["dex", "serve", "/config.yaml"]
     ports:
       - 5556:5556
