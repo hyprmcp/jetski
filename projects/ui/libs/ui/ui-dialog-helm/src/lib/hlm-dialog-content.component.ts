@@ -1,4 +1,4 @@
-import { NgComponentOutlet } from '@angular/common';
+import { NgComponentOutlet } from "@angular/common";
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,26 +6,26 @@ import {
   inject,
   input,
   ViewEncapsulation,
-} from '@angular/core';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideX } from '@ng-icons/lucide';
-import { hlm } from '@spartan-ng/helm/utils';
+} from "@angular/core";
+import { NgIcon, provideIcons } from "@ng-icons/core";
+import { lucideX } from "@ng-icons/lucide";
+import { hlm } from "@spartan-ng/helm/utils";
 import {
   BrnDialogClose,
   BrnDialogRef,
   injectBrnDialogContext,
-} from '@spartan-ng/brain/dialog';
-import { HlmIcon } from '@spartan-ng/helm/icon';
-import type { ClassValue } from 'clsx';
-import { HlmDialogClose } from './hlm-dialog-close.directive';
+} from "@spartan-ng/brain/dialog";
+import { HlmIcon } from "@spartan-ng/helm/icon";
+import type { ClassValue } from "clsx";
+import { HlmDialogClose } from "./hlm-dialog-close.directive";
 
 @Component({
-  selector: 'hlm-dialog-content',
+  selector: "hlm-dialog-content",
   imports: [NgComponentOutlet, BrnDialogClose, HlmDialogClose, NgIcon, HlmIcon],
   providers: [provideIcons({ lucideX })],
   host: {
-    '[class]': '_computedClass()',
-    '[attr.data-state]': 'state()',
+    "[class]": "_computedClass()",
+    "[attr.data-state]": "state()",
   },
   template: `
     @if (component) {
@@ -46,16 +46,16 @@ export class HlmDialogContent {
   private readonly _dialogRef = inject(BrnDialogRef);
   private readonly _dialogContext = injectBrnDialogContext({ optional: true });
 
-  public readonly state = computed(() => this._dialogRef?.state() ?? 'closed');
+  public readonly state = computed(() => this._dialogRef?.state() ?? "closed");
 
   public readonly component = this._dialogContext?.$component;
   private readonly _dynamicComponentClass =
     this._dialogContext?.$dynamicComponentClass;
 
-  public readonly userClass = input<ClassValue>('', { alias: 'class' });
+  public readonly userClass = input<ClassValue>("", { alias: "class" });
   protected readonly _computedClass = computed(() =>
     hlm(
-      'border-border grid w-full max-w-lg relative gap-4 border bg-background p-6 shadow-lg [animation-duration:200] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[2%]  data-[state=open]:slide-in-from-top-[2%] sm:rounded-lg md:w-full',
+      "border-border flex flex-col w-full max-w-lg relative gap-4 border bg-background p-6 shadow-lg [animation-duration:200] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[state=closed]:slide-out-to-top-[2%]  data-[state=open]:slide-in-from-top-[2%] sm:rounded-lg md:w-full",
       this.userClass(),
       this._dynamicComponentClass,
     ),
