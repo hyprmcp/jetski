@@ -35,6 +35,8 @@ import { type ClientUsage } from './analytics/client-usage';
 import { ClientUsageComponent } from './analytics/client-usage.component';
 import { type RecentSessions } from './analytics/recent-sessions';
 import { RecentSessionsComponent } from './analytics/recent-sessions.component';
+import { PromptAnalytics } from './analytics/prompty-analytics';
+import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component';
 
 @Component({
   template: `
@@ -139,6 +141,13 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
             ></app-project-analytics-overview>
           </div>
 
+          <!-- Prompt Analytics -->
+          <div>
+            <app-prompt-analytics
+              [data]="analytics.promptAnalytics"
+            ></app-prompt-analytics>
+          </div>
+
           <!-- Tools Performance Chart -->
           <div>
             <app-tools-performance
@@ -182,6 +191,7 @@ import { RecentSessionsComponent } from './analytics/recent-sessions.component';
     ToolAnalyticsComponent,
     ClientUsageComponent,
     RecentSessionsComponent,
+    PromptAnalyticsComponent,
   ],
   providers: [
     provideIcons({
@@ -252,6 +262,7 @@ export interface ProjectAnalytics {
   overview: Overview;
   toolsPerformance: ToolsPerformance;
   toolAnalytics: ToolAnalytics;
+  promptAnalytics: PromptAnalytics;
   clientUsage: ClientUsage;
   recentSessions: RecentSessions;
 }

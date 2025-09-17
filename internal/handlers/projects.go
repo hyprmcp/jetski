@@ -109,7 +109,22 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 		AllowedSortBy:    []string{"started_at", "duration", "http_status_code"},
 	})
 
-	if logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting); err != nil {
+	var id *uuid.UUID
+	if s := r.URL.Query().Get("id"); s != "" {
+		if u, err := uuid.Parse(s); err != nil {
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		} else {
+			id = &u
+		}
+	}
+
+	var mcpSessionID *string
+	if s := r.URL.Query().Get("mcpSessionId"); s != "" {
+		mcpSessionID = &s
+	}
+
+	if logs, err := db.GetLogsForProject(ctx, projectID, pagination, sorting, id, mcpSessionID); err != nil {
 		HandleInternalServerError(w, r, err, "failed to get logs for project")
 	} else {
 		RespondJSON(w, logs)
@@ -275,18 +290,7 @@ func getAnalytics(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	// Parse buildNumber query parameter
-	var buildNumber *int
-	if buildNumberStr := r.URL.Query().Get("buildNumber"); buildNumberStr != "" {
-		if bn, err := strconv.Atoi(buildNumberStr); err != nil {
-			Handle4XXErrorWithStatusText(w, http.StatusBadRequest, "invalid buildNumber")
-			return
-		} else {
-			buildNumber = &bn
-		}
-	}
-
-	if analyticsData, err := analytics.GetProjectAnalytics(ctx, projectID, startAt, buildNumber); err != nil {
+	if analyticsData, err := analytics.GetProjectAnalytics(ctx, projectID, startAt); err != nil {
 		HandleInternalServerError(w, r, err, "failed to get analytics for project")
 	} else {
 		RespondJSON(w, analyticsData)

@@ -52,6 +52,7 @@ import { validateResourceName } from '../../../vaildators/name';
               <div class="flex items-center justify-end pt-4 ">
                 <button
                   hlmBtn
+                  variant="outline"
                   type="submit"
                   [disabled]="form.invalid || loading()"
                 >

@@ -27,7 +27,10 @@ import { ToolsPerformance } from './tools-performance';
           <!-- Top 3 Performing Tools -->
           <div>
             @if (data.topPerformingTools.length) {
-              <h4 hlmH4 class="mb-3 text-green-700">Top Performing Tools</h4>
+              <h4 hlmH4 class=" text-green-700">Top Performing Tools</h4>
+              <p class="text-sm text-muted-foreground mb-3">
+                Your most used tools
+              </p>
             }
             @for (
               tool of data.topPerformingTools;
@@ -74,7 +77,10 @@ import { ToolsPerformance } from './tools-performance';
           <!-- Tools Requiring Attention -->
           <div class="mt-6">
             @if (data.toolsRequiringAttention.length) {
-              <h4 hlmH4 class="mb-3 text-red-700">Tools Requiring Attention</h4>
+              <h4 hlmH4 class="text-red-700">Tools Requiring Attention</h4>
+              <p class="text-sm text-muted-foreground mb-3">
+                Identify tools that might cause errors or delays for your users
+              </p>
             }
             @for (tool of data.toolsRequiringAttention; track tool.name) {
               <div
@@ -84,11 +90,9 @@ import { ToolsPerformance } from './tools-performance';
                   <div
                     class="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center"
                   >
-                    <ng-icon
-                      name="lucideTriangleAlert"
-                      size="20"
-                      class="text-red-600"
-                    />
+                    <span class="text-red-600 leading-none">
+                      <ng-icon name="lucideTriangleAlert" size="20" />
+                    </span>
                   </div>
                   <div>
                     <p class="font-medium">{{ tool.name }}</p>

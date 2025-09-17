@@ -1,13 +1,18 @@
 import { Component, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideEye } from '@ng-icons/lucide';
 import {
-  HlmCardContent,
   HlmCard,
+  HlmCardContent,
   HlmCardHeader,
   HlmCardTitle,
 } from '@spartan-ng/helm/card';
 import { formatDistance } from 'date-fns';
 import { RelativeDatePipe } from '../../../../pipes/relative-date-pipe';
 import { RecentSessions } from './recent-sessions';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-recent-sessions',
@@ -17,7 +22,8 @@ import { RecentSessions } from './recent-sessions';
       <div hlmCardHeader>
         <div hlmCardTitle>Recent Sessions</div>
         <p class="text-sm text-muted-foreground">
-          Latest user sessions with performance metrics
+          Recent user activity with session details and usage statistics. Click
+          the arrow to view individual tool calls for each session
         </p>
       </div>
       <div hlmCardContent>
@@ -32,6 +38,7 @@ import { RecentSessions } from './recent-sessions';
                 <th class="text-left py-3 px-4 font-medium">Errors</th>
                 <th class="text-left py-3 px-4 font-medium">Last Tool Call</th>
                 <th class="text-left py-3 px-4 font-medium">Started</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
@@ -54,6 +61,18 @@ import { RecentSessions } from './recent-sessions';
                   <td class="py-3 px-4">
                     {{ session.startedAt | relativeDate }}
                   </td>
+                  <td>
+                    <a
+                      hlmBtn
+                      variant="ghost"
+                      [routerLink]="['logs']"
+                      [queryParams]="{ mcpSessionId: session.sessionId }"
+                      class="text-foreground h-8 w-8 p-0"
+                    >
+                      <span class="sr-only">Show logs</span>
+                      <ng-icon hlm size="sm" name="lucideEye" />
+                    </a>
+                  </td>
                 </tr>
               }
             </tbody>
@@ -68,7 +87,12 @@ import { RecentSessions } from './recent-sessions';
     HlmCardHeader,
     HlmCardTitle,
     RelativeDatePipe,
+    RouterLink,
+    NgIcon,
+    HlmButton,
+    HlmIcon,
   ],
+  providers: [provideIcons({ lucideEye })],
 })
 export class RecentSessionsComponent {
   @Input() data!: RecentSessions;
