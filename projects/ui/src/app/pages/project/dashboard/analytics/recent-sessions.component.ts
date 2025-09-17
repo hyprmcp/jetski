@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideArrowRight } from '@ng-icons/lucide';
+import { lucideEye } from '@ng-icons/lucide';
 import {
   HlmCard,
   HlmCardContent,
@@ -11,6 +11,8 @@ import {
 import { formatDistance } from 'date-fns';
 import { RelativeDatePipe } from '../../../../pipes/relative-date-pipe';
 import { RecentSessions } from './recent-sessions';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   selector: 'app-recent-sessions',
@@ -61,11 +63,14 @@ import { RecentSessions } from './recent-sessions';
                   </td>
                   <td>
                     <a
+                      hlmBtn
+                      variant="ghost"
                       [routerLink]="['logs']"
                       [queryParams]="{ mcpSessionId: session.sessionId }"
-                      class="text-foreground border border-foreground rounded-sm px-2 py-2 flex items-center"
+                      class="text-foreground h-8 w-8 p-0"
                     >
-                      <ng-icon name="lucideArrowRight" />
+                      <span class="sr-only">Show logs</span>
+                      <ng-icon hlm size="sm" name="lucideEye" />
                     </a>
                   </td>
                 </tr>
@@ -84,8 +89,10 @@ import { RecentSessions } from './recent-sessions';
     RelativeDatePipe,
     RouterLink,
     NgIcon,
+    HlmButton,
+    HlmIcon,
   ],
-  providers: [provideIcons({ lucideArrowRight })],
+  providers: [provideIcons({ lucideEye })],
 })
 export class RecentSessionsComponent {
   @Input() data!: RecentSessions;
