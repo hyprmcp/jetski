@@ -157,12 +157,12 @@ export class LogsActionsComponent {
     response: JsonRcpResponse,
   ): string | undefined {
     // there can only be one content item with type "text"
-    return (response.result as CallToolResult).content.find(
+    return (response.result as CallToolResult)?.content.find(
       (it) => it.type === 'text',
     )?.text;
   }
 
   protected getResponseStructuredContent(response: JsonRcpResponse): unknown {
-    return (response.result as CallToolResult).structuredContent;
+    return (response.result as CallToolResult)?.structuredContent;
   }
 }
