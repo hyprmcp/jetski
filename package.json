@@ -48,6 +48,7 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
+    "highlight.js": "^11.11.1",
     "ng2-charts": "^8.0.0",
     "ngx-sonner": ">=3.0.0",
     "postcss": "^8.5.6",

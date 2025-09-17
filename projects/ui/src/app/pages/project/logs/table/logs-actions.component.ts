@@ -1,16 +1,17 @@
 import { DatePipe, DecimalPipe, JsonPipe, KeyValuePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEllipsis, lucideEye } from '@ng-icons/lucide';
 import { BrnDialogContent, BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmDialogImports } from '../../../../../../libs/ui/ui-dialog-helm/src';
-import {
+import type {
   JsonRcpResponse,
   MCPServerLog,
 } from '../../../../../api/mcp-server-log';
+import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
 
 @Component({
   selector: 'app-logs-actions',
@@ -25,6 +26,7 @@ import {
     DatePipe,
     DecimalPipe,
     KeyValuePipe,
+    HighlightJsonPipe,
   ],
   providers: [provideIcons({ lucideEllipsis, lucideEye })],
   template: `
@@ -86,7 +88,7 @@ import {
                         track kv.key
                       ) {
                         <dt class="font-bold inline">{{ kv.key }}:&nbsp;</dt>
-                        <dd class="inline">{{ kv.value | json }}</dd>
+                        <dd class="inline font-mono">{{ kv.value | json }}</dd>
                       }
                     </dl>
                   </div>
@@ -96,14 +98,19 @@ import {
                   @if (getResponseTextContent(response); as content) {
                     <div>
                       <strong>Response Content: </strong>
-                      <pre class="whitespace-pre-wrap">{{ content }}</pre>
+                      <pre class="whitespace-pre-wrap text-sm">{{
+                        content
+                      }}</pre>
                     </div>
                   }
 
                   @if (getResponseStructuredContent(response); as content) {
                     <div>
                       <strong>Response Structured Content: </strong>
-                      <pre class="overflow-auto">{{ content | json }}</pre>
+                      <pre
+                        class="overflow-auto text-sm"
+                        [innerHtml]="content | hljson"
+                      ></pre>
                     </div>
                   }
                 }
@@ -116,7 +123,10 @@ import {
               <summary class="cursor-pointer">
                 <strong>Raw Request</strong>
               </summary>
-              <pre>{{ request | json }}</pre>
+              <pre
+                class="overflow-auto text-sm"
+                [innerHtml]="request | hljson"
+              ></pre>
             </details>
           }
 
@@ -125,7 +135,10 @@ import {
               <summary class="cursor-pointer">
                 <strong>Raw Response</strong>
               </summary>
-              <pre class="overflow-auto">{{ response | json }}</pre>
+              <pre
+                class="overflow-auto text-sm"
+                [innerHtml]="response | hljson"
+              ></pre>
             </details>
           }
         </div>
