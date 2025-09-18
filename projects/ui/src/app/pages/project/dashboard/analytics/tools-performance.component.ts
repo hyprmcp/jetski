@@ -17,7 +17,7 @@ import { ToolsPerformance } from './tools-performance';
     <!-- Tools Performance Chart -->
     <div hlmCard>
       <div hlmCardHeader>
-        <div hlmCardTitle>Tools Performance</div>
+        <div hlmCardTitle>Operation Performance</div>
         <p class="text-sm text-muted-foreground">
           Performance insights and optimization opportunities
         </p>
@@ -29,7 +29,7 @@ import { ToolsPerformance } from './tools-performance';
             @if (data.topPerformingTools.length) {
               <h4 hlmH4 class=" text-green-700">Top Performing Tools</h4>
               <p class="text-sm text-muted-foreground mb-3">
-                Your most used tools
+                Most used operations for your MCP server
               </p>
             }
             @for (
@@ -79,7 +79,8 @@ import { ToolsPerformance } from './tools-performance';
             @if (data.toolsRequiringAttention.length) {
               <h4 hlmH4 class="text-red-700">Tools Requiring Attention</h4>
               <p class="text-sm text-muted-foreground mb-3">
-                Identify tools that might cause errors or delays for your users
+                Identify operations that might cause errors or delays for your
+                users
               </p>
             }
             @for (tool of data.toolsRequiringAttention; track tool.name) {
