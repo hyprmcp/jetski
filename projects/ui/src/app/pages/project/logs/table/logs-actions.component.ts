@@ -90,8 +90,10 @@ import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
                         kv of request.params.arguments | keyvalue;
                         track kv.key
                       ) {
-                        <dt class="font-bold inline">{{ kv.key }}:&nbsp;</dt>
-                        <dd class="inline font-mono">{{ kv.value | json }}</dd>
+                        <dt class="font-bold">{{ kv.key }}:</dt>
+                        <dd class="font-mono mb-1 ps-2">
+                          {{ kv.value | json }}
+                        </dd>
                       }
                     </dl>
                   </div>
