@@ -1,6 +1,6 @@
 import { DatePipe, DecimalPipe, JsonPipe, KeyValuePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
-import type { CallToolResult } from '@modelcontextprotocol/sdk/types.js';
+import { type CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEllipsis, lucideEye } from '@ng-icons/lucide';
 import { BrnDialogContent, BrnDialogImports } from '@spartan-ng/brain/dialog';
@@ -157,7 +157,7 @@ export class LogsActionsComponent {
     response: JsonRcpResponse,
   ): string | undefined {
     // there can only be one content item with type "text"
-    return (response.result as CallToolResult)?.content.find(
+    return (response.result as CallToolResult)?.content?.find(
       (it) => it.type === 'text',
     )?.text;
   }
