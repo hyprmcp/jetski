@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.1.1](https://github.com/hyprmcp/jetski/compare/0.1.0...0.1.1) (2025-09-18)
+
+
+### Bug Fixes
+
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.18.1 ([#209](https://github.com/hyprmcp/jetski/issues/209)) ([31358ab](https://github.com/hyprmcp/jetski/commit/31358ab6188864e5741624a9446a6d1a7854b520))
+* improve mcp server log tool call arguments layout ([#207](https://github.com/hyprmcp/jetski/issues/207)) ([2a278d8](https://github.com/hyprmcp/jetski/commit/2a278d8f6186bf40837a991cf0670cfa07cec419))
+
+
+### Other
+
+* change tools to operations in tools performance analytics section ([#210](https://github.com/hyprmcp/jetski/issues/210)) ([1645f6b](https://github.com/hyprmcp/jetski/commit/1645f6bb86fa62a8d58e8a8ff80f0937cf1587d9))
+* **deps:** update dependency prettier-plugin-organize-imports to v4.3.0 ([#206](https://github.com/hyprmcp/jetski/issues/206)) ([ef0d14b](https://github.com/hyprmcp/jetski/commit/ef0d14b63d5f13cbe05f4def311cdc9ff97523be))
+
 ## [0.1.0](https://github.com/hyprmcp/jetski/compare/0.1.0...0.1.0) (2025-09-18)
 
 
