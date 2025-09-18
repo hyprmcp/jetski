@@ -79,3 +79,39 @@
 ::-webkit-scrollbar-thumb:hover {
   @apply bg-muted-foreground/50;
 }
+
+.hljs-punctuation {
+  @apply text-gray-500;
+}
+
+.hljs-number,
+.hljs-keyword {
+  @apply text-orange-400;
+}
+
+.hljs-string {
+  @apply text-green-600;
+}
+
+.hljs-attr {
+  @apply text-blue-500;
+}
+
+.dark {
+  .hljs-punctuation {
+    @apply text-gray-400;
+  }
+
+  .hljs-number,
+  .hljs-keyword {
+    @apply text-orange-300;
+  }
+
+  .hljs-string {
+    @apply text-green-300;
+  }
+
+  .hljs-attr {
+    @apply text-blue-300;
+  }
+}

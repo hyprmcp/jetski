@@ -1,16 +1,16 @@
 export interface MCPServerLog {
   id: string;
-  userAccountId?: string | null;
-  mcpSessionId?: string | null;
+  userAccountId?: string;
+  mcpSessionId?: string;
   startedAt: string;
   duration: number;
   deploymentRevisionId: string;
-  authTokenDigest?: string | null;
+  authTokenDigest?: string;
   mcpRequest?: JsonRpcRequest;
   mcpResponse?: JsonRcpResponse;
-  userAgent?: string | null;
-  httpStatusCode?: number | null;
-  httpError?: string | null;
+  userAgent?: string;
+  httpStatusCode?: number;
+  httpError?: string;
 }
 
 export interface JsonRpcRequest {
@@ -20,10 +20,12 @@ export interface JsonRpcRequest {
 }
 
 export interface JsonRcpResponse {
-  result: object;
-  error: object;
+  result: unknown;
+  error: unknown;
 }
 
 export interface JsonRpcParams {
   name?: string;
+  arguments?: Record<string, unknown>;
+  [key: string]: unknown;
 }
