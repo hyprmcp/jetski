@@ -11,11 +11,11 @@ import (
 func calculateClientUsage(logs []types.MCPServerLog) types.ClientUsage {
 	clientUsageMap := make(map[string]types.ClientUsageData)
 	for _, log := range logs {
-		if log.UserAgent == nil {
-			continue
+		client := "unknown"
+		if log.UserAgent != nil {
+			client = getNormalizedUserAgent(*log.UserAgent)
 		}
 
-		client := getNormalizedUserAgent(*log.UserAgent)
 		usage, exists := clientUsageMap[client]
 		if !exists {
 			usage = types.ClientUsageData{Name: client, Requests: 1}
@@ -26,8 +26,7 @@ func calculateClientUsage(logs []types.MCPServerLog) types.ClientUsage {
 	}
 
 	return types.ClientUsage{
-		// TODO: Check why this is needed here again, it is calculated twice
-		TotalSessions: countUniqueSessions(logs),
+		TotalRequests: len(logs),
 		Clients:       slices.Collect(maps.Values(clientUsageMap)),
 	}
 }

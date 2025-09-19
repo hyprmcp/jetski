@@ -43,9 +43,11 @@ import { ThemeService } from '../../../../services/theme.service';
                 class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none"
               >
                 <div class="text-3xl font-semibold">
-                  {{ data.totalSessions | number }}
+                  {{ data.totalRequests | number }}
                 </div>
-                <div class="text-sm text-muted-foreground">Total Sessions</div>
+                <div class="text-sm text-muted-foreground">
+                  Total Operations
+                </div>
               </div>
             </div>
           </div>
@@ -129,8 +131,8 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
   }
 
   getPercentage(client: ClientUsageData): number {
-    if (this.data.totalSessions === 0) return 0;
-    return Math.round((client.requests / this.data.totalSessions) * 100);
+    if (this.data.totalRequests === 0) return 0;
+    return Math.round((client.requests / this.data.totalRequests) * 100);
   }
 
   getModernColor(index: number): string {
