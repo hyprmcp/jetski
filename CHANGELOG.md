@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.2](https://github.com/hyprmcp/jetski/compare/0.1.1...0.1.2) (2025-09-19)
+
+
+### Bug Fixes
+
+* change client analytics chart total to requests ([#213](https://github.com/hyprmcp/jetski/issues/213)) ([aa90595](https://github.com/hyprmcp/jetski/commit/aa90595d3050649ae8cdc63688d49f193010e77b))
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.513 ([#211](https://github.com/hyprmcp/jetski/issues/211)) ([4bb7ebb](https://github.com/hyprmcp/jetski/commit/4bb7ebbfa2c6e8fe13c08e2fc5425a37b1fdafe7))
+
 ## [0.1.1](https://github.com/hyprmcp/jetski/compare/0.1.0...0.1.1) (2025-09-18)
 
 
