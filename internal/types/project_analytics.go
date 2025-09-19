@@ -76,7 +76,7 @@ type ArgumentValue struct {
 
 // ClientUsage represents client usage analytics
 type ClientUsage struct {
-	TotalSessions int               `json:"totalSessions"`
+	TotalRequests int               `json:"totalRequests"`
 	Clients       []ClientUsageData `json:"clients"`
 }
 

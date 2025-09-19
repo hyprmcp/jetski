@@ -4,6 +4,6 @@ export interface ClientUsageData {
 }
 
 export interface ClientUsage {
-  totalSessions: number;
+  totalRequests: number;
   clients: ClientUsageData[];
 }
