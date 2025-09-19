@@ -125,6 +125,7 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
       cursor: 'Cursor',
       chatgpt: 'ChatGPT',
       claude_pro: 'Claude Pro',
+      claude_code: 'Claude Code',
       other: 'Other',
     };
     return displayNames[name] || name;

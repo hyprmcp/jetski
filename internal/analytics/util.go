@@ -100,12 +100,19 @@ func getNormalizedUserAgent(userAgent string) string {
 	if strings.Contains(ua, "cursor") {
 		return "cursor"
 	}
+
 	if strings.Contains(ua, "claude") {
+		if strings.Contains(ua, "code") {
+			return "claude_code"
+		}
+
 		return "claude_pro"
 	}
+
 	if strings.Contains(ua, "chatgpt") || strings.Contains(ua, "openai") {
 		return "chatgpt"
 	}
+
 	if strings.Contains(ua, "node") {
 		return "node"
 	}

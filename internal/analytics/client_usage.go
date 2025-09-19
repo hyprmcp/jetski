@@ -27,6 +27,9 @@ func calculateClientUsage(logs []types.MCPServerLog) types.ClientUsage {
 
 	return types.ClientUsage{
 		TotalRequests: len(logs),
-		Clients:       slices.Collect(maps.Values(clientUsageMap)),
+		Clients: slices.SortedFunc(
+			maps.Values(clientUsageMap),
+			func(a, b types.ClientUsageData) int { return b.Requests - a.Requests },
+		),
 	}
 }
