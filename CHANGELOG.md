@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/hyprmcp/jetski/compare/0.1.2...0.1.3) (2025-09-19)
+
+
+### Bug Fixes
+
+* add parsing claude code useragent ([#214](https://github.com/hyprmcp/jetski/issues/214)) ([fc6b1f0](https://github.com/hyprmcp/jetski/commit/fc6b1f0ad8fadfd00d3b679ca17f015c73fa3eee))
+
 ## [0.1.2](https://github.com/hyprmcp/jetski/compare/0.1.1...0.1.2) (2025-09-19)
 
 
