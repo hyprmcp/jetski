@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.1.4](https://github.com/hyprmcp/jetski/compare/0.1.3...0.1.4) (2025-09-25)
+
+
+### Bug Fixes
+
+* **deps:** update aws-sdk-go-v2 monorepo ([#225](https://github.com/hyprmcp/jetski/issues/225)) ([65b6624](https://github.com/hyprmcp/jetski/commit/65b6624a47865df90c01abfdf7dac243a474cdb8))
+* **deps:** update dependency @angular/cdk to v20.2.5 ([#228](https://github.com/hyprmcp/jetski/issues/228)) ([f7ebf5e](https://github.com/hyprmcp/jetski/commit/f7ebf5e6176861fe31b75240d5429cab8bb94b13))
+* **deps:** update module github.com/aws/aws-sdk-go-v2/config to v1.31.9 ([#224](https://github.com/hyprmcp/jetski/issues/224)) ([072cc5a](https://github.com/hyprmcp/jetski/commit/072cc5a8e111445fa774a3efb94ac1fb7b6931cf))
+
+
+### Other
+
+* **deps:** update dependency @eslint/js to v9.36.0 ([#216](https://github.com/hyprmcp/jetski/issues/216)) ([267d941](https://github.com/hyprmcp/jetski/commit/267d941174951f351d960a17c6639e83936e898b))
+* **deps:** update dependency typescript-eslint to v8.44.1 ([#223](https://github.com/hyprmcp/jetski/issues/223)) ([90801f0](https://github.com/hyprmcp/jetski/commit/90801f028d2208f8b4a42b2a03136b6d51688291))
+* redirect to "new project" page after creating an organization ([#229](https://github.com/hyprmcp/jetski/issues/229)) ([4cb3f54](https://github.com/hyprmcp/jetski/commit/4cb3f54a2f8f5f7dc78f7d02c0a85821d9cc417b))
+
 ## [0.1.3](https://github.com/hyprmcp/jetski/compare/0.1.2...0.1.3) (2025-09-19)
 
 
