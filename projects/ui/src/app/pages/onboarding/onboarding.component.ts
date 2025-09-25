@@ -127,7 +127,7 @@ export class OnboardingComponent {
       .subscribe({
         next: () => {
           this.contextService.context.reload();
-          this.router.navigateByUrl(`/${name}`);
+          this.router.navigate(['/' + name, 'new']);
           toast.success(`Organization ${name} created successfully`);
         },
         error: (err) => {

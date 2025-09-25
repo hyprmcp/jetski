@@ -153,7 +153,14 @@ import { RouterLink } from '@angular/router';
               </div>
             </section>
           } @empty {
-            <div class="text-muted-foreground text-sm">no projects found</div>
+            <div class="text-muted-foreground text-sm">
+              No projects found.
+              <a
+                class="text-foreground underline hover:text-foreground"
+                routerLink="new"
+                >Create one now!</a
+              >
+            </div>
           }
         </div>
       }
