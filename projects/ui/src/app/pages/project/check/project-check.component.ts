@@ -33,10 +33,10 @@ import { ContextService } from '../../../services/context.service';
       <div hlmCard class="mx-4 md:mx-0 md:mt-24">
         <div
           hlmCardContent
-          class="flex items-center justify-center gap-4 md:m-12 text-center"
+          class="flex items-center justify-center gap-4 md:m-12"
         >
           @if (success()) {
-            <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center text-center">
               <div class="text-muted-foreground">
                 Your MCP Endpoint is ready
               </div>
@@ -54,7 +54,9 @@ import { ContextService } from '../../../services/context.service';
               </div>
             </div>
           } @else if (errorMessage()) {
-            <div class="text-muted-foreground">{{ errorMessage() }}</div>
+            <div class="text-muted-foreground text-center">
+              {{ errorMessage() }}
+            </div>
           } @else {
             <hlm-spinner class="size-10" />
             <div>
