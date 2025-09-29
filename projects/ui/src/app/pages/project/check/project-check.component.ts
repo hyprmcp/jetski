@@ -25,9 +25,13 @@ import {
 } from 'rxjs';
 import { getProjectUrl } from '../../../../api/project';
 import { ContextService } from '../../../services/context.service';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCircleCheck, lucideExternalLink } from '@ng-icons/lucide';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 
 @Component({
-  imports: [HlmCardImports, HlmSpinnerImports],
+  imports: [HlmCardImports, HlmSpinnerImports, NgIcon, HlmIcon],
+  viewProviders: [provideIcons({ lucideCircleCheck, lucideExternalLink })],
   template: `
     <div class="max-w-screen-md mx-auto">
       <div hlmCard class="mx-4 md:mx-0 md:mt-24">
@@ -37,20 +41,29 @@ import { ContextService } from '../../../services/context.service';
         >
           @if (success()) {
             <div class="flex flex-col items-center text-center">
-              <div class="text-muted-foreground">
-                Your MCP Endpoint is ready
-              </div>
+              <ng-icon
+                hlm
+                name="lucideCircleCheck"
+                size="xl"
+                class="text-green-500 mb-4"
+              />
+              <div class="">Your MCP Endpoint is ready</div>
               @if (projectUrl(); as projectUrl) {
+                <div class="mt-8 mb-4 text-muted-foreground">
+                  Open your server URL in the browser for detailed installation
+                  instructions:
+                </div>
                 <a
-                  [href]="'https://' + projectUrl"
-                  class="text-2xl font-semibold hover:underline"
-                  >{{ projectUrl }}</a
+                  [href]="projectUrl"
+                  class="text-2xl font-semibold hover:underline inline-flex items-center gap-2"
                 >
+                  <ng-icon hlm name="lucideExternalLink" />
+                  {{ projectUrl }}
+                </a>
               }
               <div class="text-muted-foreground mt-4 md:mt-12">
-                Configure this URL in your MCP client using
-                <strong>Streamable HTTP</strong> transport, or click the link
-                above for detailed instructions.
+                Or configure this URL in your MCP client using
+                <strong>Streamable HTTP</strong> transport.
               </div>
             </div>
           } @else if (errorMessage()) {
@@ -103,7 +116,7 @@ export class ProjectCheckComponent implements OnInit, OnDestroy {
         delay(10_000),
         switchMap((url) =>
           this.httpClient
-            .get(`https://${url}`, {
+            .get(url, {
               headers: { accept: 'text/html' },
               observe: 'response',
               responseType: 'text',

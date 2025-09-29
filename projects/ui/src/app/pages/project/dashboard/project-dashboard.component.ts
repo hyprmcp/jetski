@@ -3,6 +3,7 @@ import { ContextService } from '../../../services/context.service';
 import {
   getAnalyticsForProject,
   getDeploymentsForProject,
+  getProjectUrl,
 } from '../../../../api/project';
 import { BrnSelectModule } from '@spartan-ng/brain/select';
 import {
@@ -44,91 +45,108 @@ import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component
       <div class="space-y-6 mb-24">
         <!-- Header -->
         <div class="flex flex-col justify-between gap-4 sm:flex-row">
-          <div class="flex items-center justify-between grow">
+          <div class="flex items-center justify-between grow gap-4">
             <div>
               <h1 class="text-2xl font-semibold text-foreground">
                 {{ proj.name }}
               </h1>
               <p class="text-muted-foreground">Analytics Dashboard</p>
             </div>
-          </div>
-          <div class="flex items-center gap-2">
-            <!-- Time Filter -->
-            <div class="relative">
-              <brn-select
-                [ngModel]="selectedTimeFilter()"
-                (ngModelChange)="onTimeFilterChange($event)"
-                class="w-40"
+            @if (contextService.selectedOrg(); as org) {
+              <div
+                class="rounded-lg border border-border bg-muted/50 px-4 py-2"
               >
-                <hlm-select-trigger>
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium">
-                      {{ getTimeFilterLabel(selectedTimeFilter()) }}
-                    </span>
-                    <ng-icon hlm name="lucideChevronDown" size="sm" />
-                  </div>
-                </hlm-select-trigger>
-                <hlm-select-content>
-                  <hlm-option [value]="getTimestampFor24h()"
-                    >Last 24h</hlm-option
+                <div class="text-xs text-muted-foreground mb-1">
+                  MCP Server URL
+                </div>
+                @if (getProjectUrl(org, proj); as projectUrl) {
+                  <a
+                    [href]="projectUrl"
+                    class="text-sm font-mono text-foreground hover:text-primary transition-colors"
                   >
-                  <hlm-option [value]="getTimestampFor7d()"
-                    >Last 7 days</hlm-option
-                  >
-                  <hlm-option [value]="getTimestampFor30d()"
-                    >Last 30 days</hlm-option
-                  >
-                  <hlm-option [value]="getTimestampFor90d()"
-                    >Last 90 days</hlm-option
-                  >
-                </hlm-select-content>
-              </brn-select>
-            </div>
-
-            <!-- Deployment Version Filter -->
-            <div class="relative">
-              <brn-select
-                [ngModel]="selectedDeploymentVersion()"
-                (ngModelChange)="onDeploymentVersionChange($event)"
-                class="w-40"
-              >
-                <hlm-select-trigger>
-                  <div class="flex items-center gap-2">
-                    <span class="text-sm font-medium">
-                      {{
-                        selectedDeploymentVersion()
-                          ? 'v' + selectedDeploymentVersion()
-                          : 'All Versions'
-                      }}
-                    </span>
-                    <ng-icon hlm name="lucideChevronDown" size="sm" />
-                  </div>
-                </hlm-select-trigger>
-                <hlm-select-content>
-                  <hlm-option value="">
-                    <div class="flex items-center justify-between w-full">
-                      <span>All Versions</span>
+                    {{ projectUrl }}
+                  </a>
+                }
+              </div>
+            }
+            <div class="flex items-center gap-2">
+              <!-- Time Filter -->
+              <div class="relative">
+                <brn-select
+                  [ngModel]="selectedTimeFilter()"
+                  (ngModelChange)="onTimeFilterChange($event)"
+                  class="w-40"
+                >
+                  <hlm-select-trigger>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium">
+                        {{ getTimeFilterLabel(selectedTimeFilter()) }}
+                      </span>
+                      <ng-icon hlm name="lucideChevronDown" size="sm" />
                     </div>
-                  </hlm-option>
-                  @for (
-                    revision of deploymentRevisions.value();
-                    track revision.id
-                  ) {
-                    <hlm-option [value]="revision.buildNumber">
-                      <div class="flex flex-col w-full">
-                        <div class="flex items-center justify-between">
-                          <span>Version #{{ revision.buildNumber }}</span>
-                        </div>
-                        <div class="flex items-center justify-between mt-1">
-                          <span class="text-xs text-muted-foreground">
-                            {{ revision.createdAt | relativeDate }}
-                          </span>
-                        </div>
+                  </hlm-select-trigger>
+                  <hlm-select-content>
+                    <hlm-option [value]="getTimestampFor24h()"
+                      >Last 24h</hlm-option
+                    >
+                    <hlm-option [value]="getTimestampFor7d()"
+                      >Last 7 days</hlm-option
+                    >
+                    <hlm-option [value]="getTimestampFor30d()"
+                      >Last 30 days</hlm-option
+                    >
+                    <hlm-option [value]="getTimestampFor90d()"
+                      >Last 90 days</hlm-option
+                    >
+                  </hlm-select-content>
+                </brn-select>
+              </div>
+
+              <!-- Deployment Version Filter -->
+              <div class="relative">
+                <brn-select
+                  [ngModel]="selectedDeploymentVersion()"
+                  (ngModelChange)="onDeploymentVersionChange($event)"
+                  class="w-40"
+                >
+                  <hlm-select-trigger>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium">
+                        {{
+                          selectedDeploymentVersion()
+                            ? 'v' + selectedDeploymentVersion()
+                            : 'All Versions'
+                        }}
+                      </span>
+                      <ng-icon hlm name="lucideChevronDown" size="sm" />
+                    </div>
+                  </hlm-select-trigger>
+                  <hlm-select-content>
+                    <hlm-option value="">
+                      <div class="flex items-center justify-between w-full">
+                        <span>All Versions</span>
                       </div>
                     </hlm-option>
-                  }
-                </hlm-select-content>
-              </brn-select>
+                    @for (
+                      revision of deploymentRevisions.value();
+                      track revision.id
+                    ) {
+                      <hlm-option [value]="revision.buildNumber">
+                        <div class="flex flex-col w-full">
+                          <div class="flex items-center justify-between">
+                            <span>Version #{{ revision.buildNumber }}</span>
+                          </div>
+                          <div class="flex items-center justify-between mt-1">
+                            <span class="text-xs text-muted-foreground">
+                              {{ revision.createdAt | relativeDate }}
+                            </span>
+                          </div>
+                        </div>
+                      </hlm-option>
+                    }
+                  </hlm-select-content>
+                </brn-select>
+              </div>
             </div>
           </div>
         </div>
@@ -256,6 +274,8 @@ export class ProjectDashboardComponent {
   getTimestampFor90d(): number {
     return Math.floor((Date.now() - 90 * 24 * 60 * 60 * 1000) / 1000);
   }
+
+  protected readonly getProjectUrl = getProjectUrl;
 }
 
 export interface ProjectAnalytics {
