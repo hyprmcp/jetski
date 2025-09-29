@@ -18,6 +18,7 @@ import { ProjectSettingsComponent } from './pages/project-settings/project-setti
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
 import { LogsComponent } from './pages/project/logs/logs.component';
 import { ContextService } from './services/context.service';
+import { ProjectCheckComponent } from './pages/project/check/project-check.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -143,6 +144,10 @@ export const authenticatedRoutes: Routes = [
                   {
                     path: '',
                     component: ProjectDashboardComponent,
+                  },
+                  {
+                    path: 'check',
+                    component: ProjectCheckComponent,
                   },
                   {
                     path: 'logs',

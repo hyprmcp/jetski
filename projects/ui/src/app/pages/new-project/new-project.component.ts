@@ -1,13 +1,13 @@
-import { Component, computed, inject, signal } from '@angular/core';
-import { ContextService } from '../../services/context.service';
 import { HttpClient } from '@angular/common/http';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { firstValueFrom, startWith } from 'rxjs';
-import { Router } from '@angular/router';
-import { Project } from '../../../api/project';
+import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
-import { validateResourceName } from '../../../vaildators/name';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Router } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { firstValueFrom, startWith } from 'rxjs';
+import { getProjectUrl, Project } from '../../../api/project';
+import { validateResourceName } from '../../../vaildators/name';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   template: ` <div class="flex justify-center items-center ">
@@ -22,19 +22,19 @@ import { HlmButton } from '@spartan-ng/helm/button';
             <div class="gap-4">
               <div>
                 <label
-                  for="orgName"
+                  for="projectName"
                   class="block font-medium text-foreground mb-2"
                   >Project Name</label
                 >
                 <input
-                  id="orgName"
+                  id="projectName"
                   type="text"
                   formControlName="name"
                   placeholder="my-mcp-server"
                   class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground placeholder:italic"
                 />
                 <p
-                  class="mt-3 mb-3 text-sm font-normal text-gray-500 dark:text-gray-400"
+                  class="mt-1 mb-3 text-sm font-normal text-gray-500 dark:text-gray-400"
                 >
                   Your MCP server's URL will look like this:
                   {{ mcpURL() }}
@@ -50,10 +50,41 @@ import { HlmButton } from '@spartan-ng/helm/button';
                     numbers, and hyphens and must start with a letter or number.
                   </div>
                 }
-                @if (error() && form.pristine) {
-                  <div class="text-sm text-red-600 my-2">{{ error() }}</div>
+              </div>
+
+              <div>
+                <label
+                  for="proxyUrl"
+                  class="block font-medium text-foreground mb-2"
+                  >MCP Server URL</label
+                >
+                <input
+                  id="proxyUrl"
+                  type="text"
+                  formControlName="proxyUrl"
+                  placeholder="https://mcp.my-company.com/mcp"
+                  class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground placeholder:italic"
+                />
+                <p
+                  class="mt-1 mb-3 text-sm font-normal text-gray-500 dark:text-gray-400"
+                >
+                  Enter the full URL of your upstream MCP server. We will
+                  forward all MCP requests to this server.
+                </p>
+                @if (
+                  form.controls.proxyUrl.invalid &&
+                  (form.controls.proxyUrl.touched ||
+                    form.controls.proxyUrl.errors?.['pattern'])
+                ) {
+                  <div class="text-sm text-red-600 my-2">
+                    Please enter a valid URL.
+                  </div>
                 }
               </div>
+
+              @if (error() && form.pristine) {
+                <div class="text-sm text-red-600 my-2">{{ error() }}</div>
+              }
 
               <!-- Actions -->
               <div class="flex items-center justify-end pt-4 ">
@@ -80,17 +111,24 @@ export class NewProjectComponent {
   private readonly router = inject(Router);
   protected readonly form = this.fb.group({
     name: this.fb.control('', [Validators.required, validateResourceName]),
+    proxyUrl: this.fb.control('', [
+      Validators.required,
+      Validators.pattern(
+        /^(http|https):\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(:\d+)?(\/.*)?$/,
+      ),
+    ]),
   });
   protected readonly error = signal<unknown>(undefined);
   protected readonly loading = signal(false);
   private readonly formSignal = toSignal(
     this.form.valueChanges.pipe(startWith(this.form.value)),
   );
-  protected readonly mcpURL = computed(() => {
-    const orgName = this.ctx.selectedOrg()?.name;
-    const name = this.formSignal()?.name || 'my-mcp-server';
-    return `https://${orgName}.hyprmcp.com/${name}/mcp`;
-  });
+  protected readonly mcpURL = computed(() =>
+    getProjectUrl(
+      this.ctx.selectedOrg()?.name || 'my-organization',
+      this.formSignal()?.name || 'my-mcp-server',
+    ),
+  );
 
   protected async submit() {
     if (this.form.invalid) {
@@ -104,10 +142,16 @@ export class NewProjectComponent {
           this.httpClient.post<Project>('/api/v1/projects', {
             organizationId: org.id,
             name: this.form.value.name,
+            proxyUrl: this.form.value.proxyUrl,
           }),
         );
         this.ctx.registerCreatedProject(project);
-        await this.router.navigate(['/' + org.name, 'project', project.name]);
+        await this.router.navigate([
+          '/' + org.name,
+          'project',
+          project.name,
+          'check',
+        ]);
       } catch (e) {
         this.error.set(e);
       }

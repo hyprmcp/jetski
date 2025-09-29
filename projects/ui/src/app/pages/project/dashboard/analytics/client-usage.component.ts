@@ -173,7 +173,7 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
 
     // Update chart colors
     if (this.pieChart.data.datasets[0]) {
-      this.pieChart.data.datasets[0].backgroundColor = this.data.clients.map(
+      this.pieChart.data.datasets[0].backgroundColor = this.data.clients?.map(
         (_, index) => this.getModernColor(index),
       );
       this.pieChart.data.datasets[0].borderColor = isDark
@@ -225,17 +225,20 @@ export class ClientUsageComponent implements AfterViewInit, OnDestroy {
       this.pieChart = new Chart(ctx, {
         type: 'doughnut', // Changed to doughnut for modern look
         data: {
-          labels: this.data.clients.map((client) =>
-            this.getDisplayName(client.name),
-          ),
+          labels:
+            this.data.clients?.map((client) =>
+              this.getDisplayName(client.name),
+            ) ?? [],
           datasets: [
             {
-              data: this.data.clients.map((client) =>
-                this.getPercentage(client),
-              ),
-              backgroundColor: this.data.clients.map((_, index) =>
-                this.getModernColor(index),
-              ),
+              data:
+                this.data.clients?.map((client) =>
+                  this.getPercentage(client),
+                ) ?? [],
+              backgroundColor:
+                this.data.clients?.map((_, index) =>
+                  this.getModernColor(index),
+                ) ?? [],
               borderWidth: 2,
               borderColor: isDark ? '#1a1a1a' : '#ffffff',
               borderRadius: 0,

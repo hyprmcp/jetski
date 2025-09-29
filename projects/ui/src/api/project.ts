@@ -4,6 +4,7 @@ import { inject, Injectable, Signal } from '@angular/core';
 import { DeploymentRevisionSummary, ProjectSummary } from './dashboard';
 import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
 import { Observable } from 'rxjs';
+import { Organization } from './organization';
 
 export interface Project extends Base {
   name: string;
@@ -86,4 +87,47 @@ export function getAnalyticsForProject(
       parse: (value) => value as ProjectAnalytics,
     },
   );
+}
+
+export function getProjectUrl(summary: ProjectSummary): string;
+export function getProjectUrl(
+  organization: Organization,
+  project: Project,
+): string;
+export function getProjectUrl(
+  organizationName: string,
+  projectName: string,
+): string;
+export function getProjectUrl(
+  summaryOrOrganization: ProjectSummary | Organization | string,
+  project?: Project | string,
+): string {
+  let orgName, projectName: string;
+  if (
+    typeof summaryOrOrganization === 'string' &&
+    typeof project === 'string'
+  ) {
+    orgName = summaryOrOrganization;
+    projectName = project;
+  } else if (
+    typeof summaryOrOrganization !== 'string' &&
+    typeof project !== 'string'
+  ) {
+    if (isOrganization(summaryOrOrganization)) {
+      orgName = summaryOrOrganization.name;
+      projectName = project?.name || '-';
+    } else {
+      orgName = summaryOrOrganization.organization.name;
+      projectName = summaryOrOrganization.name;
+    }
+  } else {
+    throw new Error('Invalid arguments');
+  }
+
+  return `https://${orgName}.hyprmcp.cloud/${projectName}/mcp`;
+}
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function isOrganization(value: any): value is Organization {
+  return value && value.id && value.name && value.settings;
 }

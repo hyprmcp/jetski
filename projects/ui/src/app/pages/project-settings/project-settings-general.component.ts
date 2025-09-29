@@ -56,21 +56,20 @@ import { ContextService } from '../../services/context.service';
             [formControl]="form.controls.telemetry"
           />
           <div class="grid gap-2">
-            <label hlmLabel for="telemetry">Enable telemetry</label>
+            <label hlmLabel for="telemetry">Enable Prompt Analytics</label>
             <p class="text-muted-foreground text-sm">
-              Enabling telemetry will give you insights about the prompt<br />
-              and context that triggered the MCP call.
+              Enabling prompt analytics will give you insights about the<br />
+              prompt and context that triggered the MCP call.
             </p>
           </div>
         </div>
 
-        <h2 class="text-lg font-semibold text-foreground mb-6">Proxy Mode</h2>
+        <h2 class="text-lg font-semibold text-foreground mb-6">Upstream MCP</h2>
 
         <div class="space-y-2">
-          <label for="proxy_url" hlmLabel>Proxy URL</label>
+          <label for="proxy_url" hlmLabel>MCP URL</label>
           <p class="text-muted-foreground text-sm">
-            If you host the MCP server somewhere other than Hyprmcp, enter its
-            URL here.
+            Your MCP server needs to support streamable HTTP.
           </p>
           <div>
             <input
