@@ -58,10 +58,15 @@ import { validateResourceName } from '../../../vaildators/name';
                     {{ mcpUrl | async }}
                   </p>
                   @if (
-                    form.controls.name.invalid && form.controls.name.touched
+                    form.controls.name.invalid &&
+                    (form.controls.name.touched ||
+                      form.controls.name.errors?.['pattern'])
                   ) {
                     <div class="text-sm text-red-600 my-2">
-                      Please enter a valid organization name.
+                      Please enter a valid organization name.<br />
+                      Your organization name must contain only lowercase
+                      letters, numbers, and hyphens and must start with a letter
+                      or number.
                     </div>
                   }
                   @if (error() && form.pristine) {

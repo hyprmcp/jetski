@@ -7,6 +7,7 @@ import { Router } from '@angular/router';
 import { Project } from '../../../api/project';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { validateResourceName } from '../../../vaildators/name';
+import { HlmButton } from '@spartan-ng/helm/button';
 
 @Component({
   template: ` <div class="flex justify-center items-center ">
@@ -38,9 +39,15 @@ import { validateResourceName } from '../../../vaildators/name';
                   Your MCP server's URL will look like this:
                   {{ mcpURL() }}
                 </p>
-                @if (form.controls.name.invalid && form.controls.name.touched) {
+                @if (
+                  form.controls.name.invalid &&
+                  (form.controls.name.touched ||
+                    form.controls.name.errors?.['pattern'])
+                ) {
                   <div class="text-sm text-red-600 my-2">
-                    Please enter a valid name.
+                    Please enter a valid name.<br />
+                    Your project name must contain only lowercase letters,
+                    numbers, and hyphens and must start with a letter or number.
                   </div>
                 }
                 @if (error() && form.pristine) {
@@ -52,7 +59,6 @@ import { validateResourceName } from '../../../vaildators/name';
               <div class="flex items-center justify-end pt-4 ">
                 <button
                   hlmBtn
-                  variant="outline"
                   type="submit"
                   [disabled]="form.invalid || loading()"
                 >
@@ -65,7 +71,7 @@ import { validateResourceName } from '../../../vaildators/name';
       </div>
     </div>
   </div>`,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, HlmButton],
 })
 export class NewProjectComponent {
   private readonly ctx = inject(ContextService);
