@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.2.0](https://github.com/hyprmcp/jetski/compare/0.1.4...0.2.0) (2025-09-29)
+
+
+### Features
+
+* add project check component ([#241](https://github.com/hyprmcp/jetski/issues/241)) ([1cff2fb](https://github.com/hyprmcp/jetski/commit/1cff2fbf0ace9188cf0e98749bc238ecc5afb441))
+
+
+### Bug Fixes
+
+* **deps:** update aws-sdk-go-v2 monorepo ([#232](https://github.com/hyprmcp/jetski/issues/232)) ([a30df06](https://github.com/hyprmcp/jetski/commit/a30df06ac508e5dec08da729ec026e9c2db6ebb5))
+* **deps:** update module github.com/aws/aws-sdk-go-v2/config to v1.31.12 ([#244](https://github.com/hyprmcp/jetski/issues/244)) ([f6ed0d7](https://github.com/hyprmcp/jetski/commit/f6ed0d73abe51e3c9fb150605e878265fee7ae3d))
+* **deps:** update module github.com/modelcontextprotocol/go-sdk to v0.8.0 ([#218](https://github.com/hyprmcp/jetski/issues/218)) ([898dc2f](https://github.com/hyprmcp/jetski/commit/898dc2f8e462d653bbad160827e73f128fe4ad35))
+* **deps:** update module github.com/wneessen/go-mail to v0.7.1 ([#234](https://github.com/hyprmcp/jetski/issues/234)) ([c177848](https://github.com/hyprmcp/jetski/commit/c1778489978d6612c549770a1d3411a65ad6517a))
+* only display red error rate if it is bigger than 0 ([#240](https://github.com/hyprmcp/jetski/issues/240)) ([86f2315](https://github.com/hyprmcp/jetski/commit/86f2315412d13adf9a88d81b0865fac964d9457c))
+
+
+### Other
+
+* **deps:** update angular monorepo to v20.3.2 ([#227](https://github.com/hyprmcp/jetski/issues/227)) ([26f7706](https://github.com/hyprmcp/jetski/commit/26f77063e80ec72d79ef5d0dea7d7d4597192c08))
+* **deps:** update angular-cli monorepo to v20.3.3 ([#226](https://github.com/hyprmcp/jetski/issues/226)) ([94cfdd1](https://github.com/hyprmcp/jetski/commit/94cfdd1e8dc8a90bdba4e8070259f0eb218e6ed7))
+* **deps:** update axllent/mailpit docker tag to v1.27.9 ([#235](https://github.com/hyprmcp/jetski/issues/235)) ([82e4146](https://github.com/hyprmcp/jetski/commit/82e4146e45f7a3351ba263cee82264eddb3aa018))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.18.2 ([#231](https://github.com/hyprmcp/jetski/issues/231)) ([35b092f](https://github.com/hyprmcp/jetski/commit/35b092f9872919341f7106db03ea86dcb11f305a))
+* **deps:** update dependency @sentry/angular to v10.15.0 ([#222](https://github.com/hyprmcp/jetski/issues/222)) ([fb9992d](https://github.com/hyprmcp/jetski/commit/fb9992d114dd47ee312c2f036428301a309f1b09))
+* **deps:** update dependency golangci-lint to v2.5.0 ([#220](https://github.com/hyprmcp/jetski/issues/220)) ([3e97eaf](https://github.com/hyprmcp/jetski/commit/3e97eaf9d1a559fe71ac1aec7d83a4aac71b0834))
+* **deps:** update dependency jasmine-core to ~5.11.0 ([#233](https://github.com/hyprmcp/jetski/issues/233)) ([038a9b0](https://github.com/hyprmcp/jetski/commit/038a9b096135f9fd5661f1609ffddd42c1c2691e))
+* **deps:** update dependency posthog-js to v1.268.6 ([#221](https://github.com/hyprmcp/jetski/issues/221)) ([0f80173](https://github.com/hyprmcp/jetski/commit/0f80173a7bc00dfa47932fc8fb75236f70d58c8e))
+* **deps:** update dependency posthog-js to v1.268.8 ([#238](https://github.com/hyprmcp/jetski/issues/238)) ([a963071](https://github.com/hyprmcp/jetski/commit/a963071f81101becf0479ef2c352c63ee95f62ad))
+* improve error messages during onboarding ([#236](https://github.com/hyprmcp/jetski/issues/236)) ([30bddab](https://github.com/hyprmcp/jetski/commit/30bddab10e9bb2397b5a58c0ead1ae644c8ebfe2))
+
 ## [0.1.4](https://github.com/hyprmcp/jetski/compare/0.1.3...0.1.4) (2025-09-25)
 
 
