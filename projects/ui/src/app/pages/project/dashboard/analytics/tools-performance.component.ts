@@ -104,7 +104,10 @@ import { ToolsPerformance } from './tools-performance';
                     <p class="font-medium">
                       {{ tool.totalCalls | number }} calls
                     </p>
-                    <p class="text-sm text-red-600 font-medium">
+                    <p
+                      class="text-sm font-medium"
+                      [class.text-red-600]="tool.errorRate > 0"
+                    >
                       {{ tool.errorRate | percent }} error rate
                     </p>
                   </div>
