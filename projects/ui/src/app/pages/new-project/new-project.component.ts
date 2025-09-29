@@ -101,7 +101,12 @@ export class NewProjectComponent {
           }),
         );
         this.ctx.registerCreatedProject(project);
-        await this.router.navigate(['/' + org.name, 'project', project.name]);
+        await this.router.navigate([
+          '/' + org.name,
+          'project',
+          project.name,
+          'settings',
+        ]);
       } catch (e) {
         this.error.set(e);
       }
