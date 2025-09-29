@@ -59,12 +59,14 @@ import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component
                 <div class="text-xs text-muted-foreground mb-1">
                   MCP Server URL
                 </div>
-                <a
-                  [href]="getProjectUrl(org, proj)"
-                  class="text-sm font-mono text-foreground hover:text-primary transition-colors"
-                >
-                  {{ getProjectUrl(org, proj) }}
-                </a>
+                @if (getProjectUrl(org, proj); as projectUrl) {
+                  <a
+                    [href]="projectUrl"
+                    class="text-sm font-mono text-foreground hover:text-primary transition-colors"
+                  >
+                    {{ projectUrl }}
+                  </a>
+                }
               </div>
             }
             <div class="flex items-center gap-2">
