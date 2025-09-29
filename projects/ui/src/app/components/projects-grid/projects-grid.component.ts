@@ -6,6 +6,7 @@ import { RelativeDatePipe } from '../../pipes/relative-date-pipe';
 import { getProjectSummaries, ProjectSummary } from '../../../api/dashboard';
 import { Organization } from '../../../api/organization';
 import { RouterLink } from '@angular/router';
+import { getProjectUrl } from '../../../api/project';
 
 @Component({
   selector: 'app-projects-grid',
@@ -168,10 +169,10 @@ import { RouterLink } from '@angular/router';
   `,
 })
 export class ProjectsGridComponent {
-  readonly organization = input<Organization>();
-  readonly projectSummaries = getProjectSummaries(this.organization);
+  public readonly organization = input<Organization>();
+  protected readonly projectSummaries = getProjectSummaries(this.organization);
 
-  getProjectUrl(project: ProjectSummary): string {
-    return `${project.organization.name}.hyprmcp.cloud/${project.name}/mcp`;
+  protected getProjectUrl(project: ProjectSummary): string {
+    return getProjectUrl(project);
   }
 }

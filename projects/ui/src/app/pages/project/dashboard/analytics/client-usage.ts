@@ -5,5 +5,5 @@ export interface ClientUsageData {
 
 export interface ClientUsage {
   totalRequests: number;
-  clients: ClientUsageData[];
+  clients?: ClientUsageData[];
 }

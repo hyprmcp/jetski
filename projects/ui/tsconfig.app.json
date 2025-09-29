@@ -19,7 +19,8 @@
         "./libs/ui/ui-typography-helm/src/index.ts"
       ],
       "@spartan-ng/helm/label": ["./libs/ui/ui-label-helm/src/index.ts"],
-      "@spartan-ng/helm/utils": ["./libs/ui/ui-utils-helm/src/index.ts"]
+      "@spartan-ng/helm/utils": ["./libs/ui/ui-utils-helm/src/index.ts"],
+      "@spartan-ng/helm/spinner": ["./libs/ui/ui-spinner-helm/src/index.ts"]
     }
   },
   "include": ["src/**/*.ts"],
