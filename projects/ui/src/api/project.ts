@@ -89,22 +89,39 @@ export function getAnalyticsForProject(
   );
 }
 
-export function getProjectUrl(summaryOrOrganization: ProjectSummary): string;
+export function getProjectUrl(summary: ProjectSummary): string;
 export function getProjectUrl(
-  summaryOrOrganization: Organization,
+  organization: Organization,
   project: Project,
 ): string;
 export function getProjectUrl(
-  summaryOrOrganization: ProjectSummary | Organization,
-  project?: Project,
+  organizationName: string,
+  projectName: string,
+): string;
+export function getProjectUrl(
+  summaryOrOrganization: ProjectSummary | Organization | string,
+  project?: Project | string,
 ): string {
   let orgName, projectName: string;
-  if (isOrganization(summaryOrOrganization)) {
-    orgName = summaryOrOrganization.name;
-    projectName = project?.name || '-';
+  if (
+    typeof summaryOrOrganization === 'string' &&
+    typeof project === 'string'
+  ) {
+    orgName = summaryOrOrganization;
+    projectName = project;
+  } else if (
+    typeof summaryOrOrganization !== 'string' &&
+    typeof project !== 'string'
+  ) {
+    if (isOrganization(summaryOrOrganization)) {
+      orgName = summaryOrOrganization.name;
+      projectName = project?.name || '-';
+    } else {
+      orgName = summaryOrOrganization.organization.name;
+      projectName = summaryOrOrganization.name;
+    }
   } else {
-    orgName = summaryOrOrganization.organization.name;
-    projectName = summaryOrOrganization.name;
+    throw new Error('Invalid arguments');
   }
 
   return `${orgName}.hyprmcp.cloud/${projectName}/mcp`;

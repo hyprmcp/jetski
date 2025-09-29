@@ -52,6 +52,7 @@ func postProjectHandler() http.HandlerFunc {
 		var projectReq struct {
 			Name           string    `json:"name"`
 			OrganizationID uuid.UUID `json:"organizationId"`
+			ProxyURL       *string   `json:"proxyUrl"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&projectReq); err != nil {
@@ -71,11 +72,35 @@ func postProjectHandler() http.HandlerFunc {
 			return
 		}
 
-		if project, err := db.CreateProject(ctx, projectReq.OrganizationID, user.ID, projectReq.Name); err != nil {
-			HandleInternalServerError(w, r, err, "create project error")
-		} else {
-			RespondJSON(w, project)
+		var project *types.Project
+		var err error
+		err = db.RunTx(ctx, func(ctx context.Context) error {
+			project, err = db.CreateProject(ctx, projectReq.OrganizationID, user.ID, projectReq.Name)
+			if err != nil {
+				return err
+			}
+
+			if projectReq.ProxyURL != nil {
+				err := db.CreateDeploymentRevision(ctx, &types.DeploymentRevision{
+					ProjectID:     project.ID,
+					CreatedBy:     user.ID,
+					Telemetry:     true,
+					Authenticated: true,
+					ProxyURL:      projectReq.ProxyURL,
+				})
+				if err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+
+		if err != nil {
+			HandleInternalServerError(w, r, err, "failed to create project")
+			return
 		}
+
+		RespondJSON(w, project)
 	}
 }
 

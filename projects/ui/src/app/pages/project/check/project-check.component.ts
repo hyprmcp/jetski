@@ -53,8 +53,8 @@ import { ContextService } from '../../../services/context.service';
                 above for detailed instructions.
               </div>
             </div>
-          } @else if (errorMessage(); as msg) {
-            <div class="text-muted-foreground">{{ msg }}</div>
+          } @else if (errorMessage()) {
+            <div class="text-muted-foreground">{{ errorMessage() }}</div>
           } @else {
             <hlm-spinner class="size-10" />
             <div>
