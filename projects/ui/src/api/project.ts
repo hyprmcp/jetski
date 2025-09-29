@@ -124,7 +124,7 @@ export function getProjectUrl(
     throw new Error('Invalid arguments');
   }
 
-  return `${orgName}.hyprmcp.cloud/${projectName}/mcp`;
+  return `https://${orgName}.hyprmcp.cloud/${projectName}/mcp`;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
