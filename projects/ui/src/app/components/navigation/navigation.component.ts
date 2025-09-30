@@ -74,7 +74,7 @@ export class NavigationComponent {
         },
         {
           label: 'Settings',
-          href: [...projectBase, 'settings'],
+          href: [...orgBase, 'settings', 'project', project.name],
         },
       ];
     } else {
