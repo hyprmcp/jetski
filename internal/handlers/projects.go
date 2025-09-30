@@ -23,7 +23,7 @@ import (
 func ProjectsRouter(k8sClient client.Client) func(r chi.Router) {
 	return func(r chi.Router) {
 		r.Get("/", getProjects)
-		r.Post("/", postProjectHandler())
+		r.Post("/", postProjectHandler(k8sClient))
 		r.Route("/{projectId}", func(r chi.Router) {
 			r.Get("/", getProjectSummary)
 			r.Get("/logs", getLogsForProject)
@@ -44,7 +44,9 @@ func getProjects(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func postProjectHandler() http.HandlerFunc {
+func postProjectHandler(k8sClient client.Client) http.HandlerFunc {
+	gatewayApplier := apply.MCPGateway(k8sClient)
+
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 		user := internalctx.GetUser(ctx)
@@ -64,7 +66,8 @@ func postProjectHandler() http.HandlerFunc {
 			return
 		}
 
-		if userInOrg, _, err := db.IsUserPartOfOrg(ctx, user.ID, projectReq.OrganizationID); err != nil {
+		userInOrg, org, err := db.IsUserPartOfOrg(ctx, user.ID, projectReq.OrganizationID)
+		if err != nil {
 			HandleInternalServerError(w, r, err, "check user org error")
 			return
 		} else if !userInOrg {
@@ -73,7 +76,6 @@ func postProjectHandler() http.HandlerFunc {
 		}
 
 		var project *types.Project
-		var err error
 		err = db.RunTx(ctx, func(ctx context.Context) error {
 			project, err = db.CreateProject(ctx, projectReq.OrganizationID, user.ID, projectReq.Name)
 			if err != nil {
@@ -98,6 +100,12 @@ func postProjectHandler() http.HandlerFunc {
 		if err != nil {
 			HandleInternalServerError(w, r, err, "failed to create project")
 			return
+		}
+
+		if projectReq.ProxyURL != nil {
+			if err := gatewayApplier.Apply(ctx, *org); err != nil {
+				internalctx.GetLogger(ctx).Error("failed to apply gateway", zap.Error(err))
+			}
 		}
 
 		RespondJSON(w, project)
