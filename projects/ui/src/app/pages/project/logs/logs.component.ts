@@ -1,10 +1,12 @@
+import { BrnSelectImports } from '@spartan-ng/brain/select';
+import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
 import { httpResource } from '@angular/common/http';
 import { Component, inject, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideChevronDown, lucideRotateCcw } from '@ng-icons/lucide';
-import { BrnSelectModule } from '@spartan-ng/brain/select';
+
 import { HlmButtonModule } from '@spartan-ng/helm/button';
 import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmMenuModule } from '@spartan-ng/helm/menu';
@@ -29,7 +31,7 @@ import { ContextService } from '../../../services/context.service';
 import { LogsActionsComponent } from './table/logs-actions.component';
 import { TableHeadSortButtonComponent } from './table/sort-header-button.component';
 import { TimestampCellComponent } from './timestamp-cell.component';
-import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
+
 import { ActivatedRoute } from '@angular/router';
 
 @Component({
@@ -42,7 +44,7 @@ import { ActivatedRoute } from '@angular/router';
     HlmButtonModule,
     NgIcon,
     HlmIcon,
-    BrnSelectModule,
+    BrnSelectImports,
     HlmSelectModule,
     ...HlmTableImports,
   ],

@@ -1,6 +1,7 @@
+import { BrnMenuItemRadio } from '@spartan-ng/brain/menu';
 import { Directive, computed, input } from '@angular/core';
 import { hlm } from '@spartan-ng/helm/utils';
-import { BrnMenuItemRadio } from '@spartan-ng/brain/menu';
+
 import type { ClassValue } from 'clsx';
 
 @Directive({

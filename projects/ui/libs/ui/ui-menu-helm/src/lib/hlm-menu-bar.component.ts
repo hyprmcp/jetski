@@ -1,3 +1,4 @@
+import { BrnMenuBar } from '@spartan-ng/brain/menu';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -5,7 +6,7 @@ import {
   input,
 } from '@angular/core';
 import { hlm } from '@spartan-ng/helm/utils';
-import { BrnMenuBar } from '@spartan-ng/brain/menu';
+
 import type { ClassValue } from 'clsx';
 
 @Component({

@@ -1,3 +1,4 @@
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { CommonModule } from '@angular/common';
 import { HttpClient } from '@angular/common/http';
 import { Component, inject, signal, viewChild } from '@angular/core';
@@ -10,7 +11,7 @@ import {
 } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePlus, lucideTrash } from '@ng-icons/lucide';
-import { BrnDialogImports } from '@spartan-ng/brain/dialog';
+
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmH3 } from '@spartan-ng/helm/typography';

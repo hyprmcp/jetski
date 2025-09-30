@@ -1,3 +1,4 @@
+import { BrnCheckbox } from '@spartan-ng/brain/checkbox';
 import { BooleanInput } from '@angular/cdk/coercion';
 import {
   ChangeDetectionStrategy,
@@ -13,7 +14,7 @@ import {
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck } from '@ng-icons/lucide';
-import { BrnCheckbox } from '@spartan-ng/brain/checkbox';
+
 import { hlm } from '@spartan-ng/helm/utils';
 import type { ChangeFn, TouchFn } from '@spartan-ng/brain/forms';
 import { HlmIcon } from '@spartan-ng/helm/icon';
@@ -39,7 +40,7 @@ export const HLM_CHECKBOX_VALUE_ACCESSOR = {
       [aria-label]="ariaLabel()"
       [aria-labelledby]="ariaLabelledby()"
       [aria-describedby]="ariaDescribedby()"
-      (changed)="_handleChange()"
+      (checkedChange)="_handleChange()"
       (touched)="_onTouched?.()"
     >
       @if (checked()) {

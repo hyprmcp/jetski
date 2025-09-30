@@ -1,3 +1,4 @@
+import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
 import { CommonModule } from '@angular/common';
 import { Component, computed, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -11,7 +12,7 @@ import {
   lucidePlus,
   lucideSun,
 } from '@ng-icons/lucide';
-import { BrnMenuTrigger } from '@spartan-ng/brain/menu';
+
 import { HlmButton } from '@spartan-ng/helm/button';
 import {
   HlmMenu,

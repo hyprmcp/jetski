@@ -1,6 +1,7 @@
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Component, Input } from '@angular/core';
 import { HlmCardContent, HlmCard } from '@spartan-ng/helm/card';
-import { BrnSelectModule } from '@spartan-ng/brain/select';
+
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
   lucideChevronDown,
@@ -172,7 +173,7 @@ import { Overview } from './overview';
   imports: [
     HlmCard,
     HlmCardContent,
-    BrnSelectModule,
+    BrnSelectImports,
     FormsModule,
     NgIcon,
     PercentPipe,

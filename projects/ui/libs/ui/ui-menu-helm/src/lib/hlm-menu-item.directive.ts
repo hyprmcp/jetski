@@ -1,7 +1,8 @@
+import { BrnMenuItem } from '@spartan-ng/brain/menu';
 import { BooleanInput } from '@angular/cdk/coercion';
 import { booleanAttribute, computed, Directive, input } from '@angular/core';
 import { hlm } from '@spartan-ng/helm/utils';
-import { BrnMenuItem } from '@spartan-ng/brain/menu';
+
 import { ClassValue } from 'clsx';
 
 @Directive({
