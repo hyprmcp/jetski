@@ -129,7 +129,10 @@ export class ProjectSettingsGeneralComponent {
         map((p) => p?.id),
         distinctUntilChanged(),
         filter((id) => id !== undefined),
-        tap(() => this.loading.set(true)),
+        tap(() => {
+          this.loading.set(true);
+          this.form.disable();
+        }),
         switchMap((id) => this.projectService.getProjectSummary(id)),
         takeUntilDestroyed(),
       )
