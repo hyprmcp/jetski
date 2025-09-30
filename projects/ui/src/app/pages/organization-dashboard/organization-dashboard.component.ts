@@ -1,9 +1,10 @@
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Component, inject } from '@angular/core';
 import { UsageCardComponent } from '../../components/usage-card/usage-card.component';
 import { ProjectsGridComponent } from '../../components/projects-grid/projects-grid.component';
 import { ContextService } from '../../services/context.service';
 import { getRecentDeployments } from '../../../api/dashboard';
-import { BrnSelectModule } from '@spartan-ng/brain/select';
+
 import { provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
 import { FormsModule } from '@angular/forms';
@@ -15,7 +16,7 @@ import { OrganizationDeploymentsComponent } from '../../components/deployments/o
     UsageCardComponent,
     ProjectsGridComponent,
     OrganizationDeploymentsComponent,
-    BrnSelectModule,
+    BrnSelectImports,
     FormsModule,
   ],
   providers: [provideIcons({ lucideChevronDown })],

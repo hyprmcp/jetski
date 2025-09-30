@@ -1,3 +1,4 @@
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Component, inject, signal } from '@angular/core';
 import { ContextService } from '../../../services/context.service';
 import {
@@ -5,7 +6,7 @@ import {
   getDeploymentsForProject,
   getProjectUrl,
 } from '../../../../api/project';
-import { BrnSelectModule } from '@spartan-ng/brain/select';
+
 import {
   HlmSelectContent,
   HlmSelectOption,
@@ -197,7 +198,7 @@ import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component
     }
   `,
   imports: [
-    BrnSelectModule,
+    BrnSelectImports,
     HlmSelectContent,
     HlmSelectTrigger,
     HlmSelectOption,

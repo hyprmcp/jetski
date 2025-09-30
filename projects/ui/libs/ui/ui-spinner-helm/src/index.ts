@@ -6,7 +6,7 @@ export * from './lib/hlm-spinner';
 export const HlmSpinnerImports = [HlmSpinner] as const;
 
 @NgModule({
-	imports: [...HlmSpinnerImports],
-	exports: [...HlmSpinnerImports],
+  imports: [...HlmSpinnerImports],
+  exports: [...HlmSpinnerImports],
 })
 export class HlmSpinnerModule {}

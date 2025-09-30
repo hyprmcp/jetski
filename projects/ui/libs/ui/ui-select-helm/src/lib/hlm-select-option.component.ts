@@ -1,3 +1,4 @@
+import { BrnSelectOption } from '@spartan-ng/brain/select';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -8,7 +9,7 @@ import {
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCheck } from '@ng-icons/lucide';
 import { hlm } from '@spartan-ng/helm/utils';
-import { BrnSelectOption } from '@spartan-ng/brain/select';
+
 import { HlmIcon } from '@spartan-ng/helm/icon';
 import type { ClassValue } from 'clsx';
 

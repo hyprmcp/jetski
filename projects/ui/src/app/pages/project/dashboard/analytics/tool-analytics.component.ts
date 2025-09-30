@@ -1,3 +1,4 @@
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Component, Input, OnInit } from '@angular/core';
 import {
   HlmCardContent,
@@ -5,7 +6,7 @@ import {
   HlmCardHeader,
   HlmCardTitle,
 } from '@spartan-ng/helm/card';
-import { BrnSelectModule } from '@spartan-ng/brain/select';
+
 import {
   HlmSelectContent,
   HlmSelectOption,
@@ -195,7 +196,7 @@ import { ColorPipe } from '../../../../pipes/color-pipe';
     HlmCardContent,
     HlmCardHeader,
     HlmCardTitle,
-    BrnSelectModule,
+    BrnSelectImports,
     HlmSelectContent,
     HlmSelectTrigger,
     HlmSelectOption,

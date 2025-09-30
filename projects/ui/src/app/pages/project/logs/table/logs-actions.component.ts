@@ -1,9 +1,10 @@
+import { BrnDialogContent, BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { DatePipe, DecimalPipe, JsonPipe, KeyValuePipe } from '@angular/common';
 import { Component, input } from '@angular/core';
 import { type CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEllipsis, lucideEye } from '@ng-icons/lucide';
-import { BrnDialogContent, BrnDialogImports } from '@spartan-ng/brain/dialog';
+
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmDialogImports } from '../../../../../../libs/ui/ui-dialog-helm/src';

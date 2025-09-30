@@ -1,3 +1,4 @@
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HlmButton } from '@spartan-ng/helm/button';
@@ -13,7 +14,7 @@ import {
 } from '@ng-icons/lucide';
 import { ContextService } from '../../services/context.service';
 import { getDeploymentsForProject } from '../../../api/project';
-import { BrnSelectModule } from '@spartan-ng/brain/select';
+
 import {
   HlmSelectContent,
   HlmSelectTrigger,
@@ -35,7 +36,7 @@ Chart.register(...registerables);
     CommonModule,
     HlmButton,
     NgIcon,
-    BrnSelectModule,
+    BrnSelectImports,
     HlmSelectContent,
     HlmSelectTrigger,
     HlmSelectOption,

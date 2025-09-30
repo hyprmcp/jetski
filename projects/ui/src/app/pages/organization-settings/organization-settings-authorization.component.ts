@@ -1,6 +1,7 @@
+import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { BrnSelectImports } from '@spartan-ng/brain/select';
+
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmSelectImports } from '@spartan-ng/helm/select';
 import { toast } from 'ngx-sonner';
