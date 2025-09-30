@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.1](https://github.com/hyprmcp/jetski/compare/0.2.0...0.2.1) (2025-09-30)
+
+
+### Bug Fixes
+
+* add applying k8s resources in POST project handler ([#247](https://github.com/hyprmcp/jetski/issues/247)) ([f6fb4c4](https://github.com/hyprmcp/jetski/commit/f6fb4c472688d0b9257bd9bb00292ebd95f5daf9))
+* **deps:** update module github.com/wneessen/go-mail to v0.7.2 ([#242](https://github.com/hyprmcp/jetski/issues/242)) ([785c689](https://github.com/hyprmcp/jetski/commit/785c6890853e2a7f0aaf7860c749b63c66e3ee2d))
+
+
+### Other
+
+* **deps:** update dependency typescript-eslint to v8.45.0 ([#243](https://github.com/hyprmcp/jetski/issues/243)) ([1890674](https://github.com/hyprmcp/jetski/commit/1890674cbd1ffe0c37871da09906fb6b684572f3))
+* **deps:** update docker/login-action action to v3.6.0 ([#239](https://github.com/hyprmcp/jetski/issues/239)) ([8d558ab](https://github.com/hyprmcp/jetski/commit/8d558abd612f4460b14906190aa102121790ac04))
+
 ## [0.2.0](https://github.com/hyprmcp/jetski/compare/0.1.4...0.2.0) (2025-09-29)
 
 
