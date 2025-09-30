@@ -17,7 +17,7 @@ import { ProjectSettingsGeneralComponent } from './pages/project-settings/projec
 import { ProjectCheckComponent } from './pages/project/check/project-check.component';
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
 import { LogsComponent } from './pages/project/logs/logs.component';
-import { ContextService } from './services/context.service';
+import { ContextService, getFirstPathParam } from './services/context.service';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -40,6 +40,25 @@ const redirectToDefaultPage: CanActivateFn = async () => {
     }
     return router.createUrlTree(urlParts);
   }
+  return true;
+};
+
+const redirectOrgDashboardToProject: CanActivateFn = async (route) => {
+  const contextService = inject(ContextService);
+  const router = inject(Router);
+  await resourceDone(contextService.context.status);
+  const orgName = getFirstPathParam(route, 'organizationName');
+  const orgId = contextService
+    .organizations()
+    .find((o) => o.name === orgName)?.id;
+  const projects = contextService
+    .projects()
+    .filter((project) => project.organizationId === orgId);
+
+  if (projects.length === 1) {
+    return router.createUrlTree(['/', orgName, 'project', projects[0].name]);
+  }
+
   return true;
 };
 
@@ -110,6 +129,7 @@ export const authenticatedRoutes: Routes = [
           {
             path: '',
             component: OrganizationDashboardComponent,
+            canActivate: [redirectOrgDashboardToProject],
           },
           {
             path: 'monitoring',
