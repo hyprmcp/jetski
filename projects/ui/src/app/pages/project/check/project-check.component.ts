@@ -55,6 +55,7 @@ import { getProjectUrl } from '../../../../api/project';
                 </div>
                 <a
                   [href]="projectUrl"
+                  target="_blank"
                   class="text-2xl font-semibold hover:underline inline-flex items-center gap-2"
                 >
                   <ng-icon hlm name="lucideExternalLink" />
