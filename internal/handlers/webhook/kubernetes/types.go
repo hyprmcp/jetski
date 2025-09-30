@@ -75,8 +75,8 @@ func (req *request) GetDesiredChildren() ([]client.Object, error) {
 									corev1.ResourceCPU:    resource.MustParse("500m"),
 								},
 								Requests: corev1.ResourceList{
-									corev1.ResourceMemory: resource.MustParse("128Mi"),
-									corev1.ResourceCPU:    resource.MustParse("500m"),
+									corev1.ResourceMemory: resource.MustParse("16Mi"),
+									corev1.ResourceCPU:    resource.MustParse("5m"),
 								},
 							},
 							Ports:        []corev1.ContainerPort{{Name: "http", ContainerPort: 9000}},
