@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.2.3](https://github.com/hyprmcp/jetski/compare/0.2.2...0.2.3) (2025-09-30)
+
+
+### Other
+
+* change success page link target to blank ([#250](https://github.com/hyprmcp/jetski/issues/250)) ([526cee6](https://github.com/hyprmcp/jetski/commit/526cee636c7f1fdf06e58dd06509612ba0f3f037))
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.519 ([#219](https://github.com/hyprmcp/jetski/issues/219)) ([70ce17b](https://github.com/hyprmcp/jetski/commit/70ce17bbe9dc19ea16227291a304df5efd7495b6))
+* lower gateway resource requests ([#251](https://github.com/hyprmcp/jetski/issues/251)) ([988fc82](https://github.com/hyprmcp/jetski/commit/988fc8213bf2d25dee253c6ca8882df34aa7f3bc))
+* merge organization and project settings ([#253](https://github.com/hyprmcp/jetski/issues/253)) ([e543aa9](https://github.com/hyprmcp/jetski/commit/e543aa9e35ba25b9da12fc4c73a49f5002143667))
+
 ## [0.2.2](https://github.com/hyprmcp/jetski/compare/0.2.1...0.2.2) (2025-09-30)
 
 
