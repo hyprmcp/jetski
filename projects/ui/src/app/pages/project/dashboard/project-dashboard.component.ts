@@ -62,6 +62,7 @@ import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component
                 @if (getProjectUrl(org, proj); as projectUrl) {
                   <a
                     [href]="projectUrl"
+                    target="_blank"
                     class="text-sm font-mono text-foreground hover:text-primary transition-colors"
                   >
                     {{ projectUrl }}
