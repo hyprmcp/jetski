@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/hyprmcp/jetski/compare/0.2.1...0.2.2) (2025-09-30)
+
+
+### Bug Fixes
+
+* project check success does not propagate ([#248](https://github.com/hyprmcp/jetski/issues/248)) ([10b8549](https://github.com/hyprmcp/jetski/commit/10b8549827031cf05e33967c203256be5557b461))
+
 ## [0.2.1](https://github.com/hyprmcp/jetski/compare/0.2.0...0.2.1) (2025-09-30)
 
 
