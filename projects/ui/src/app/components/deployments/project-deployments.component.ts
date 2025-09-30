@@ -3,44 +3,49 @@ import { HlmH3 } from '@spartan-ng/helm/typography';
 import { getDeploymentsForProject } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
 import { DeploymentRevisionComponent } from './deployment-revision.component';
+import { UpsellWrapperComponent } from '../upsell-wrapper/upsell-wrapper.component';
 
 @Component({
   template: `
-    @if (contextService.selectedProject(); as proj) {
-      <div class="space-y-4">
-        <div class="flex flex-col justify-between gap-4 sm:flex-row">
-          <div class="flex items-center justify-between grow">
-            <div>
-              <h1 class="text-2xl font-semibold text-foreground">
-                {{ proj.name }}
-              </h1>
-              <p class="text-muted-foreground">Deployments</p>
+    <app-upsell-wrapper
+      description="Unlock hosted MCP servers, deployment history and more"
+    >
+      @if (contextService.selectedProject(); as proj) {
+        <div class="space-y-4">
+          <div class="flex flex-col justify-between gap-4 sm:flex-row">
+            <div class="flex items-center justify-between grow">
+              <div>
+                <h1 class="text-2xl font-semibold text-foreground">
+                  {{ proj.name }}
+                </h1>
+                <p class="text-muted-foreground">Deployments</p>
+              </div>
             </div>
           </div>
+          <div>
+            <h3 hlmH3>Deployment History</h3>
+            @if (deploymentRevisions.error(); as err) {
+              <div class="text-red-600 text-sm">failed to load deployments</div>
+            } @else {
+              <div class="space-y-4">
+                @for (
+                  revision of deploymentRevisions.value();
+                  track revision.id
+                ) {
+                  <app-deployments-revision [deploymentRevision]="revision" />
+                } @empty {
+                  <div class="text-muted-foreground text-sm">
+                    nothing deployed yet
+                  </div>
+                }
+              </div>
+            }
+          </div>
         </div>
-        <div>
-          <h3 hlmH3>Deployment History</h3>
-          @if (deploymentRevisions.error(); as err) {
-            <div class="text-red-600 text-sm">failed to load deployments</div>
-          } @else {
-            <div class="space-y-4">
-              @for (
-                revision of deploymentRevisions.value();
-                track revision.id
-              ) {
-                <app-deployments-revision [deploymentRevision]="revision" />
-              } @empty {
-                <div class="text-muted-foreground text-sm">
-                  nothing deployed yet
-                </div>
-              }
-            </div>
-          }
-        </div>
-      </div>
-    }
+      }
+    </app-upsell-wrapper>
   `,
-  imports: [HlmH3, DeploymentRevisionComponent],
+  imports: [HlmH3, DeploymentRevisionComponent, UpsellWrapperComponent],
 })
 export class ProjectDeploymentsComponent {
   readonly contextService = inject(ContextService);
