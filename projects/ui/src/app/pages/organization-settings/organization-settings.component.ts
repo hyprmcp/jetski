@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, computed, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import {
@@ -88,5 +88,10 @@ import { ContextService } from '../../services/context.service';
 })
 export class OrganizationSettingsComponent {
   private readonly ctx = inject(ContextService);
-  protected readonly projects = this.ctx.projects;
+  protected readonly projects = computed(() => {
+    const org = this.ctx.selectedOrg();
+    const projects = this.ctx.projects();
+    if (!org || !projects) return [];
+    return projects.filter((project) => project.organizationId === org.id);
+  });
 }
