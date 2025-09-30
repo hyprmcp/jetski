@@ -116,7 +116,7 @@ export class ProjectSettingsGeneralComponent {
     proxyUrl: this.fb.nonNullable.control('', {
       validators: [
         (ctrl) =>
-          ctrl.value && URL.parse(ctrl.value) === null
+          ctrl.value && !URL.canParse(ctrl.value)
             ? { url: 'value is not a valid URL' }
             : null,
       ],
