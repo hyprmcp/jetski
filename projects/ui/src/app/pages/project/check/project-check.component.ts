@@ -8,26 +8,26 @@ import {
   signal,
 } from '@angular/core';
 import { toObservable } from '@angular/core/rxjs-interop';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCircleCheck, lucideExternalLink } from '@ng-icons/lucide';
 import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 import {
   catchError,
   delay,
-  EMPTY,
   filter,
   map,
   of,
   retry,
   Subject,
   switchMap,
+  take,
   takeUntil,
   throwError,
 } from 'rxjs';
-import { getProjectUrl } from '../../../../api/project';
 import { ContextService } from '../../../services/context.service';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideCircleCheck, lucideExternalLink } from '@ng-icons/lucide';
-import { HlmIcon } from '@spartan-ng/helm/icon';
+import { getProjectUrl } from '../../../../api/project';
 
 @Component({
   imports: [HlmCardImports, HlmSpinnerImports, NgIcon, HlmIcon],
@@ -137,7 +137,7 @@ export class ProjectCheckComponent implements OnInit, OnDestroy {
                 // Status 406: Gateway reached, "unacceptable" means that MCP servers don't typically serve text/html --> OK
                 // Any other status: Unexpected --> Not OK
                 if (status === 401 || status === 406) {
-                  return EMPTY;
+                  return of(true);
                 } else {
                   return throwError(
                     () => new Error('unexpected gateway status'),
@@ -148,12 +148,13 @@ export class ProjectCheckComponent implements OnInit, OnDestroy {
               retry({ count: 60, delay: 5000 }),
             ),
         ),
+        take(1),
         takeUntil(this.destroyed),
       )
       .subscribe({
+        next: () => this.success.set(true),
         error: (error) =>
           this.errorMessage.set(error?.message || 'An error occurred'),
-        complete: () => this.success.set(true),
       });
   }
 
