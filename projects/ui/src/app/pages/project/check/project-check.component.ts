@@ -1,4 +1,4 @@
-import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import {
   Component,
   computed,
@@ -6,13 +6,13 @@ import {
   OnDestroy,
   OnInit,
   signal,
-} from "@angular/core";
-import { toObservable } from "@angular/core/rxjs-interop";
-import { NgIcon, provideIcons } from "@ng-icons/core";
-import { lucideCircleCheck, lucideExternalLink } from "@ng-icons/lucide";
-import { HlmCardImports } from "@spartan-ng/helm/card";
-import { HlmIcon } from "@spartan-ng/helm/icon";
-import { HlmSpinnerImports } from "@spartan-ng/helm/spinner";
+} from '@angular/core';
+import { toObservable } from '@angular/core/rxjs-interop';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCircleCheck, lucideExternalLink } from '@ng-icons/lucide';
+import { HlmCardImports } from '@spartan-ng/helm/card';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 import {
   catchError,
   delay,
@@ -25,9 +25,9 @@ import {
   take,
   takeUntil,
   throwError,
-} from "rxjs";
-import { ContextService } from "../../../services/context.service";
-import { getProjectUrl } from "../../../../api/project";
+} from 'rxjs';
+import { ContextService } from '../../../services/context.service';
+import { getProjectUrl } from '../../../../api/project';
 
 @Component({
   imports: [HlmCardImports, HlmSpinnerImports, NgIcon, HlmIcon],
@@ -117,9 +117,9 @@ export class ProjectCheckComponent implements OnInit, OnDestroy {
         switchMap((url) =>
           this.httpClient
             .get(url, {
-              headers: { accept: "text/html" },
-              observe: "response",
-              responseType: "text",
+              headers: { accept: 'text/html' },
+              observe: 'response',
+              responseType: 'text',
             })
             .pipe(
               map((resp) => resp.status),
@@ -140,7 +140,7 @@ export class ProjectCheckComponent implements OnInit, OnDestroy {
                   return of(true);
                 } else {
                   return throwError(
-                    () => new Error("unexpected gateway status"),
+                    () => new Error('unexpected gateway status'),
                   );
                 }
               }),
@@ -154,7 +154,7 @@ export class ProjectCheckComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => this.success.set(true),
         error: (error) =>
-          this.errorMessage.set(error?.message || "An error occurred"),
+          this.errorMessage.set(error?.message || 'An error occurred'),
       });
   }
 
