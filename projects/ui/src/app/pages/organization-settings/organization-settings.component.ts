@@ -1,15 +1,26 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { NgIcon, provideIcons } from '@ng-icons/core';
-import { lucideKeyRound, lucideSettings, lucideUsers } from '@ng-icons/lucide';
+import {
+  lucideKeyRound,
+  lucideLightbulb,
+  lucideSettings,
+  lucideUsers,
+} from '@ng-icons/lucide';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-organization-settings',
   standalone: true,
   imports: [CommonModule, NgIcon, RouterOutlet, RouterLink, RouterLinkActive],
   viewProviders: [
-    provideIcons({ lucideUsers, lucideSettings, lucideKeyRound }),
+    provideIcons({
+      lucideUsers,
+      lucideSettings,
+      lucideKeyRound,
+      lucideLightbulb,
+    }),
   ],
 
   template: `
@@ -19,7 +30,9 @@ import { lucideKeyRound, lucideSettings, lucideUsers } from '@ng-icons/lucide';
         <h1 class="text-2xl font-semibold text-foreground">
           Organization Settings
         </h1>
-        <p class="text-muted-foreground">Manage your organization</p>
+        <p class="text-muted-foreground">
+          Manage your organization and its projects
+        </p>
       </div>
 
       <!-- Settings Navigation -->
@@ -33,15 +46,7 @@ import { lucideKeyRound, lucideSettings, lucideUsers } from '@ng-icons/lucide';
               class="flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-md text-foreground hover:bg-accent hover:text-accent-foreground"
             >
               <ng-icon name="lucideSettings" class="h-4 w-4"></ng-icon>
-              <span>General</span>
-            </a>
-            <a
-              routerLink="authorization"
-              routerLinkActive="bg-accent text-accent-foreground"
-              class="flex items-center space-x-3 px-3 py-2 text-sm font-medium rounded-md text-foreground hover:bg-accent hover:text-accent-foreground"
-            >
-              <ng-icon name="lucideKeyRound" class="h-4 w-4"></ng-icon>
-              <span>Authorization</span>
+              <span>Organization</span>
             </a>
             <a
               routerLink="members"
@@ -52,6 +57,23 @@ import { lucideKeyRound, lucideSettings, lucideUsers } from '@ng-icons/lucide';
               <ng-icon name="lucideUsers" class="h-4 w-4"></ng-icon>
               <span>Members</span>
             </a>
+            <hr />
+            <div
+              class="flex items-center gap-3 px-3 py-2 text-sm font-bold rounded-md text-foreground"
+            >
+              <ng-icon name="lucideLightbulb" class="h-4 w-4"></ng-icon>
+              Projects
+            </div>
+            @for (project of projects(); track project.id) {
+              <a
+                [routerLink]="['project', project.name]"
+                routerLinkActive="bg-accent text-accent-foreground"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="flex items-center space-x-3 ps-10 pe-3 py-2 text-sm font-medium rounded-md text-foreground hover:bg-accent hover:text-accent-foreground"
+              >
+                <span>{{ project.name }}</span>
+              </a>
+            }
           </nav>
         </div>
 
@@ -64,4 +86,7 @@ import { lucideKeyRound, lucideSettings, lucideUsers } from '@ng-icons/lucide';
     </div>
   `,
 })
-export class OrganizationSettingsComponent {}
+export class OrganizationSettingsComponent {
+  private readonly ctx = inject(ContextService);
+  protected readonly projects = this.ctx.projects;
+}

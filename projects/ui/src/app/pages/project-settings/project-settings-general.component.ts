@@ -1,11 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
-import { toast } from 'ngx-sonner';
 import { HlmLabel } from '@spartan-ng/helm/label';
+import { toast } from 'ngx-sonner';
+import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
 import { ProjectSummary } from '../../../api/dashboard';
 import { ProjectService } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
@@ -21,7 +23,11 @@ import { ContextService } from '../../services/context.service';
   ],
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2 class="text-lg font-semibold text-foreground mb-6">Authorization</h2>
+      <h2 class="text-xl font-semibold text-foreground mb-2">
+        Project Settings for {{ project()?.name }}
+      </h2>
+
+      <h3 class="text-lg font-semibold text-foreground mb-6">Authorization</h3>
 
       <div class="space-y-6">
         <div class="flex items-start gap-3">
@@ -43,12 +49,12 @@ import { ContextService } from '../../services/context.service';
 
         <p class="text-sm">
           Some authorization settings are organization-scoped.
-          <a routerLink="../../../settings/authorization" class="underline"
-            >Go to authorization settings for your organization.</a
+          <a routerLink="../../authorization" class="underline"
+            >Go to organization settings.</a
           >
         </p>
 
-        <h2 class="text-lg font-semibold text-foreground mb-6">Telemetry</h2>
+        <h3 class="text-lg font-semibold text-foreground mb-6">Telemetry</h3>
 
         <div class="flex items-start gap-3">
           <hlm-checkbox
@@ -64,7 +70,7 @@ import { ContextService } from '../../services/context.service';
           </div>
         </div>
 
-        <h2 class="text-lg font-semibold text-foreground mb-6">Upstream MCP</h2>
+        <h3 class="text-lg font-semibold text-foreground mb-6">Upstream MCP</h3>
 
         <div class="space-y-2">
           <label for="proxy_url" hlmLabel>MCP URL</label>
@@ -97,11 +103,12 @@ import { ContextService } from '../../services/context.service';
     </form>
   `,
 })
-export class ProjectSettingsGeneralComponent implements OnInit {
+export class ProjectSettingsGeneralComponent {
   private readonly contextService = inject(ContextService);
   private readonly projectService = inject(ProjectService);
   private readonly fb = inject(FormBuilder);
 
+  protected readonly project = this.contextService.selectedProject;
   protected readonly loading = signal(false);
   protected readonly form = this.fb.nonNullable.group({
     authenticated: this.fb.nonNullable.control(false),
@@ -116,13 +123,17 @@ export class ProjectSettingsGeneralComponent implements OnInit {
     }),
   });
 
-  public ngOnInit(): void {
-    const projectId = this.contextService.selectedProject()?.id;
-    if (projectId) {
-      this.loading.set(true);
-      this.form.disable();
-
-      this.projectService.getProjectSummary(projectId).subscribe({
+  constructor() {
+    toObservable(this.contextService.selectedProject)
+      .pipe(
+        map((p) => p?.id),
+        distinctUntilChanged(),
+        filter((id) => id !== undefined),
+        tap(() => this.loading.set(true)),
+        switchMap((id) => this.projectService.getProjectSummary(id)),
+        takeUntilDestroyed(),
+      )
+      .subscribe({
         next: (summary) => {
           this.updateFormValues(summary);
           this.loading.set(false);
@@ -134,7 +145,6 @@ export class ProjectSettingsGeneralComponent implements OnInit {
           toast.error('An error occurred while loading project settings');
         },
       });
-    }
   }
 
   protected onSubmit(): void {

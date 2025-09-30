@@ -14,11 +14,10 @@ import { OrganizationSettingsGeneralComponent } from './pages/organization-setti
 import { OrganizationSettingsMembersComponent } from './pages/organization-settings/organization-settings-members.component';
 import { OrganizationSettingsComponent } from './pages/organization-settings/organization-settings.component';
 import { ProjectSettingsGeneralComponent } from './pages/project-settings/project-settings-general.component';
-import { ProjectSettingsComponent } from './pages/project-settings/project-settings.component';
+import { ProjectCheckComponent } from './pages/project/check/project-check.component';
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
 import { LogsComponent } from './pages/project/logs/logs.component';
 import { ContextService } from './services/context.service';
-import { ProjectCheckComponent } from './pages/project/check/project-check.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -132,6 +131,16 @@ export const authenticatedRoutes: Routes = [
                 path: 'members',
                 component: OrganizationSettingsMembersComponent,
               },
+              {
+                path: 'project/:projectName',
+                children: [
+                  {
+                    path: '',
+                    pathMatch: 'full',
+                    component: ProjectSettingsGeneralComponent,
+                  },
+                ],
+              },
             ],
           },
           { path: 'new', component: NewProjectComponent },
@@ -160,17 +169,6 @@ export const authenticatedRoutes: Routes = [
                   {
                     path: 'monitoring',
                     component: MonitoringComponent,
-                  },
-                  {
-                    path: 'settings',
-                    component: ProjectSettingsComponent,
-                    children: [
-                      {
-                        path: '',
-                        pathMatch: 'full',
-                        component: ProjectSettingsGeneralComponent,
-                      },
-                    ],
                   },
                 ],
               },
