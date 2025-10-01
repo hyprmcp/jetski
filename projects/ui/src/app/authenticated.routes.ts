@@ -18,6 +18,7 @@ import { ProjectCheckComponent } from './pages/project/check/project-check.compo
 import { ProjectDashboardComponent } from './pages/project/dashboard/project-dashboard.component';
 import { LogsComponent } from './pages/project/logs/logs.component';
 import { ContextService, getFirstPathParam } from './services/context.service';
+import { PromptsComponent } from './pages/project/prompts/prompts.component';
 
 const redirectToDefaultPage: CanActivateFn = async () => {
   const contextService = inject(ContextService);
@@ -181,6 +182,10 @@ export const authenticatedRoutes: Routes = [
                   {
                     path: 'logs',
                     component: LogsComponent,
+                  },
+                  {
+                    path: 'prompts',
+                    component: PromptsComponent,
                   },
                   {
                     path: 'deployments',

@@ -1,7 +1,11 @@
 import { httpResource } from '@angular/common/http';
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, input, signal } from '@angular/core';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-
+import { ActivatedRoute, RouterLink } from '@angular/router';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideEye } from '@ng-icons/lucide';
+import { HlmButtonModule } from '@spartan-ng/helm/button';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import {
   ColumnDef,
   createAngularTable,
@@ -13,19 +17,16 @@ import {
   PaginationState,
   SortingState,
 } from '@tanstack/angular-table';
-import { formatDuration, intervalToDuration } from 'date-fns';
 import { combineLatestWith, distinctUntilChanged, map, tap } from 'rxjs';
-import { JsonRpcRequest, MCPServerLog } from '../../../../api/mcp-server-log';
+import { MCPServerLogPromptData } from '../../../../api/mcp-server-log';
 import { TableHeadSortButtonComponent } from '../../../components/table/sort-header-button.component';
-import { ContextService } from '../../../services/context.service';
-import { LogsActionsComponent } from './logs-actions.component';
-import { TimestampCellComponent } from './timestamp-cell.component';
-
-import { ActivatedRoute } from '@angular/router';
 import { TableComponent } from '../../../components/table/table.component';
+import { ContextService } from '../../../services/context.service';
+import { TimestampCellComponent } from '../logs/timestamp-cell.component';
 
 @Component({
   host: { class: 'w-full' },
+  imports: [TableComponent],
   template: `
     <app-table [columns]="columns" [table]="table" (refresh)="data.reload()">
       <h1 class="text-2xl font-semibold text-foreground">Logs</h1>
@@ -34,86 +35,38 @@ import { TableComponent } from '../../../components/table/table.component';
       </p>
     </app-table>
   `,
-  imports: [TableComponent],
 })
-export class LogsComponent {
-  protected readonly columns: ColumnDef<MCPServerLog>[] = [
+export class PromptsComponent {
+  protected readonly columns: ColumnDef<MCPServerLogPromptData>[] = [
     {
       accessorKey: 'startedAt',
       id: 'started_at',
       cell: (info) =>
         flexRenderComponent(TimestampCellComponent, {
-          inputs: {
-            timestamp: info.getValue<string>(),
-          },
+          inputs: { timestamp: info.getValue<string>() },
         }),
       enableSorting: true,
       header: () =>
         flexRenderComponent(TableHeadSortButtonComponent, {
-          inputs: {
-            header: 'Timestamp',
-          },
+          inputs: { header: 'Timestamp' },
         }),
     },
+    { accessorKey: 'method', id: 'method', header: 'Method' },
     {
-      accessorKey: 'duration',
-      id: 'duration',
-      header: () => flexRenderComponent(TableHeadSortButtonComponent),
-      // header: 'Duration (ms)',
-      cell: (info) => {
-        const durationMs = info.getValue<number>() / 1000 / 1000; // Convert from nanoseconds to milliseconds
-        const duration = intervalToDuration({ start: 0, end: durationMs });
-        const formatted = formatDuration(duration, {
-          format: ['minutes', 'seconds'],
-        });
-        const rawMs = Math.round(durationMs) + ' ms';
-        return `<span title="${rawMs}">${formatted || rawMs}</span>`;
-      },
-      enableSorting: true,
-    },
-    {
-      accessorKey: 'mcpRequest',
-      id: 'mcpRequest',
-      header: 'MCP Method',
-      cell: (info) =>
-        info.getValue<JsonRpcRequest | undefined>()?.method ?? '-',
-      enableSorting: false,
-    },
-    {
-      accessorKey: 'mcpRequest',
-      id: 'toolName',
-      header: 'Tool Name',
-      cell: (info) => {
-        const request = info.getValue<JsonRpcRequest | undefined>();
-        const toolName =
-          request?.method.toLowerCase() === 'tools/call'
-            ? request.params?.name
-            : '-';
-        return toolName || '-';
-      },
-      enableSorting: false,
-    },
-    {
-      accessorKey: 'httpStatusCode',
-      id: 'http_status_code',
+      accessorKey: 'toolName',
+      id: 'tool_name',
       header: () =>
         flexRenderComponent(TableHeadSortButtonComponent, {
-          inputs: {
-            header: 'Status Code',
-          },
+          inputs: { header: 'Tool Name' },
         }),
-      cell: (info) =>
-        `<span class="capitalize">${info.getValue<string>()}</span>`,
-      enableSorting: true,
     },
+    { accessorKey: 'prompt', id: 'prompt', header: 'Prompt' },
     {
       id: 'action',
       enableHiding: false,
       cell: (info) =>
-        flexRenderComponent(LogsActionsComponent, {
-          inputs: {
-            mcpServerLog: info.row.original,
-          },
+        flexRenderComponent(PromptsTableActionsComponent, {
+          inputs: { data: info.row.original },
         }),
     },
   ];
@@ -176,8 +129,7 @@ export class LogsComponent {
         }
 
         return {
-          url: `/api/v1/projects/${projectId}/logs`,
-          method: 'GET',
+          url: `/api/v1/projects/${projectId}/prompts`,
           params,
         };
       } else {
@@ -185,7 +137,7 @@ export class LogsComponent {
       }
     },
     {
-      parse: (value) => value as MCPServerLog[],
+      parse: (value) => value as MCPServerLogPromptData[],
       defaultValue: [],
     },
   );
@@ -220,4 +172,24 @@ export class LogsComponent {
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
   }));
+}
+
+@Component({
+  imports: [NgIcon, HlmButtonModule, RouterLink, HlmIcon],
+  viewProviders: [provideIcons({ lucideEye })],
+  template: `
+    <a
+      hlmBtn
+      variant="ghost"
+      class="size-8 p-0"
+      [routerLink]="['..', 'logs']"
+      [queryParams]="{ id: data().id }"
+    >
+      <span class="sr-only">Open menu</span>
+      <ng-icon hlm size="sm" name="lucideEye" />
+    </a>
+  `,
+})
+export class PromptsTableActionsComponent {
+  public readonly data = input.required<MCPServerLogPromptData>();
 }

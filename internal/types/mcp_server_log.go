@@ -47,3 +47,11 @@ func (log *MCPServerLog) IsError() bool {
 
 	return false
 }
+
+type MCPServerLogPromptData struct {
+	ID        uuid.UUID `json:"id"`
+	StartedAt time.Time `json:"startedAt"`
+	Method    string    `json:"method"`
+	ToolName  string    `json:"toolName"`
+	Prompt    string    `json:"prompt"`
+}

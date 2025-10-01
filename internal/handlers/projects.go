@@ -27,6 +27,7 @@ func ProjectsRouter(k8sClient client.Client) func(r chi.Router) {
 		r.Route("/{projectId}", func(r chi.Router) {
 			r.Get("/", getProjectSummary)
 			r.Get("/logs", getLogsForProject)
+			r.Get("/prompts", getPromptsForProject)
 			r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
 			r.Get("/analytics", getAnalytics)
 			r.Put("/settings", putProjectSettings(k8sClient))
@@ -143,7 +144,7 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 	})
 
 	var id *uuid.UUID
-	if s := r.URL.Query().Get("id"); s != "" {
+	if s := r.FormValue("id"); s != "" {
 		if u, err := uuid.Parse(s); err != nil {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -153,7 +154,7 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var mcpSessionID *string
-	if s := r.URL.Query().Get("mcpSessionId"); s != "" {
+	if s := r.FormValue("mcpSessionId"); s != "" {
 		mcpSessionID = &s
 	}
 
@@ -161,6 +162,35 @@ func getLogsForProject(w http.ResponseWriter, r *http.Request) {
 		HandleInternalServerError(w, r, err, "failed to get logs for project")
 	} else {
 		RespondJSON(w, logs)
+	}
+}
+
+func getPromptsForProject(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	projectID := getProjectIDIfAllowed(w, r, pathParam)
+	if projectID == uuid.Nil {
+		return
+	}
+	pagination, err := lists.ParsePaginationOrDefault(r, lists.Pagination{Count: 10})
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	sorting := lists.ParseSortingOrDefault(r, lists.SortingOptions{
+		DefaultSortBy:    "started_at",
+		DefaultSortOrder: lists.SortOrderDesc,
+		AllowedSortBy:    []string{"started_at", "tool_name", "prompt"},
+	})
+
+	var mcpSessionID *string
+	if s := r.FormValue("mcpSessionId"); s != "" {
+		mcpSessionID = &s
+	}
+
+	if prompts, err := db.GetPromptsForProject(ctx, projectID, pagination, sorting, mcpSessionID); err != nil {
+		HandleInternalServerError(w, r, err, "failed to get prompts for project")
+	} else {
+		RespondJSON(w, prompts)
 	}
 }
 
