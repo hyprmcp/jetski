@@ -131,53 +131,49 @@ import { ColumnDef, FlexRenderDirective, Table } from '@tanstack/angular-table';
     </div>
 
     <div class="mt-4 flex flex-col justify-end sm:flex-row sm:items-center">
-      @if (table().getRowCount() > 0) {
-        <div class="mt-2 flex sm:mt-0">
-          <brn-select
-            class="inline-block"
-            [ngModel]="table().getState().pagination.pageSize"
-            (ngModelChange)="
-              table().setPageSize($event); table().resetPageIndex()
-            "
-          >
-            <hlm-select-trigger class="mr-1 inline-flex h-9">
-              <hlm-select-value />
-            </hlm-select-trigger>
-            <hlm-select-content>
-              @for (size of availablePageSizes(); track size) {
-                <hlm-option [value]="size">
-                  {{ size === 10000 ? 'All' : size }}
-                </hlm-option>
-              }
-            </hlm-select-content>
-          </brn-select>
+      <div class="mt-2 flex sm:mt-0">
+        <brn-select
+          class="inline-block"
+          [ngModel]="table().getState().pagination.pageSize"
+          (ngModelChange)="
+            table().setPageSize($event); table().resetPageIndex()
+          "
+        >
+          <hlm-select-trigger class="mr-1 inline-flex h-9">
+            <hlm-select-value />
+          </hlm-select-trigger>
+          <hlm-select-content>
+            @for (size of availablePageSizes(); track size) {
+              <hlm-option [value]="size">
+                {{ size === 10000 ? 'All' : size }}
+              </hlm-option>
+            }
+          </hlm-select-content>
+        </brn-select>
 
-          <div class="flex space-x-1">
-            <button
-              size="sm"
-              variant="outline"
-              hlmBtn
-              [disabled]="!table().getCanPreviousPage()"
-              (click)="table().previousPage()"
-            >
-              Previous
-            </button>
-            <button
-              size="sm"
-              variant="outline"
-              hlmBtn
-              [disabled]="!table().getCanNextPage()"
-              (click)="table().nextPage()"
-            >
-              Next
-            </button>
-          </div>
+        <div class="flex space-x-1">
+          <button
+            size="sm"
+            variant="outline"
+            hlmBtn
+            [disabled]="!table().getCanPreviousPage()"
+            (click)="table().previousPage()"
+          >
+            Previous
+          </button>
+          <button
+            size="sm"
+            variant="outline"
+            hlmBtn
+            [disabled]="
+              !table().getCanNextPage() || table().getRowCount() === 0
+            "
+            (click)="table().nextPage()"
+          >
+            Next
+          </button>
         </div>
-      } @else {
-        <div class="flex h-full w-full items-center justify-center">
-          <div class="text-muted-foreground text-sm">No Data</div>
-        </div>
-      }
+      </div>
     </div>`,
 })
 export class TableComponent<T> {
