@@ -37,7 +37,7 @@ import { type ClientUsage } from './analytics/client-usage';
 import { ClientUsageComponent } from './analytics/client-usage.component';
 import { type RecentSessions } from './analytics/recent-sessions';
 import { RecentSessionsComponent } from './analytics/recent-sessions.component';
-import { PromptAnalytics } from './analytics/prompty-analytics';
+import { PromptAnalytics } from './analytics/prompt-analytics';
 import { PromptAnalyticsComponent } from './analytics/prompt-analytics.component';
 
 @Component({

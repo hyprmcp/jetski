@@ -29,9 +29,9 @@ import { TimestampCellComponent } from '../logs/timestamp-cell.component';
   imports: [TableComponent],
   template: `
     <app-table [columns]="columns" [table]="table" (refresh)="data.reload()">
-      <h1 class="text-2xl font-semibold text-foreground">Logs</h1>
+      <h1 class="text-2xl font-semibold text-foreground">Prompts</h1>
       <p class="text-muted-foreground">
-        Details about calls to your MCP servers
+        Analyze which operations are triggered by which prompts
       </p>
     </app-table>
   `,
