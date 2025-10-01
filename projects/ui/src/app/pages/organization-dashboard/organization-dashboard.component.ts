@@ -1,21 +1,18 @@
-import { BrnSelectImports } from '@spartan-ng/brain/select';
 import { Component, inject } from '@angular/core';
-import { UsageCardComponent } from '../../components/usage-card/usage-card.component';
-import { ProjectsGridComponent } from '../../components/projects-grid/projects-grid.component';
-import { ContextService } from '../../services/context.service';
-import { getRecentDeployments } from '../../../api/dashboard';
-
+import { FormsModule } from '@angular/forms';
 import { provideIcons } from '@ng-icons/core';
 import { lucideChevronDown } from '@ng-icons/lucide';
-import { FormsModule } from '@angular/forms';
-import { OrganizationDeploymentsComponent } from '../../components/deployments/organization-deployments.component';
+import { BrnSelectImports } from '@spartan-ng/brain/select';
+import { getRecentDeployments } from '../../../api/dashboard';
+import { ProjectsGridComponent } from '../../components/projects-grid/projects-grid.component';
+import { UsageCardComponent } from '../../components/usage-card/usage-card.component';
+import { ContextService } from '../../services/context.service';
 
 @Component({
   selector: 'app-organization-dashboard',
   imports: [
     UsageCardComponent,
     ProjectsGridComponent,
-    OrganizationDeploymentsComponent,
     BrnSelectImports,
     FormsModule,
   ],
@@ -40,10 +37,6 @@ import { OrganizationDeploymentsComponent } from '../../components/deployments/o
         <app-usage-card
           [organization]="contextService.selectedOrg()"
         ></app-usage-card>
-        <div class="mt-4"></div>
-        <app-organization-deployments
-          [organization]="contextService.selectedOrg()"
-        ></app-organization-deployments>
       </div>
 
       <!-- Right column - Projects -->
