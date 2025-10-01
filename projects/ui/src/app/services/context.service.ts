@@ -1,10 +1,14 @@
-import { computed, inject, Injectable, signal, Signal } from '@angular/core';
-import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { combineLatestWith, filter, map } from 'rxjs';
-import { Project } from '../../api/project';
-import { Organization } from '../../api/organization';
+import { computed, inject, Injectable, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import {
+  ActivatedRoute,
+  ActivatedRouteSnapshot,
+  NavigationEnd,
+  Router,
+} from '@angular/router';
+import { filter, map } from 'rxjs';
 import { getContext } from '../../api/context';
+import { Project } from '../../api/project';
 
 @Injectable({
   providedIn: 'root',
@@ -13,60 +17,60 @@ export class ContextService {
   private readonly createdProjects = signal<Project[]>([]);
 
   readonly context = getContext(this.createdProjects);
-  readonly projects = computed(
-    () => (this.context.value()?.projects as Project[]) ?? [],
-  );
+  readonly projects = computed(() => this.context.value()?.projects ?? []);
   readonly organizations = computed(
-    () => (this.context.value()?.organizations as Organization[]) ?? [],
+    () => this.context.value()?.organizations ?? [],
   );
 
   private readonly router = inject(Router);
   private readonly route = inject(ActivatedRoute);
 
-  readonly selectedOrg: Signal<Organization | undefined> = toSignal(
+  readonly selectedOrgName = toSignal(
     this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
-      map(() => this.getFirstPathParam(this.route, 'organizationName')),
-      combineLatestWith(toObservable(this.organizations)),
-      map(([organizationName, orgs]) =>
-        orgs?.find((org: Organization) => org.name === organizationName),
-      ),
+      map(() => getFirstPathParam(this.route, 'organizationName')),
     ),
   );
 
-  readonly selectedProject: Signal<Project | undefined> = toSignal(
+  readonly selectedProjectName = toSignal(
     this.router.events.pipe(
       filter((e) => e instanceof NavigationEnd),
-      map(() => this.getFirstPathParam(this.route, 'projectName')),
-      combineLatestWith(
-        toObservable(this.selectedOrg),
-        toObservable(this.projects),
-      ),
-      map(([projectName, org, projects]) =>
-        projects?.find(
-          (project: Project) =>
-            project.name === projectName && project.organizationId === org?.id,
-        ),
-      ),
+      map(() => getFirstPathParam(this.route, 'projectName')),
     ),
   );
+
+  readonly selectedOrg = computed(() => {
+    const orgs = this.organizations();
+    const name = this.selectedOrgName();
+    return orgs.find((org) => org.name === name);
+  });
+
+  readonly selectedProject = computed(() => {
+    const projects = this.projects();
+    const name = this.selectedProjectName();
+    const org = this.selectedOrg();
+    return projects.find(
+      (project) => project.name === name && project.organizationId === org?.id,
+    );
+  });
 
   public registerCreatedProject(project: Project) {
     this.createdProjects.update((val) => [...val, project]);
   }
+}
 
-  private getFirstPathParam(
-    route: ActivatedRoute,
-    paramName: string,
-  ): string | null {
-    const paramValue = route.snapshot.paramMap.get(paramName);
-    if (paramValue !== null) {
-      return paramValue;
-    }
-    if (route.firstChild !== null) {
-      return this.getFirstPathParam(route.firstChild, paramName);
-    } else {
-      return null;
-    }
+export function getFirstPathParam(
+  route: ActivatedRoute | ActivatedRouteSnapshot | null,
+  paramName: string,
+): string | null {
+  if (route === null) {
+    return null;
+  } else if (route instanceof ActivatedRoute) {
+    return getFirstPathParam(route.snapshot, paramName);
+  } else {
+    return (
+      route.paramMap.get(paramName) ??
+      getFirstPathParam(route.firstChild, paramName)
+    );
   }
 }
