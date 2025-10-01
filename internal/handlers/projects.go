@@ -3,6 +3,7 @@ package handlers
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -11,6 +12,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/google/uuid"
 	"github.com/hyprmcp/jetski/internal/analytics"
+	"github.com/hyprmcp/jetski/internal/apierrors"
 	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/hyprmcp/jetski/internal/db"
 	"github.com/hyprmcp/jetski/internal/kubernetes/apply"
@@ -26,6 +28,7 @@ func ProjectsRouter(k8sClient client.Client) func(r chi.Router) {
 		r.Post("/", postProjectHandler(k8sClient))
 		r.Route("/{projectId}", func(r chi.Router) {
 			r.Get("/", getProjectSummary)
+			r.Delete("/", deleteProjectHandler(k8sClient))
 			r.Get("/logs", getLogsForProject)
 			r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
 			r.Get("/analytics", getAnalytics)
@@ -282,6 +285,41 @@ func putProjectSettings(k8sClient client.Client) http.HandlerFunc {
 			HandleInternalServerError(w, r, err, "failed to save settings of project")
 			return
 		}
+	}
+}
+
+func deleteProjectHandler(k8sClient client.Client) http.HandlerFunc {
+	applier := apply.MCPGateway(k8sClient)
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		log := internalctx.GetLogger(ctx)
+		projectID := getProjectIDIfAllowed(w, r, pathParam)
+		if projectID == uuid.Nil {
+			return
+		}
+
+		var org types.Organization
+		if project, err := db.GetProjectSummary(ctx, projectID); err != nil {
+			if errors.Is(err, apierrors.ErrNotFound) {
+				Handle4XXErrorWithStatusText(w, http.StatusNotFound, "project not found")
+			} else {
+				HandleInternalServerError(w, r, err, "failed to get project summary")
+			}
+			return
+		} else {
+			org = project.Organization
+		}
+
+		if err := db.DeleteProject(ctx, projectID); err != nil {
+			HandleInternalServerError(w, r, err, "failed to delete project")
+			return
+		}
+
+		if err := applier.Apply(ctx, org); err != nil {
+			log.Error("failed to update MCPGateway resource after project deletion", zap.Error(err))
+		}
+
+		w.WriteHeader(http.StatusNoContent)
 	}
 }
 

@@ -1,16 +1,16 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
-import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
-import { HlmButton } from '@spartan-ng/helm/button';
-import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
-import { HlmLabel } from '@spartan-ng/helm/label';
-import { toast } from 'ngx-sonner';
-import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
-import { ProjectSummary } from '../../../api/dashboard';
-import { ProjectService } from '../../../api/project';
-import { ContextService } from '../../services/context.service';
+import { CommonModule } from "@angular/common";
+import { Component, inject, signal } from "@angular/core";
+import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
+import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
+import { ActivatedRoute, Router, RouterLink } from "@angular/router";
+import { HlmButton } from "@spartan-ng/helm/button";
+import { HlmCheckbox } from "@spartan-ng/helm/checkbox";
+import { HlmLabel } from "@spartan-ng/helm/label";
+import { toast } from "ngx-sonner";
+import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs";
+import { ProjectSummary } from "../../../api/dashboard";
+import { ProjectService } from "../../../api/project";
+import { ContextService } from "../../services/context.service";
 
 @Component({
   imports: [
@@ -101,23 +101,45 @@ import { ContextService } from '../../services/context.service';
         </div>
       </div>
     </form>
+
+    <div class="space-y-2 mt-4">
+      <h3 class="text-lg font-bold text-destructive">Danger Zone</h3>
+
+      <div class="border border-destructive rounded-md p-4">
+        <div class="flex items-center">
+          <div class="flex-1">
+            <div class="text-foreground font-medium">Delete Project</div>
+            <div class="text-sm text-muted-foreground">
+              Permanently delete this project including all related settings and
+              analytics data. Your MCP server will stop working. This action
+              cannot be undone.
+            </div>
+          </div>
+          <button hlmBtn variant="destructive" (click)="deleteProject()">
+            Delete Project
+          </button>
+        </div>
+      </div>
+    </div>
   `,
 })
 export class ProjectSettingsGeneralComponent {
   private readonly contextService = inject(ContextService);
   private readonly projectService = inject(ProjectService);
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
+  private readonly route = inject(ActivatedRoute);
 
   protected readonly project = this.contextService.selectedProject;
   protected readonly loading = signal(false);
   protected readonly form = this.fb.nonNullable.group({
     authenticated: this.fb.nonNullable.control(false),
     telemetry: this.fb.nonNullable.control(false),
-    proxyUrl: this.fb.nonNullable.control('', {
+    proxyUrl: this.fb.nonNullable.control("", {
       validators: [
         (ctrl) =>
           ctrl.value && !URL.canParse(ctrl.value)
-            ? { url: 'value is not a valid URL' }
+            ? { url: "value is not a valid URL" }
             : null,
       ],
     }),
@@ -145,7 +167,7 @@ export class ProjectSettingsGeneralComponent {
         error: () => {
           this.loading.set(false);
           this.form.enable();
-          toast.error('An error occurred while loading project settings');
+          toast.error("An error occurred while loading project settings");
         },
       });
   }
@@ -170,12 +192,12 @@ export class ProjectSettingsGeneralComponent {
           this.updateFormValues(summary);
           this.loading.set(false);
           this.form.enable();
-          toast.success('settings saved successfully');
+          toast.success("settings saved successfully");
         },
         error: () => {
           this.loading.set(false);
           this.form.enable();
-          toast.error('An error occurred while saving settings');
+          toast.error("An error occurred while saving settings");
         },
       });
     }
@@ -188,7 +210,22 @@ export class ProjectSettingsGeneralComponent {
       this.form.patchValue({
         authenticated: rev.authenticated ?? false,
         telemetry: rev.telemetry ?? false,
-        proxyUrl: rev.proxyUrl ?? '',
+        proxyUrl: rev.proxyUrl ?? "",
+      });
+    }
+  }
+
+  protected deleteProject(): void {
+    const projectId = this.contextService.selectedProject()?.id;
+    if (projectId) {
+      this.projectService.deleteProject(projectId).subscribe({
+        next: () => {
+          this.router.navigate(["..", ".."], { relativeTo: this.route });
+          toast.success("Project deleted successfully");
+        },
+        error: () => {
+          toast.error("An error occurred while deleting project");
+        },
       });
     }
   }

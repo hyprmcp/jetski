@@ -4,11 +4,15 @@ import (
 	"context"
 	"fmt"
 
+	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/hyprmcp/jetski/internal/db"
 	"github.com/hyprmcp/jetski/internal/env"
-	"github.com/hyprmcp/jetski/internal/kubernetes/applyconfiguration/api/v1alpha1"
+	api "github.com/hyprmcp/jetski/internal/kubernetes/api/v1alpha1"
+	applyconfig "github.com/hyprmcp/jetski/internal/kubernetes/applyconfiguration/api/v1alpha1"
 	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/hyprmcp/jetski/internal/util"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
 
@@ -21,15 +25,29 @@ func MCPGateway(client client.Client) *mcpGatewayApplier {
 }
 
 func (a *mcpGatewayApplier) Apply(ctx context.Context, org types.Organization) error {
-	var gatewayProjects []*v1alpha1.ProjectSpecApplyConfiguration
+	log := internalctx.GetLogger(ctx)
+	var gatewayProjects []*applyconfig.ProjectSpecApplyConfiguration
 	if pss, err := db.GetProjectSummaries(ctx, org.ID); err != nil {
 		return err
+	} else if len(pss) == 0 {
+		log.Info("org has no projects. deleting gateway")
+
+		err := a.client.Delete(
+			ctx,
+			&api.MCPGateway{ObjectMeta: metav1.ObjectMeta{Name: org.Name, Namespace: env.GatewayNamespace()}},
+			client.PropagationPolicy(metav1.DeletePropagationBackground),
+		)
+		if err != nil && !errors.IsNotFound(err) {
+			return fmt.Errorf("failed to delete gateway: %w", err)
+		} else {
+			return nil
+		}
 	} else {
 		for _, ps := range pss {
 			if ps.LatestDeploymentRevisionID == nil {
 				continue
 			}
-			spec := v1alpha1.ProjectSpec().
+			spec := applyconfig.ProjectSpec().
 				WithProjectID(ps.ID.String()).
 				WithProjectName(ps.Name).
 				WithDeploymentRevisionID(ps.LatestDeploymentRevision.ID.String()).
@@ -44,13 +62,13 @@ func (a *mcpGatewayApplier) Apply(ctx context.Context, org types.Organization) e
 		}
 	}
 
-	spec := v1alpha1.MCPGatewaySpec().
+	spec := applyconfig.MCPGatewaySpec().
 		WithOrganizationID(org.ID.String()).
 		WithOrganizationName(org.Name).
 		WithAuthorization(
-			v1alpha1.AuthorizationSpec().
+			applyconfig.AuthorizationSpec().
 				WithDynamicClientRegistration(
-					v1alpha1.DynamicClientRegistrationSpec().
+					applyconfig.DynamicClientRegistrationSpec().
 						WithPublicClient(org.Settings.Authorization.DCRPublicClient),
 				),
 		).
@@ -62,7 +80,7 @@ func (a *mcpGatewayApplier) Apply(ctx context.Context, org types.Organization) e
 
 	err := a.client.Apply(
 		ctx,
-		v1alpha1.MCPGateway(org.Name, env.GatewayNamespace()).WithSpec(spec),
+		applyconfig.MCPGateway(org.Name, env.GatewayNamespace()).WithSpec(spec),
 		&client.ApplyOptions{Force: util.PtrTo(true), FieldManager: "jetski"},
 	)
 

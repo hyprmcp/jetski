@@ -1,10 +1,11 @@
-import { HttpClient, httpResource } from '@angular/common/http';
-import { Base } from './base';
-import { inject, Injectable, Signal } from '@angular/core';
-import { DeploymentRevisionSummary, ProjectSummary } from './dashboard';
-import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
-import { Observable } from 'rxjs';
-import { Organization } from './organization';
+import { HttpClient, httpResource } from "@angular/common/http";
+import { Base } from "./base";
+import { inject, Injectable, Signal } from "@angular/core";
+import { DeploymentRevisionSummary, ProjectSummary } from "./dashboard";
+import { ProjectAnalytics } from "../app/pages/project/dashboard/project-dashboard.component";
+import { Observable } from "rxjs";
+import { Organization } from "./organization";
+import { ContextService } from "../app/services/context.service";
 
 export interface Project extends Base {
   name: string;
@@ -19,9 +20,10 @@ export interface ProjectSettingsRequest {
   authenticated: boolean;
 }
 
-@Injectable({ providedIn: 'root' })
+@Injectable({ providedIn: "root" })
 export class ProjectService {
   private readonly httpClient = inject(HttpClient);
+  private readonly ctx = inject(ContextService);
 
   public getProjectSummary(projectId: string): Observable<ProjectSummary> {
     return this.httpClient.get<ProjectSummary>(`/api/v1/projects/${projectId}`);
@@ -35,6 +37,10 @@ export class ProjectService {
       `/api/v1/projects/${projectId}/settings`,
       request,
     );
+  }
+
+  public deleteProject(projectId: string): Observable<void> {
+    return this.httpClient.delete<void>(`/api/v1/projects/${projectId}`);
   }
 }
 
@@ -68,12 +74,12 @@ export function getAnalyticsForProject(
 
         const startAtValue = startedAt?.();
         if (startAtValue !== undefined) {
-          params['startedAt'] = startAtValue.toString();
+          params["startedAt"] = startAtValue.toString();
         }
 
         const buildNumberValue = buildNumber?.();
         if (buildNumberValue !== undefined) {
-          params['buildNumber'] = buildNumberValue.toString();
+          params["buildNumber"] = buildNumberValue.toString();
         }
 
         return {
@@ -104,24 +110,24 @@ export function getProjectUrl(
 ): string {
   let orgName, projectName: string;
   if (
-    typeof summaryOrOrganization === 'string' &&
-    typeof project === 'string'
+    typeof summaryOrOrganization === "string" &&
+    typeof project === "string"
   ) {
     orgName = summaryOrOrganization;
     projectName = project;
   } else if (
-    typeof summaryOrOrganization !== 'string' &&
-    typeof project !== 'string'
+    typeof summaryOrOrganization !== "string" &&
+    typeof project !== "string"
   ) {
     if (isOrganization(summaryOrOrganization)) {
       orgName = summaryOrOrganization.name;
-      projectName = project?.name || '-';
+      projectName = project?.name || "-";
     } else {
       orgName = summaryOrOrganization.organization.name;
       projectName = summaryOrOrganization.name;
     }
   } else {
-    throw new Error('Invalid arguments');
+    throw new Error("Invalid arguments");
   }
 
   return `https://${orgName}.hyprmcp.cloud/${projectName}/mcp`;
