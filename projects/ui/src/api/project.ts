@@ -1,11 +1,10 @@
 import { HttpClient, httpResource } from '@angular/common/http';
-import { Base } from './base';
 import { inject, Injectable, Signal } from '@angular/core';
-import { DeploymentRevisionSummary, ProjectSummary } from './dashboard';
-import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
 import { Observable } from 'rxjs';
+import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
+import { Base } from './base';
+import { DeploymentRevisionSummary, ProjectSummary } from './dashboard';
 import { Organization } from './organization';
-import { ContextService } from '../app/services/context.service';
 
 export interface Project extends Base {
   name: string;
@@ -23,7 +22,6 @@ export interface ProjectSettingsRequest {
 @Injectable({ providedIn: 'root' })
 export class ProjectService {
   private readonly httpClient = inject(HttpClient);
-  private readonly ctx = inject(ContextService);
 
   public getProjectSummary(projectId: string): Observable<ProjectSummary> {
     return this.httpClient.get<ProjectSummary>(`/api/v1/projects/${projectId}`);
