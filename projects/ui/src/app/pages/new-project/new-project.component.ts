@@ -1,19 +1,34 @@
+import { AsyncPipe, JsonPipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { Client } from '@modelcontextprotocol/sdk/client/index.js';
+import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideCircleAlert } from '@ng-icons/lucide';
+import { HlmAlertImports } from '@spartan-ng/helm/alert';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
+import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmLabel } from '@spartan-ng/helm/label';
-import { HlmAlertImports } from '@spartan-ng/helm/alert';
-import { firstValueFrom, startWith } from 'rxjs';
+import {
+  catchError,
+  debounceTime,
+  distinctUntilChanged,
+  filter,
+  firstValueFrom,
+  from,
+  map,
+  Observable,
+  of,
+  startWith,
+  switchMap,
+} from 'rxjs';
 import { getProjectUrl, Project } from '../../../api/project';
 import { validateResourceName } from '../../../vaildators/name';
 import { ContextService } from '../../services/context.service';
-import { NgIcon, provideIcons } from '@ng-icons/core';
-import { HlmIcon } from '@spartan-ng/helm/icon';
-import { lucideCircleAlert } from '@ng-icons/lucide';
 
 @Component({
   template: ` <div class="flex justify-center items-center ">
@@ -88,6 +103,10 @@ import { lucideCircleAlert } from '@ng-icons/lucide';
                 }
               </div>
 
+              @if (validationState | async; as state) {
+                <pre>{{ state | json }}</pre>
+              }
+
               <div class="flex items-start gap-3 my-6">
                 <hlm-checkbox
                   id="telemetry"
@@ -140,6 +159,8 @@ import { lucideCircleAlert } from '@ng-icons/lucide';
     ...HlmAlertImports,
     NgIcon,
     HlmIcon,
+    AsyncPipe,
+    JsonPipe,
   ],
   providers: [provideIcons({ lucideCircleAlert })],
 })
@@ -169,6 +190,36 @@ export class NewProjectComponent {
       this.formSignal()?.name || 'my-mcp-server',
     ),
   );
+
+  protected readonly validationState: Observable<McpValidationEvent> =
+    this.form.controls.proxyUrl.valueChanges.pipe(
+      map(() => this.form.controls.proxyUrl.value),
+      filter((value) => value !== null && value !== undefined),
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap((url) =>
+        from(getMcpServerTools(url)).pipe(
+          map<string[], McpValidationEvent>((tools) => ({
+            state: 'success',
+            tools,
+          })),
+          catchError<McpValidationEvent, Observable<McpValidationError>>(
+            (e) => {
+              let error: string;
+              if (e instanceof HttpErrorResponse) {
+                error = e.error || e.message || 'Unknown error';
+              } else if (e instanceof Error) {
+                error = e.message || 'Unknown error';
+              } else {
+                error = 'Unknown error';
+              }
+              return of({ state: 'error', error });
+            },
+          ),
+          startWith<McpValidationEvent>({ state: 'progress' }),
+        ),
+      ),
+    );
 
   protected async submit() {
     if (this.form.invalid) {
@@ -205,3 +256,34 @@ export class NewProjectComponent {
     }
   }
 }
+
+async function getMcpServerTools(url: string): Promise<string[]> {
+  const transport = new StreamableHTTPClientTransport(new URL(url));
+  const client = new Client({ name: 'hyprmcp-validation', version: '1.0.0' });
+  try {
+    await client.connect(transport);
+    return (await client.listTools()).tools.map((toolSpec) => toolSpec.name);
+  } finally {
+    try {
+      await client.close();
+    } catch (e) {
+      console.warn('close error', e);
+    }
+  }
+}
+
+interface McpValidationError {
+  state: 'error';
+  error: unknown;
+}
+interface McpValidationInProgress {
+  state: 'progress';
+}
+interface McpValidationSuccess {
+  state: 'success';
+  tools: string[];
+}
+type McpValidationEvent =
+  | McpValidationError
+  | McpValidationInProgress
+  | McpValidationSuccess;
