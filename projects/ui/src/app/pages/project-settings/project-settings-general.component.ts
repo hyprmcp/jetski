@@ -227,7 +227,11 @@ export class ProjectSettingsGeneralComponent {
               toast.error("An error occurred while deleting project"),
           }),
           switchMap(() =>
-            this.router.navigate(["..", ".."], { relativeTo: this.route }),
+            this.router.navigate([
+              "/",
+              this.contextService.selectedOrg()?.name,
+              "settings",
+            ]),
           ),
         )
         .subscribe({
