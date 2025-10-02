@@ -1,18 +1,18 @@
-import { CommonModule } from "@angular/common";
-import { Component, inject, signal } from "@angular/core";
-import { takeUntilDestroyed, toObservable } from "@angular/core/rxjs-interop";
-import { FormBuilder, ReactiveFormsModule } from "@angular/forms";
-import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { HlmButton } from "@spartan-ng/helm/button";
-import { HlmCheckbox } from "@spartan-ng/helm/checkbox";
-import { HlmLabel } from "@spartan-ng/helm/label";
-import { toast } from "ngx-sonner";
-import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs";
-import { ProjectSummary } from "../../../api/dashboard";
-import { ProjectService } from "../../../api/project";
-import { ContextService } from "../../services/context.service";
-import { HlmDialogImports } from "../../../../libs/ui/ui-dialog-helm/src";
-import { BrnDialogImports } from "@spartan-ng/brain/dialog";
+import { CommonModule } from '@angular/common';
+import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
+import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
+import { HlmLabel } from '@spartan-ng/helm/label';
+import { toast } from 'ngx-sonner';
+import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
+import { ProjectSummary } from '../../../api/dashboard';
+import { ProjectService } from '../../../api/project';
+import { ContextService } from '../../services/context.service';
+import { HlmDialogImports } from '../../../../libs/ui/ui-dialog-helm/src';
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 
 @Component({
   imports: [
@@ -164,11 +164,11 @@ export class ProjectSettingsGeneralComponent {
   protected readonly form = this.fb.nonNullable.group({
     authenticated: this.fb.nonNullable.control(false),
     telemetry: this.fb.nonNullable.control(false),
-    proxyUrl: this.fb.nonNullable.control("", {
+    proxyUrl: this.fb.nonNullable.control('', {
       validators: [
         (ctrl) =>
           ctrl.value && !URL.canParse(ctrl.value)
-            ? { url: "value is not a valid URL" }
+            ? { url: 'value is not a valid URL' }
             : null,
       ],
     }),
@@ -196,7 +196,7 @@ export class ProjectSettingsGeneralComponent {
         error: () => {
           this.loading.set(false);
           this.form.enable();
-          toast.error("An error occurred while loading project settings");
+          toast.error('An error occurred while loading project settings');
         },
       });
   }
@@ -221,12 +221,12 @@ export class ProjectSettingsGeneralComponent {
           this.updateFormValues(summary);
           this.loading.set(false);
           this.form.enable();
-          toast.success("settings saved successfully");
+          toast.success('settings saved successfully');
         },
         error: () => {
           this.loading.set(false);
           this.form.enable();
-          toast.error("An error occurred while saving settings");
+          toast.error('An error occurred while saving settings');
         },
       });
     }
@@ -239,7 +239,7 @@ export class ProjectSettingsGeneralComponent {
       this.form.patchValue({
         authenticated: rev.authenticated ?? false,
         telemetry: rev.telemetry ?? false,
-        proxyUrl: rev.proxyUrl ?? "",
+        proxyUrl: rev.proxyUrl ?? '',
       });
     }
   }
@@ -251,21 +251,21 @@ export class ProjectSettingsGeneralComponent {
         .deleteProject(projectId)
         .pipe(
           tap({
-            next: () => toast.success("Project deleted successfully"),
+            next: () => toast.success('Project deleted successfully'),
             error: () =>
-              toast.error("An error occurred while deleting project"),
+              toast.error('An error occurred while deleting project'),
           }),
           switchMap(() =>
             this.router.navigate([
-              "/",
+              '/',
               this.contextService.selectedOrg()?.name,
-              "settings",
+              'settings',
             ]),
           ),
         )
         .subscribe({
-          next: (done) => console.log("redirect done", { done }),
-          error: (e) => console.error("redirect error", { e }),
+          next: (done) => console.log('redirect done', { done }),
+          error: (e) => console.error('redirect error', { e }),
         });
     }
   }
