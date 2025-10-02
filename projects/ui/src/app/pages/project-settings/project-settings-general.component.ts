@@ -2,17 +2,17 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { toast } from 'ngx-sonner';
 import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
+import { HlmDialogImports } from '../../../../libs/ui/ui-dialog-helm/src';
 import { ProjectSummary } from '../../../api/dashboard';
 import { ProjectService } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
-import { HlmDialogImports } from '../../../../libs/ui/ui-dialog-helm/src';
-import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 
 @Component({
   imports: [
@@ -157,7 +157,6 @@ export class ProjectSettingsGeneralComponent {
   private readonly projectService = inject(ProjectService);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
 
   protected readonly project = this.contextService.selectedProject;
   protected readonly loading = signal(false);
