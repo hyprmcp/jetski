@@ -11,6 +11,7 @@ import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
 import { ProjectSummary } from '../../../api/dashboard';
 import { ProjectService } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
+import { NgIcon } from '@ng-icons/core';
 
 @Component({
   imports: [
@@ -23,11 +24,68 @@ import { ContextService } from '../../services/context.service';
   ],
   template: `
     <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <h2 class="text-xl font-semibold text-foreground mb-2">
+      <h2
+        class="text-xl font-semibold text-foreground border-b border-border pb-2"
+      >
         Project Settings for {{ project()?.name }}
       </h2>
 
-      <h3 class="text-lg font-semibold text-foreground mb-6">Authorization</h3>
+      <!-- TODO: add MCP Url Box -->
+
+      <h3 class="text-lg font-semibold text-foreground mt-8 mb-6">
+        Origin MCP Server
+      </h3>
+
+      <div class="space-y-2">
+        <label for="proxy_url" hlmLabel>MCP Server URL</label>
+        <p class="text-muted-foreground text-sm">
+          Provide MCP server url for your remote MCP server.<br />
+          It must support streamable http transport and be accessible from the
+          internet.
+        </p>
+        <div>
+          <input
+            id="proxy_url"
+            type="text"
+            placeholder="https://your-custom-domain.com/mcp/"
+            [formControl]="form.controls.proxyUrl"
+            class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
+          />
+          @if (
+            form.controls.proxyUrl.touched && form.controls.proxyUrl.errors
+          ) {
+            <div class="text-xs text-red-500">Not a valid URL</div>
+          }
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-foreground mt-12 mb-6">
+        Telemetry
+      </h3>
+
+      <div class="flex items-start gap-3">
+        <hlm-checkbox id="telemetry" [formControl]="form.controls.telemetry" />
+        <div class="grid gap-2">
+          <label hlmLabel for="telemetry">Enable Prompt Analytics</label>
+          <p class="text-muted-foreground text-sm">
+            Enabling prompt analytics will give you insights about the<br />
+            prompt and context that triggered the MCP call.
+          </p>
+        </div>
+      </div>
+
+      <h3 class="text-lg font-semibold text-foreground mt-12 mb-6">
+        Authentication
+      </h3>
+
+      <div class="text-sm my-6">
+        <strong
+          >Warning: Gateway Authentication is not compatible with upstream
+          authentication</strong
+        ><br />
+        If your upstream MCP server already uses authentication, don't enable
+        authentication here.
+      </div>
 
       <div class="space-y-6">
         <div class="flex items-start gap-3">
@@ -42,7 +100,7 @@ import { ContextService } from '../../services/context.service';
             <p class="text-muted-foreground text-sm">
               Users must authenticate via OAuth2 to access the MCP server.<br />
               This gives you better analytics and allows you to get an
-              additional session context.
+              additional session context.<br />
             </p>
           </div>
         </div>
@@ -53,45 +111,6 @@ import { ContextService } from '../../services/context.service';
             >Go to organization settings.</a
           >
         </p>
-
-        <h3 class="text-lg font-semibold text-foreground mb-6">Telemetry</h3>
-
-        <div class="flex items-start gap-3">
-          <hlm-checkbox
-            id="telemetry"
-            [formControl]="form.controls.telemetry"
-          />
-          <div class="grid gap-2">
-            <label hlmLabel for="telemetry">Enable Prompt Analytics</label>
-            <p class="text-muted-foreground text-sm">
-              Enabling prompt analytics will give you insights about the<br />
-              prompt and context that triggered the MCP call.
-            </p>
-          </div>
-        </div>
-
-        <h3 class="text-lg font-semibold text-foreground mb-6">Upstream MCP</h3>
-
-        <div class="space-y-2">
-          <label for="proxy_url" hlmLabel>MCP URL</label>
-          <p class="text-muted-foreground text-sm">
-            Your MCP server needs to support streamable HTTP.
-          </p>
-          <div>
-            <input
-              id="proxy_url"
-              type="text"
-              placeholder="https://your-custom-domain.com/mcp/"
-              [formControl]="form.controls.proxyUrl"
-              class="w-full px-3 py-2 text-sm bg-background border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent placeholder:text-muted-foreground"
-            />
-            @if (
-              form.controls.proxyUrl.touched && form.controls.proxyUrl.errors
-            ) {
-              <div class="text-xs text-red-500">Not a valid URL</div>
-            }
-          </div>
-        </div>
 
         <!-- Actions -->
         <div class="flex items-center justify-end pt-4 border-t border-border">

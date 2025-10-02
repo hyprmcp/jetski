@@ -132,10 +132,6 @@ export const authenticatedRoutes: Routes = [
             canActivate: [redirectOrgDashboardToProject],
           },
           {
-            path: 'monitoring',
-            component: MonitoringComponent,
-          },
-          {
             path: 'settings',
             component: OrganizationSettingsComponent,
             children: [
