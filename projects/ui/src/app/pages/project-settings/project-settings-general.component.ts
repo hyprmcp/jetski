@@ -218,15 +218,22 @@ export class ProjectSettingsGeneralComponent {
   protected deleteProject(): void {
     const projectId = this.contextService.selectedProject()?.id;
     if (projectId) {
-      this.projectService.deleteProject(projectId).subscribe({
-        next: () => {
-          this.router.navigate(["..", ".."], { relativeTo: this.route });
-          toast.success("Project deleted successfully");
-        },
-        error: () => {
-          toast.error("An error occurred while deleting project");
-        },
-      });
+      this.projectService
+        .deleteProject(projectId)
+        .pipe(
+          tap({
+            next: () => toast.success("Project deleted successfully"),
+            error: () =>
+              toast.error("An error occurred while deleting project"),
+          }),
+          switchMap(() =>
+            this.router.navigate(["..", ".."], { relativeTo: this.route }),
+          ),
+        )
+        .subscribe({
+          next: (done) => console.log("redirect done", { done }),
+          error: (e) => console.error("redirect error", { e }),
+        });
     }
   }
 }
