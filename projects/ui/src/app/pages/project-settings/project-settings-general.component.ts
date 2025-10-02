@@ -11,6 +11,8 @@ import { distinctUntilChanged, filter, map, switchMap, tap } from "rxjs";
 import { ProjectSummary } from "../../../api/dashboard";
 import { ProjectService } from "../../../api/project";
 import { ContextService } from "../../services/context.service";
+import { HlmDialogImports } from "../../../../libs/ui/ui-dialog-helm/src";
+import { BrnDialogImports } from "@spartan-ng/brain/dialog";
 
 @Component({
   imports: [
@@ -18,6 +20,8 @@ import { ContextService } from "../../services/context.service";
     HlmButton,
     HlmCheckbox,
     HlmLabel,
+    ...HlmDialogImports,
+    ...BrnDialogImports,
     ReactiveFormsModule,
     RouterLink,
   ],
@@ -115,9 +119,34 @@ import { ContextService } from "../../services/context.service";
               cannot be undone.
             </div>
           </div>
-          <button hlmBtn variant="destructive" (click)="deleteProject()">
-            Delete Project
-          </button>
+          <hlm-dialog>
+            <button hlmBtn brnDialogTrigger variant="destructive">
+              Delete Project
+            </button>
+
+            <hlm-dialog-content *brnDialogContent="let ctx">
+              <hlm-dialog-header>
+                <h3 brnDialogTitle hlm>Delete Project {{ project()?.name }}</h3>
+                <p brnDialogDescription hlm>
+                  This action cannot be undone. Are you sure you want to delete
+                  this project?
+                </p>
+              </hlm-dialog-header>
+              <hlm-dialog-footer>
+                <button hlmBtn type="button" variant="outline" brnDialogClose>
+                  Cancel
+                </button>
+                <button
+                  hlmBtn
+                  type="button"
+                  variant="destructive"
+                  (click)="deleteProject()"
+                >
+                  Delete Project
+                </button>
+              </hlm-dialog-footer>
+            </hlm-dialog-content>
+          </hlm-dialog>
         </div>
       </div>
     </div>
