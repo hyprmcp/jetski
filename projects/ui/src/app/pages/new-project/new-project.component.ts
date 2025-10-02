@@ -1,13 +1,19 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { HlmButton } from '@spartan-ng/helm/button';
+import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
+import { HlmLabel } from '@spartan-ng/helm/label';
+import { HlmAlertImports } from '@spartan-ng/helm/alert';
 import { firstValueFrom, startWith } from 'rxjs';
 import { getProjectUrl, Project } from '../../../api/project';
 import { validateResourceName } from '../../../vaildators/name';
 import { ContextService } from '../../services/context.service';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { HlmIcon } from '@spartan-ng/helm/icon';
+import { lucideCircleAlert } from '@ng-icons/lucide';
 
 @Component({
   template: ` <div class="flex justify-center items-center ">
@@ -82,7 +88,31 @@ import { ContextService } from '../../services/context.service';
                 }
               </div>
 
-              @if (error() && form.pristine) {
+              <div class="flex items-start gap-3 my-6">
+                <hlm-checkbox
+                  id="telemetry"
+                  [formControl]="form.controls.telemetry"
+                />
+                <div class="space-y-1">
+                  <label hlmLabel for="telemetry"
+                    >Enable Prompt Analytics</label
+                  >
+                  <p class="text-muted-foreground text-sm">
+                    Enabling prompt analytics will give you insights about
+                    the<br />
+                    prompt and context that triggered the MCP call.
+                  </p>
+
+                  @if (form.value.telemetry) {
+                    <div hlmAlert class="mt-2">
+                      <ng-icon hlm hlmAlertIcon name="lucideCircleAlert" />
+                      This feature may have a slight impact on token usage.
+                    </div>
+                  }
+                </div>
+              </div>
+
+              @if (error()) {
                 <div class="text-sm text-red-600 my-2">{{ error() }}</div>
               }
 
@@ -102,7 +132,16 @@ import { ContextService } from '../../services/context.service';
       </div>
     </div>
   </div>`,
-  imports: [ReactiveFormsModule, HlmButton],
+  imports: [
+    ReactiveFormsModule,
+    HlmButton,
+    HlmCheckbox,
+    HlmLabel,
+    ...HlmAlertImports,
+    NgIcon,
+    HlmIcon,
+  ],
+  providers: [provideIcons({ lucideCircleAlert })],
 })
 export class NewProjectComponent {
   private readonly ctx = inject(ContextService);
@@ -117,8 +156,9 @@ export class NewProjectComponent {
         /^(http|https):\/\/[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}(:\d+)?(\/.*)?$/,
       ),
     ]),
+    telemetry: this.fb.nonNullable.control(false),
   });
-  protected readonly error = signal<unknown>(undefined);
+  protected readonly error = signal<string | undefined>(undefined);
   protected readonly loading = signal(false);
   private readonly formSignal = toSignal(
     this.form.valueChanges.pipe(startWith(this.form.value)),
@@ -143,6 +183,7 @@ export class NewProjectComponent {
             organizationId: org.id,
             name: this.form.value.name,
             proxyUrl: this.form.value.proxyUrl,
+            telemetry: this.form.value.telemetry ?? false,
           }),
         );
         this.ctx.registerCreatedProject(project);
@@ -153,7 +194,13 @@ export class NewProjectComponent {
           'check',
         ]);
       } catch (e) {
-        this.error.set(e);
+        if (e instanceof HttpErrorResponse) {
+          this.error.set(e.error || e.message || 'an error occurred');
+        } else if (e instanceof Error) {
+          this.error.set(e.message || 'an error occurred');
+        } else {
+          this.error.set('an error occurred');
+        }
       }
     }
   }
