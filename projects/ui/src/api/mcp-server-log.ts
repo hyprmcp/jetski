@@ -13,6 +13,14 @@ export interface MCPServerLog {
   httpError?: string;
 }
 
+export interface MCPServerLogPromptData {
+  id: string;
+  startedAt: string;
+  method: string;
+  toolName: string;
+  prompt: string;
+}
+
 export interface JsonRpcRequest {
   method: string;
   params: JsonRpcParams;

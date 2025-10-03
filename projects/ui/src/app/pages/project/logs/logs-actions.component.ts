@@ -4,15 +4,14 @@ import { Component, input } from '@angular/core';
 import { type CallToolResult } from '@modelcontextprotocol/sdk/types.js';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideEllipsis, lucideEye } from '@ng-icons/lucide';
-
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmIcon } from '@spartan-ng/helm/icon';
-import { HlmDialogImports } from '../../../../../../libs/ui/ui-dialog-helm/src';
+import { HlmDialogImports } from '../../../../../libs/ui/ui-dialog-helm/src';
 import type {
   JsonRcpResponse,
   MCPServerLog,
-} from '../../../../../api/mcp-server-log';
-import { HighlightJsonPipe } from '../../../../pipes/highlight-json-pipe';
+} from '../../../../api/mcp-server-log';
+import { HighlightJsonPipe } from '../../../pipes/highlight-json-pipe';
 
 @Component({
   selector: 'app-logs-actions',

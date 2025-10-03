@@ -98,3 +98,45 @@ func GetLogsForProject(
 	}
 	return logs, nil
 }
+
+func GetPromptsForProject(
+	ctx context.Context,
+	projectId uuid.UUID,
+	pagination lists.Pagination,
+	sorting lists.Sorting,
+	mcpSessionID *string,
+) ([]types.MCPServerLogPromptData, error) {
+	db := internalctx.GetDb(ctx)
+	offset := pagination.Count * pagination.Page
+	filters := []string{"deployment_revision_id IN (SELECT id FROM DeploymentRevision WHERE project_id = @projectId)"}
+	if mcpSessionID != nil {
+		filters = append(filters, "mcp_session_id = @mcpSessionId")
+	}
+	query := fmt.Sprintf(
+		`SELECT * FROM (
+			SELECT
+				id,
+				started_at,
+				jsonb_path_query_first(mcp_request, '$.method') #>> '{}' AS method,
+				jsonb_path_query_first(mcp_request, '$.params.name') #>> '{}' AS tool_name,
+				jsonb_path_query_first(mcp_request, '$.params.arguments.hyprmcpPromptAnalytics') #>> '{}' AS prompt
+			FROM MCPServerLog
+			WHERE %s
+		)
+		WHERE prompt IS NOT NULL
+		ORDER BY %s %s
+		LIMIT @count OFFSET @offset`,
+		strings.Join(filters, " AND "),
+		sorting.SortBy,
+		sorting.SortOrder,
+	)
+	rows, err := db.Query(ctx, query, pgx.NamedArgs{"projectId": projectId, "count": pagination.Count, "offset": offset, "mcpSessionId": mcpSessionID})
+	if err != nil {
+		return nil, err
+	}
+	logs, err := pgx.CollectRows(rows, pgx.RowToStructByPos[types.MCPServerLogPromptData])
+	if err != nil {
+		return nil, err
+	}
+	return logs, nil
+}
