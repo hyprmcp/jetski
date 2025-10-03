@@ -1,5 +1,35 @@
 # Changelog
 
+## [0.3.0](https://github.com/hyprmcp/jetski/compare/0.2.3...0.3.0) (2025-10-03)
+
+
+### Features
+
+* add ability to delete projects ([#260](https://github.com/hyprmcp/jetski/issues/260)) ([353e432](https://github.com/hyprmcp/jetski/commit/353e432a874a92e8b56990cbd2b0db52e66a5d3a))
+* add prompts page ([#259](https://github.com/hyprmcp/jetski/issues/259)) ([c514287](https://github.com/hyprmcp/jetski/commit/c514287b8506579a99947c8d638fd08223356d22))
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/modelcontextprotocol/go-sdk to v1 ([#256](https://github.com/hyprmcp/jetski/issues/256)) ([b39c4b0](https://github.com/hyprmcp/jetski/commit/b39c4b07f35874b9e7407c6c5a971512a8bfc3cf))
+
+
+### Other
+
+* add prompt analytics checkbox to "new project" form ([#266](https://github.com/hyprmcp/jetski/issues/266)) ([98e8c61](https://github.com/hyprmcp/jetski/commit/98e8c6147384d521141e30811e8ed994e7b4c2c4))
+* add redirect to project dashboard if org only has a single project ([#254](https://github.com/hyprmcp/jetski/issues/254)) ([84c2942](https://github.com/hyprmcp/jetski/commit/84c29421d9769842cb54bbaba1d472d8f163e7c8))
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.520 ([#257](https://github.com/hyprmcp/jetski/issues/257)) ([c52f7d4](https://github.com/hyprmcp/jetski/commit/c52f7d47e9281d829f23762b7105f3f1babb9510))
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.521 ([#263](https://github.com/hyprmcp/jetski/issues/263)) ([eaae8bb](https://github.com/hyprmcp/jetski/commit/eaae8bbe5d5c1c5b89776ece19a53bfe3d4d1fd8))
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.522 ([#270](https://github.com/hyprmcp/jetski/issues/270)) ([d3abfe3](https://github.com/hyprmcp/jetski/commit/d3abfe3b5ea8bf6afc1331ce15b89806ef171586))
+* **deps:** update angular monorepo to v20.3.3 ([#265](https://github.com/hyprmcp/jetski/issues/265)) ([dd94901](https://github.com/hyprmcp/jetski/commit/dd94901a1777989252c4da6ff9f8b0b4f813d889))
+* **deps:** update angular-cli monorepo to v20.3.4 ([#268](https://github.com/hyprmcp/jetski/issues/268)) ([e7ddacf](https://github.com/hyprmcp/jetski/commit/e7ddacf8b877260563acdb3bbfbe5b867a85f58d))
+* **deps:** update dependency @angular/cdk to v20.2.7 ([#261](https://github.com/hyprmcp/jetski/issues/261)) ([98f5c41](https://github.com/hyprmcp/jetski/commit/98f5c41dcf7b1b16c64a70cee37010d9c08e0302))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.19.1 ([#269](https://github.com/hyprmcp/jetski/issues/269)) ([2500690](https://github.com/hyprmcp/jetski/commit/2500690a1ba790d06602805f16546ea9065acb42))
+* **deps:** update tailwindcss monorepo to v4.1.14 ([#262](https://github.com/hyprmcp/jetski/issues/262)) ([1ce939d](https://github.com/hyprmcp/jetski/commit/1ce939d7245e9194c9b3e29a85457a383eb67208))
+* remove deployments from org dashboard and blur deployment page with upsell banner ([#255](https://github.com/hyprmcp/jetski/issues/255)) ([f639099](https://github.com/hyprmcp/jetski/commit/f6390996a006b2837c1f362942c27229472c9df6))
+* remove unused import ([bc919e5](https://github.com/hyprmcp/jetski/commit/bc919e5353716ec0f94bd4047cbd4c4a4955240e))
+* small wording changes and ui changes ([#264](https://github.com/hyprmcp/jetski/issues/264)) ([e4d546c](https://github.com/hyprmcp/jetski/commit/e4d546c6fa074bc8bbd4f38628b68786aa00ffbe))
+
 ## [0.2.3](https://github.com/hyprmcp/jetski/compare/0.2.2...0.2.3) (2025-09-30)
 
 
