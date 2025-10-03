@@ -11,7 +11,6 @@ import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
 import { ProjectSummary } from '../../../api/dashboard';
 import { ProjectService } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
-import { NgIcon } from '@ng-icons/core';
 
 @Component({
   imports: [
