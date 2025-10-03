@@ -59,6 +59,7 @@ func postProjectHandler(k8sClient client.Client) http.HandlerFunc {
 			Name           string    `json:"name"`
 			OrganizationID uuid.UUID `json:"organizationId"`
 			ProxyURL       *string   `json:"proxyUrl"`
+			Telemetry      *bool     `json:"telemetry"`
 		}
 
 		if err := json.NewDecoder(r.Body).Decode(&projectReq); err != nil {
@@ -87,14 +88,18 @@ func postProjectHandler(k8sClient client.Client) http.HandlerFunc {
 			}
 
 			if projectReq.ProxyURL != nil {
-				err := db.CreateDeploymentRevision(ctx, &types.DeploymentRevision{
+				dr := types.DeploymentRevision{
 					ProjectID:     project.ID,
 					CreatedBy:     user.ID,
-					Telemetry:     true,
 					Authenticated: true,
 					ProxyURL:      projectReq.ProxyURL,
-				})
-				if err != nil {
+				}
+
+				if projectReq.Telemetry != nil {
+					dr.Telemetry = *projectReq.Telemetry
+				}
+
+				if err := db.CreateDeploymentRevision(ctx, &dr); err != nil {
 					return err
 				}
 			}
