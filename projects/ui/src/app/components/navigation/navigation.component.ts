@@ -84,10 +84,6 @@ export class NavigationComponent {
           href: [...orgBase],
         },
         {
-          label: 'Monitoring',
-          href: [...orgBase, 'monitoring'],
-        },
-        {
           label: 'Settings',
           href: [...orgBase, 'settings'],
         },

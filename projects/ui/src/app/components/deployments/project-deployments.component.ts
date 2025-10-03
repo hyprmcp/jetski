@@ -8,7 +8,7 @@ import { UpsellWrapperComponent } from '../upsell-wrapper/upsell-wrapper.compone
 @Component({
   template: `
     <app-upsell-wrapper
-      description="Unlock hosted MCP servers, deployment history and more"
+      description="Host your MCP server on HyprMCP Cloud with a Vercel like experience."
     >
       @if (contextService.selectedProject(); as proj) {
         <div class="space-y-4">
