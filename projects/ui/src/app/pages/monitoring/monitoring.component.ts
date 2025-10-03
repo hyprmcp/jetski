@@ -60,7 +60,7 @@ Chart.register(...registerables);
   ],
   template: `
     <app-upsell-wrapper
-      description="Unlock real-time metrics, security alerts and issue analyzis."
+      description="Unlock real-time metrics, security alerts and issue analysis."
     >
       <div class="pointer-events-none select-none">
         <!-- Header -->
