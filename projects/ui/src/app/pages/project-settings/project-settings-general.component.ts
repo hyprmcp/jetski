@@ -2,12 +2,14 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
+import { BrnDialogImports } from '@spartan-ng/brain/dialog';
 import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { HlmLabel } from '@spartan-ng/helm/label';
 import { toast } from 'ngx-sonner';
 import { distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs';
+import { HlmDialogImports } from '../../../../libs/ui/ui-dialog-helm/src';
 import { ProjectSummary } from '../../../api/dashboard';
 import { ProjectService } from '../../../api/project';
 import { ContextService } from '../../services/context.service';
@@ -18,6 +20,8 @@ import { ContextService } from '../../services/context.service';
     HlmButton,
     HlmCheckbox,
     HlmLabel,
+    ...HlmDialogImports,
+    ...BrnDialogImports,
     ReactiveFormsModule,
     RouterLink,
   ],
@@ -119,12 +123,58 @@ import { ContextService } from '../../services/context.service';
         </div>
       </div>
     </form>
+
+    <div class="space-y-2 mt-4">
+      <h3 class="text-lg font-bold text-destructive">Danger Zone</h3>
+
+      <div class="border border-destructive rounded-md p-4">
+        <div class="flex items-center">
+          <div class="flex-1">
+            <div class="text-foreground font-medium">Delete Project</div>
+            <div class="text-sm text-muted-foreground">
+              Permanently delete this project including all related settings and
+              analytics data. Your MCP server will stop working. This action
+              cannot be undone.
+            </div>
+          </div>
+          <hlm-dialog>
+            <button hlmBtn brnDialogTrigger variant="destructive">
+              Delete Project
+            </button>
+
+            <hlm-dialog-content *brnDialogContent="let ctx">
+              <hlm-dialog-header>
+                <h3 brnDialogTitle hlm>Delete Project {{ project()?.name }}</h3>
+                <p brnDialogDescription hlm>
+                  This action cannot be undone. Are you sure you want to delete
+                  this project?
+                </p>
+              </hlm-dialog-header>
+              <hlm-dialog-footer>
+                <button hlmBtn type="button" variant="outline" brnDialogClose>
+                  Cancel
+                </button>
+                <button
+                  hlmBtn
+                  type="button"
+                  variant="destructive"
+                  (click)="deleteProject()"
+                >
+                  Delete Project
+                </button>
+              </hlm-dialog-footer>
+            </hlm-dialog-content>
+          </hlm-dialog>
+        </div>
+      </div>
+    </div>
   `,
 })
 export class ProjectSettingsGeneralComponent {
   private readonly contextService = inject(ContextService);
   private readonly projectService = inject(ProjectService);
   private readonly fb = inject(FormBuilder);
+  private readonly router = inject(Router);
 
   protected readonly project = this.contextService.selectedProject;
   protected readonly loading = signal(false);
@@ -208,6 +258,32 @@ export class ProjectSettingsGeneralComponent {
         telemetry: rev.telemetry ?? false,
         proxyUrl: rev.proxyUrl ?? '',
       });
+    }
+  }
+
+  protected deleteProject(): void {
+    const projectId = this.contextService.selectedProject()?.id;
+    if (projectId) {
+      this.projectService
+        .deleteProject(projectId)
+        .pipe(
+          tap({
+            next: () => toast.success('Project deleted successfully'),
+            error: () =>
+              toast.error('An error occurred while deleting project'),
+          }),
+          switchMap(() =>
+            this.router.navigate([
+              '/',
+              this.contextService.selectedOrg()?.name,
+              'settings',
+            ]),
+          ),
+        )
+        .subscribe({
+          next: (done) => console.log('redirect done', { done }),
+          error: (e) => console.error('redirect error', { e }),
+        });
     }
   }
 }

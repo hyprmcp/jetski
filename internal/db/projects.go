@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/hyprmcp/jetski/internal/apierrors"
 	internalctx "github.com/hyprmcp/jetski/internal/context"
 	"github.com/hyprmcp/jetski/internal/types"
 	"github.com/jackc/pgx/v5"
@@ -49,5 +50,16 @@ func CreateProject(ctx context.Context, orgID, createdBy uuid.UUID, name string)
 		return nil, err
 	} else {
 		return result, nil
+	}
+}
+
+func DeleteProject(ctx context.Context, projectID uuid.UUID) error {
+	db := internalctx.GetDb(ctx)
+	if res, err := db.Exec(ctx, `DELETE FROM Project WHERE id = @id`, pgx.NamedArgs{"id": projectID}); err != nil {
+		return err
+	} else if res.RowsAffected() == 0 {
+		return apierrors.ErrNotFound
+	} else {
+		return nil
 	}
 }

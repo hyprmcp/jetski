@@ -1,9 +1,9 @@
 import { HttpClient, httpResource } from '@angular/common/http';
-import { Base } from './base';
 import { inject, Injectable, Signal } from '@angular/core';
-import { DeploymentRevisionSummary, ProjectSummary } from './dashboard';
-import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
 import { Observable } from 'rxjs';
+import { ProjectAnalytics } from '../app/pages/project/dashboard/project-dashboard.component';
+import { Base } from './base';
+import { DeploymentRevisionSummary, ProjectSummary } from './dashboard';
 import { Organization } from './organization';
 
 export interface Project extends Base {
@@ -35,6 +35,10 @@ export class ProjectService {
       `/api/v1/projects/${projectId}/settings`,
       request,
     );
+  }
+
+  public deleteProject(projectId: string): Observable<void> {
+    return this.httpClient.delete<void>(`/api/v1/projects/${projectId}`);
   }
 }
 
