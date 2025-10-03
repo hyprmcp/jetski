@@ -1,11 +1,8 @@
-import { AsyncPipe, JsonPipe } from '@angular/common';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Component, computed, inject, signal } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Client } from '@modelcontextprotocol/sdk/client/index.js';
-import { StreamableHTTPClientTransport } from '@modelcontextprotocol/sdk/client/streamableHttp.js';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleAlert } from '@ng-icons/lucide';
 import { HlmAlertImports } from '@spartan-ng/helm/alert';
@@ -13,19 +10,7 @@ import { HlmButton } from '@spartan-ng/helm/button';
 import { HlmCheckbox } from '@spartan-ng/helm/checkbox';
 import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmLabel } from '@spartan-ng/helm/label';
-import {
-  catchError,
-  debounceTime,
-  distinctUntilChanged,
-  filter,
-  firstValueFrom,
-  from,
-  map,
-  Observable,
-  of,
-  startWith,
-  switchMap,
-} from 'rxjs';
+import { firstValueFrom, startWith } from 'rxjs';
 import { getProjectUrl, Project } from '../../../api/project';
 import { validateResourceName } from '../../../vaildators/name';
 import { ContextService } from '../../services/context.service';
@@ -103,10 +88,6 @@ import { ContextService } from '../../services/context.service';
                 }
               </div>
 
-              @if (validationState | async; as state) {
-                <pre>{{ state | json }}</pre>
-              }
-
               <div class="flex items-start gap-3 my-6">
                 <hlm-checkbox
                   id="telemetry"
@@ -135,15 +116,46 @@ import { ContextService } from '../../services/context.service';
                 <div class="text-sm text-red-600 my-2">{{ error() }}</div>
               }
 
+              @if (validationState(); as state) {
+                @switch (state.state) {
+                  @case ('error') {
+                    <div class="text-sm text-red-600 my-2">
+                      MCP Endpoint validation failed: {{ state.error }}
+                    </div>
+                  }
+                  @case ('success') {
+                    <div class="text-sm text-green-600 my-2">
+                      MCP Endpoint validated!
+                    </div>
+                  }
+                }
+              }
+
               <!-- Actions -->
               <div class="flex items-center justify-end pt-4 ">
-                <button
-                  hlmBtn
-                  type="submit"
-                  [disabled]="form.invalid || loading()"
-                >
-                  Continue
-                </button>
+                @if (validationUrl() !== form.value.proxyUrl) {
+                  <button hlmBtn type="submit" [disabled]="form.invalid">
+                    Validate
+                  </button>
+                } @else if (validationState()?.state === 'error') {
+                  <button
+                    hlmBtn
+                    type="submit"
+                    [disabled]="form.invalid || loading()"
+                  >
+                    Continue anyways
+                  </button>
+                } @else if (validationState()?.state === 'success') {
+                  <button
+                    hlmBtn
+                    type="submit"
+                    [disabled]="form.invalid || loading()"
+                  >
+                    Continue
+                  </button>
+                } @else {
+                  <button hlmBtn disabled>Validating&hellip;</button>
+                }
               </div>
             </div>
           </form>
@@ -159,8 +171,6 @@ import { ContextService } from '../../services/context.service';
     ...HlmAlertImports,
     NgIcon,
     HlmIcon,
-    AsyncPipe,
-    JsonPipe,
   ],
   providers: [provideIcons({ lucideCircleAlert })],
 })
@@ -191,38 +201,18 @@ export class NewProjectComponent {
     ),
   );
 
-  protected readonly validationState: Observable<McpValidationEvent> =
-    this.form.controls.proxyUrl.valueChanges.pipe(
-      map(() => this.form.controls.proxyUrl.value),
-      filter((value) => value !== null && value !== undefined),
-      debounceTime(200),
-      distinctUntilChanged(),
-      switchMap((url) =>
-        from(getMcpServerTools(url)).pipe(
-          map<string[], McpValidationEvent>((tools) => ({
-            state: 'success',
-            tools,
-          })),
-          catchError<McpValidationEvent, Observable<McpValidationError>>(
-            (e) => {
-              let error: string;
-              if (e instanceof HttpErrorResponse) {
-                error = e.error || e.message || 'Unknown error';
-              } else if (e instanceof Error) {
-                error = e.message || 'Unknown error';
-              } else {
-                error = 'Unknown error';
-              }
-              return of({ state: 'error', error });
-            },
-          ),
-          startWith<McpValidationEvent>({ state: 'progress' }),
-        ),
-      ),
-    );
+  protected readonly validationUrl = signal<string | undefined>(undefined);
+  protected readonly validationState = signal<McpValidationEvent | undefined>(
+    undefined,
+  );
 
   protected async submit() {
     if (this.form.invalid) {
+      return;
+    }
+
+    if (this.validationUrl() !== this.form.value.proxyUrl) {
+      this.verifyMcpEndpoint();
       return;
     }
 
@@ -233,7 +223,7 @@ export class NewProjectComponent {
           this.httpClient.post<Project>('/api/v1/projects', {
             organizationId: org.id,
             name: this.form.value.name,
-            proxyUrl: this.form.value.proxyUrl,
+            proxyUrl: this.form.value.proxyUrl?.trim(),
             telemetry: this.form.value.telemetry ?? false,
           }),
         );
@@ -255,33 +245,48 @@ export class NewProjectComponent {
       }
     }
   }
-}
 
-async function getMcpServerTools(url: string): Promise<string[]> {
-  const transport = new StreamableHTTPClientTransport(new URL(url));
-  const client = new Client({ name: 'hyprmcp-validation', version: '1.0.0' });
-  try {
-    await client.connect(transport);
-    return (await client.listTools()).tools.map((toolSpec) => toolSpec.name);
-  } finally {
-    try {
-      await client.close();
-    } catch (e) {
-      console.warn('close error', e);
-    }
+  protected verifyMcpEndpoint() {
+    const url = this.form.value.proxyUrl!;
+    this.validationUrl.set(url);
+    this.validationState.set({ state: 'progress' });
+    this.httpClient
+      .get<
+        Partial<ErrorData & ToolsData>
+      >('/api/v1/verify-mcp-endpoint', { params: { url } })
+      .subscribe({
+        next: ({ error, tools }) =>
+          this.validationState.set(
+            tools
+              ? { state: 'success', tools }
+              : {
+                  state: 'error',
+                  error: error || 'invalid validation response',
+                },
+          ),
+        error: (error) =>
+          this.validationState.set({
+            state: 'error',
+            error: error.error || error.message || 'an error occurred',
+          }),
+      });
   }
 }
 
-interface McpValidationError {
+interface ErrorData {
+  error: string;
+}
+interface ToolsData {
+  tools: string[];
+}
+interface McpValidationError extends ErrorData {
   state: 'error';
-  error: unknown;
 }
 interface McpValidationInProgress {
   state: 'progress';
 }
-interface McpValidationSuccess {
+interface McpValidationSuccess extends ToolsData {
   state: 'success';
-  tools: string[];
 }
 type McpValidationEvent =
   | McpValidationError
