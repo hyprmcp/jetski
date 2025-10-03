@@ -1,6 +1,6 @@
 {
   "name": "jetski",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "type": "module",
   "scripts": {
     "ng": "ng",
