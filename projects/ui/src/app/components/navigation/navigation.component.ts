@@ -58,6 +58,10 @@ export class NavigationComponent {
           href: [...projectBase, 'logs'],
         },
         {
+          label: 'Prompts',
+          href: [...projectBase, 'prompts'],
+        },
+        {
           label: 'Deployments',
           href: [
             '/',
