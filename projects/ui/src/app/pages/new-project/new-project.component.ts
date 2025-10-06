@@ -180,10 +180,7 @@ import { ContextService } from '../../services/context.service';
                 @if (validationState()?.state === 'authenticated') {
                   <div hlmAlert class="mt-2">
                     <ng-icon hlm hlmAlertIcon name="lucideCircleAlert" />
-                    Warning: Authentication is not compatible with upstream
-                    authentication
-                    <br />
-                    If your upstream MCP server already uses authentication,
+                    If the configured MCP server already uses authentication,
                     don't enable authentication here.
                   </div>
                 }
