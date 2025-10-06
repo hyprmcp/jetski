@@ -181,7 +181,7 @@ import { BrnTooltipContentTemplate } from '@spartan-ng/brain/tooltip';
                         hlmMenuItem
                         class="w-full"
                         [routerLink]="['/' + o.name, 'new']"
-                        disabled="true"
+                        [disabled]="true"
                       >
                         New project in {{ o.name }}
                       </a>
