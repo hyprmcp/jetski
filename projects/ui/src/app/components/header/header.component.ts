@@ -26,6 +26,8 @@ import {
 import { OAuthService } from 'angular-oauth2-oidc';
 import { ContextService } from '../../services/context.service';
 import { ThemeService } from '../../services/theme.service';
+import { HlmTooltip, HlmTooltipTrigger } from '@spartan-ng/helm/tooltip';
+import { BrnTooltipContentTemplate } from '@spartan-ng/brain/tooltip';
 
 @Component({
   selector: 'app-header',
@@ -43,6 +45,9 @@ import { ThemeService } from '../../services/theme.service';
     HlmSubMenu,
     BrnMenuTrigger,
     NgIcon,
+    HlmTooltip,
+    BrnTooltipContentTemplate,
+    HlmTooltipTrigger,
   ],
   viewProviders: [
     provideIcons({
@@ -170,13 +175,23 @@ import { ThemeService } from '../../services/theme.service';
               @if (contextService.selectedOrg(); as o) {
                 <hlm-menu-separator />
                 <hlm-menu-group>
-                  <a
-                    hlmMenuItem
-                    class="w-full cursor-pointer"
-                    [routerLink]="['/' + o.name, 'new']"
-                  >
-                    New project in {{ o.name }}
-                  </a>
+                  <hlm-tooltip>
+                    <div hlmTooltipTrigger position="left">
+                      <a
+                        hlmMenuItem
+                        class="w-full"
+                        [routerLink]="['/' + o.name, 'new']"
+                        [disabled]="true"
+                      >
+                        New project in {{ o.name }}
+                      </a>
+                    </div>
+                    <span *brnTooltipContent
+                      >Multiple projects per organization<br />are only
+                      available in HyprMCP Pro.<br />You can create multiple
+                      organizations.</span
+                    >
+                  </hlm-tooltip>
                   <a
                     hlmMenuItem
                     class="w-full cursor-pointer"
