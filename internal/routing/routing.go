@@ -73,6 +73,7 @@ func ApiRouter(
 		r.Route("/organizations", handlers.OrganizationsRouter(k8sClient))
 		r.Route("/projects", handlers.ProjectsRouter(k8sClient))
 		r.Route("/dashboard", handlers.DashboardRouter)
+		r.Group(handlers.MiscRouter())
 	})
 
 	return r
