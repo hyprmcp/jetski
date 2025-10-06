@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/hyprmcp/jetski/compare/0.4.0...0.4.1) (2025-10-06)
+
+
+### Other
+
+* make multiple projects a pro feature ([#279](https://github.com/hyprmcp/jetski/issues/279)) ([11a976f](https://github.com/hyprmcp/jetski/commit/11a976fa7a2afc6588a273868cbd7ec0724df340))
+
 ## [0.4.0](https://github.com/hyprmcp/jetski/compare/0.3.0...0.4.0) (2025-10-06)
 
 
