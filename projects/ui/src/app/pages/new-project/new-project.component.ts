@@ -99,45 +99,15 @@ import { ContextService } from '../../services/context.service';
                 >
                   Don't have a remote streamable HTTP server URL? Try one of
                   these:
-                  <button
-                    type="button"
-                    (click)="fillProxyUrl('https://mcp.notion.com/mcp')"
-                    class="ml-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/80 transition-colors cursor-pointer"
-                  >
-                    https://mcp.notion.com/mcp
-                  </button>
-                  <button
-                    type="button"
-                    (click)="fillProxyUrl('https://mcp.sentry.dev/mcp')"
-                    class="ml-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/80 transition-colors cursor-pointer"
-                  >
-                    https://mcp.sentry.dev/mcp
-                  </button>
-                  <button
-                    type="button"
-                    (click)="fillProxyUrl('https://mcp.linear.app/mcp')"
-                    class="ml-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/80 transition-colors cursor-pointer"
-                  >
-                    https://mcp.linear.app/mcp
-                  </button>
-                  <button
-                    type="button"
-                    (click)="fillProxyUrl('https://mcp.stack-auth.com/mcp')"
-                    class="m-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/80 transition-colors cursor-pointer"
-                  >
-                    https://mcp.stack-auth.com/mcp
-                  </button>
-                  <button
-                    type="button"
-                    (click)="
-                      fillProxyUrl(
-                        'https://demo.hyprmcp.cloud/who-am-i-public/mcp'
-                      )
-                    "
-                    class="m-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/80 transition-colors cursor-pointer"
-                  >
-                    https://demo.hyprmcp.cloud/who-am-i-public/mcp
-                  </button>
+                  @for (url of exampleUrls; track url) {
+                    <button
+                      type="button"
+                      (click)="fillProxyUrl(url)"
+                      class="m-1 px-2 py-1 text-xs bg-secondary text-secondary-foreground rounded-full hover:bg-secondary/80 transition-colors cursor-pointer"
+                    >
+                      {{ url }}
+                    </button>
+                  }
                 </p>
 
                 @if (
@@ -290,6 +260,13 @@ export class NewProjectComponent {
   private readonly httpClient = inject(HttpClient);
   private readonly fb = inject(FormBuilder);
   private readonly router = inject(Router);
+  protected readonly exampleUrls = [
+    'https://mcp.notion.com/mcp',
+    'https://mcp.sentry.dev/mcp',
+    'https://mcp.linear.app/mcp',
+    'https://mcp.stack-auth.com/mcp',
+    'https://demo.hyprmcp.cloud/who-am-i-public/mcp',
+  ] as const;
   protected readonly form = this.fb.group({
     name: this.fb.control('', [Validators.required, validateResourceName]),
     proxyUrl: this.fb.control('', [
