@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.4.0](https://github.com/hyprmcp/jetski/compare/0.3.0...0.4.0) (2025-10-06)
+
+
+### Features
+
+* add mcp url validation ([#267](https://github.com/hyprmcp/jetski/issues/267)) ([1b558dc](https://github.com/hyprmcp/jetski/commit/1b558dcfa2409e79562e9527f2b8d19bb6c3eca3))
+
+
+### Other
+
+* **deps:** update dependency @eslint/js to v9.37.0 ([#272](https://github.com/hyprmcp/jetski/issues/272)) ([b92aa19](https://github.com/hyprmcp/jetski/commit/b92aa197936d22fd4335aa6e6f47be6fefa3dc43))
+* **deps:** update dependency jasmine-core to ~5.12.0 ([#275](https://github.com/hyprmcp/jetski/issues/275)) ([46255e2](https://github.com/hyprmcp/jetski/commit/46255e274a34131972c3d1c475c409e0a48a0ebf))
+
 ## [0.3.0](https://github.com/hyprmcp/jetski/compare/0.2.3...0.3.0) (2025-10-03)
 
 
