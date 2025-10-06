@@ -179,7 +179,7 @@ import { BrnTooltipContentTemplate } from '@spartan-ng/brain/tooltip';
                     <div hlmTooltipTrigger position="left">
                       <a
                         hlmMenuItem
-                        class="w-full cursor-help"
+                        class="w-full"
                         [routerLink]="['/' + o.name, 'new']"
                         disabled="true"
                       >
