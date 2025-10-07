@@ -15,8 +15,13 @@ import { Project } from '../../api/project';
 })
 export class ContextService {
   private readonly createdProjects = signal<Project[]>([]);
+  private readonly deletedProjects = signal<Project[]>([]);
+  private readonly createdOrDeletedProjects = computed(() => [
+    ...this.createdProjects(),
+    ...this.deletedProjects(),
+  ]);
 
-  readonly context = getContext(this.createdProjects);
+  readonly context = getContext(this.createdOrDeletedProjects);
   readonly projects = computed(() => this.context.value()?.projects ?? []);
   readonly organizations = computed(
     () => this.context.value()?.organizations ?? [],
@@ -56,6 +61,10 @@ export class ContextService {
 
   public registerCreatedProject(project: Project) {
     this.createdProjects.update((val) => [...val, project]);
+  }
+
+  public registerDeletedProject(project: Project) {
+    this.deletedProjects.update((val) => [...val, project]);
   }
 }
 
