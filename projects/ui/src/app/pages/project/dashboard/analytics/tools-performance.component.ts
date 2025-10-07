@@ -80,7 +80,9 @@ import { ToolsPerformance } from './tools-performance';
               <h4 hlmH4 class="text-red-700">Operations Requiring Attention</h4>
               <p class="text-sm text-muted-foreground mb-3">
                 Identify operations that might cause errors or delays for your
-                users
+                users. <br />
+                Operations may be listed here if they exhibit elevated error
+                rates or latency.
               </p>
             }
             @for (tool of data.toolsRequiringAttention; track tool.name) {
@@ -105,14 +107,26 @@ import { ToolsPerformance } from './tools-performance';
                       {{ tool.totalCalls | number }} calls
                     </p>
                     <p
-                      class="text-sm font-medium"
-                      [class.text-red-600]="tool.errorRate > 0"
+                      class="text-sm font-medium flex items-center gap-1"
+                      [class.text-red-600]="tool.errorRate > 0.05"
+                      [class.text-muted-foreground]="tool.errorRate <= 0.05"
                     >
+                      @if (tool.errorRate > 0.05) {
+                        <ng-icon name="lucideTriangleAlert" size="16" />
+                      }
                       {{ tool.errorRate | percent }} error rate
                     </p>
                   </div>
                   <div class="text-right">
-                    <p class="font-medium">{{ tool.avgLatency }}ms</p>
+                    <p
+                      class="font-medium flex items-center gap-1"
+                      [class.text-red-600]="tool.avgLatency > 1000"
+                    >
+                      @if (tool.avgLatency > 1000) {
+                        <ng-icon name="lucideTriangleAlert" size="16" />
+                      }
+                      {{ tool.avgLatency }}ms
+                    </p>
                     <p class="text-sm text-muted-foreground">avg latency</p>
                   </div>
                 </div>
