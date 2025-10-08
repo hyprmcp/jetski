@@ -82,10 +82,17 @@ HyprMCP uses [mise](https://mise.jdx.dev/) to configure your development environ
 
 ### 1. Jetski Analytics Platform
 
+**Clone the repository:**
+  ```bash
+  git clone https://github.com/hyprmcp/jetski.git
+  cd jetski
+  ```
+
 **Install dependencies:**
   ```bash
   mise trust
   mise install
+  touch .dex.secret.env
   docker compose up -d
   ```
 
