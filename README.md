@@ -43,18 +43,6 @@ It solves the three biggest problems teams face when developing MCP servers with
 Our platform manages and deploys instances of our [`mcp-gateway`](https://github.com/hyprmcp/mcp-gateway)  that **sits in front of your MCP server** and handles the complexity.
 It also collects and aggregates all analytics and metrics data captured by the gateway.
 
-## ⭐️ Why Jetski?
-
-Building and deploying MCP servers is hard. Even after you've built a great MCP, you face critical challenges:
-
-**User onboarding is broken.** Most users never make it past the setup phase. They search for "how to use this MCP" and end up frustrated because they can't find clear instructions. Some even try to open the MCP URL in a browser, which doesn't work, and they immediately churn.
-
-**Authentication is painful.** Identifying users and providing them with personalized tools and responses requires implementing complex authentication logic in your MCP server. This takes valuable time away from building your core features.
-
-**You're flying blind.** Without visibility into usage patterns, you can't answer basic questions: Which prompts are triggering which tools? Where are errors happening? How are users actually interacting with your MCP? This makes debugging and optimization nearly impossible.
-
-HyprMCP solves all of these problems by acting as a proxy in front of your MCP server. You keep your existing server unchanged, and we handle authentication, generate user-friendly setup instructions, and provide comprehensive analytics and logging.
-
 ## 🗄️ Table Of Contents
 
 - [Features](https://github.com/hyprmcp/#-features)
@@ -70,12 +58,12 @@ HyprMCP solves all of these problems by acting as a proxy in front of your MCP s
 - [License](https://github.com/hyprmcp/jetski#-license)
 
 ## ✨ Features
-|                                                                                                                                                                                                                                                                  |                                                                                                              |
-|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------|
-| **Comprehensive Prompt Analytics** <br> See which prompts triggered which tools, from which clients, and what happened. Gain complete visibility into your MCP server usage patterns and understand how users interact with your tools in real-time.                             | ![Prompt Analytics](.readme/mcp-prompt-analytics.gif) |
-| **Auto-Generated Setup Instructions** <br> Help users connect to the client effortlessly. We automatically generate clear, step-by-step instructions for every supported MCP client, eliminating the #1 reason users churn during onboarding.              | ![Setup Instructions](.readme/mcp-instructions.gif) |
-| **Zero-Code Authentication** <br> Identify and manage users securely without writing a single line of code. Our proxy handles all authentication logic, allowing you to provide personalized tools and responses based on user identity. | ![Authentication](.readme/mcp-authentication.gif)    |
-| **Real-Time Debug Logs** <br> Instantly debug issues and understand server behavior in real-time. See detailed logs of every request, response, and error, making it easy to identify and fix problems quickly.                                                                          | ![Debug Logs](.readme/mcp-logs.png)       |
+|                                                                                                                                                                                                                                                                  |                                                                                            |
+|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
+| **Comprehensive Prompt Analytics** <br> See which prompts triggered which tools, from which clients, and what happened. Gain complete visibility into your MCP server usage patterns and understand how users interact with your tools in real-time.                             | <img src=".readme/mcp-prompt-analytics.gif" alt="Prompt Analytics" style="min-width: 75%"> |
+| **Auto-Generated Setup Instructions** <br> Help users connect to the client effortlessly. We automatically generate clear, step-by-step instructions for every supported MCP client, eliminating the #1 reason users churn during onboarding.              | <img src=".readme/mcp-instructions.gif" alt="Setup Instructions" style="min-width: 75%">   |
+| **Zero-Code Authentication** <br> Identify and manage users securely without writing a single line of code. Our proxy handles all authentication logic, allowing you to provide personalized tools and responses based on user identity. | <img src=".readme/mcp-authentication.gif" alt="Authentication" style="min-width: 75%">     |
+| **Real-Time Debug Logs** <br> Instantly debug issues and understand server behavior in real-time. See detailed logs of every request, response, and error, making it easy to identify and fix problems quickly.                                                                          | <img src=".readme/mcp-logs.png" alt="Debug Logs" style="min-width: 75%">                   |
 
 
 ## 🚀 Quick Start - Get Started in Minutes
@@ -190,7 +178,7 @@ Thanks to everyone that is supporting this project. We are thankful for every co
 
 ## 👾 Activity
 
-![HyprMCP Activity](https://repobeats.axiom.co/api/embed/c5aac6f5d22bd6b83a21ae51353dd7bcb43f9517.svg "HyprMCP activity image")
+![HyprMCP Activity](https://repobeats.axiom.co/api/embed/bb99848dce085afb2ed699790547856069d369cc.svg "HyprMCP activity image")
 
 ## 📘 License
 
