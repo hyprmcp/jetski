@@ -102,13 +102,13 @@ jobs:
       #          OIDC_URL: "-"
       #          OIDC_CLIENT_ID: "-"
 
-      - name: Generate SBOM for frontend project
-        uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
-        with:
-          file: pnpm-lock.yaml
-          output-file: dist/frontend.spdx.json
-          format: spdx-json
-          upload-release-assets: false
+      # - name: Generate SBOM for frontend project
+      #   uses: anchore/sbom-action@f8bdd1d8ac5e901a77a92f111440fdb1b593736b # v0.20.6
+      #   with:
+      #     file: pnpm-lock.yaml
+      #     output-file: dist/frontend.spdx.json
+      #     format: spdx-json
+      #     upload-release-assets: false
 
       - name: Login to GitHub Container Registry (tag only)
         if: ${{ startsWith(github.ref, 'refs/tags/') }}
