@@ -89,14 +89,6 @@ jobs:
           SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
           VERSION: ${{ github.ref_name }}
 
-      - name: Build application
-        run: go build -ldflags="$LDFLAGS" -o dist/jetski .
-        env:
-          CGO_ENABLED: "0"
-          LDFLAGS: >-
-            -X github.com/hyprmcp/jetski/internal/buildconfig.version=${{ github.ref_name }}
-            -X github.com/hyprmcp/jetski/internal/buildconfig.commit=${{ steps.hash.outputs.sha_short }}
-
       #      - name: Start Jetski and verify migrations
       #        shell: bash
       #        run: dist/jetski serve &
@@ -145,6 +137,9 @@ jobs:
         id: build-push
         with:
           platforms: ${{ startsWith(github.ref, 'refs/tags/') && 'linux/amd64,linux/arm64' || 'linux/amd64' }}
+          build-args: |
+            VERSION=${{ github.ref_name }}
+            COMMIT=${{ steps.hash.outputs.sha_short }}
           context: .
           file: Dockerfile
           push: ${{ startsWith(github.ref, 'refs/tags/') }}
