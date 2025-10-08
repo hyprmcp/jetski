@@ -229,7 +229,12 @@ import { BrnTooltipContentTemplate } from '@spartan-ng/brain/tooltip';
                   </button>
                 </hlm-menu-group>
                 <hlm-menu-separator />
-                <button hlmBtn hlmMenuItem class="w-full">
+                <button
+                  hlmBtn
+                  hlmMenuItem
+                  class="w-full"
+                  (click)="upgradeToPro()"
+                >
                   Upgrade to Pro
                 </button>
               </hlm-menu>
@@ -284,6 +289,10 @@ export class HeaderComponent {
         return 'Switch theme';
     }
   });
+
+  upgradeToPro() {
+    window.open('https://hyprmcp.com/waitlist/');
+  }
 
   toggleTheme() {
     this.themeService.toggleTheme();
