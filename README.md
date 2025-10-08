@@ -10,7 +10,7 @@
 <br>
 <div align="center">
   <a href="https://hyprmcp.com?utm_source=github">
-    <img src="./.readme/hyprmcp.png" alt="HyprMCP Logo" height="160">
+    <img src="./.readme/hyprmcp.webp" alt="HyprMCP Logo" height="160">
   </a>
 
 <h3 align="center">🚤 MCP Analytics and Authentication Platform 🔐</h3>
@@ -45,25 +45,26 @@ It also collects and aggregates all analytics and metrics data captured by the g
 
 ## 🗄️ Table Of Contents
 
-- [Features](https://github.com/hyprmcp/#-features)
-- [Quick Start](https://github.com/hyprmcp/#-quick-start)
+- [What is Jetski?](https://github.com/hyprmcp/jetski#-what-is-jetski)
+- [Features](https://github.com/hyprmcp/jetski#-features)
+- [Quick Start](https://github.com/hyprmcp/jetski#-quick-start---get-started-in-minutes)
 - [Demo Video](https://github.com/hyprmcp/jetski#-hyprmcp-demo-video)
-- [Supported Features](https://github.com/hyprmcp/jetski#-supported-features)
+- [HyprMCP Components](https://github.com/hyprmcp/jetski#-hyprmcp-components)
 - [Architecture Diagram](https://github.com/hyprmcp/jetski#architecture-diagram)
-- [Need help?](https://github.com/hyprmcp/jetski#-need-help-or-want-to-provide-feedback)
-- [Related projects](https://github.com/hyprmcp/jetski#-related-projects)
+- [Need Help?](https://github.com/hyprmcp/jetski#-need-help-or-want-to-provide-feedback)
+- [Used Projects](https://github.com/hyprmcp/jetski#-used-projects)
 - [How to Contribute](https://github.com/hyprmcp/jetski#-how-to-contribute-to-hyprmcp)
-- [Supported by](https://github.com/hyprmcp/jetski#-thanks-to-all-our-contributors)
+- [Contributors](https://github.com/hyprmcp/jetski#-thanks-to-all-our-contributors)
 - [Activity](https://github.com/hyprmcp/jetski#-activity)
 - [License](https://github.com/hyprmcp/jetski#-license)
 
 ## ✨ Features
-|                                                                                                                                                                                                                                                         |                                                                                                |
-|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------|
+|                                                                                                                                                                                                                                                         |                                                                                            |
+|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------|
 | **Comprehensive Prompt Analytics** <br> See which prompts triggered which tools, from which clients, and what happened.<br>Gain complete visibility into your MCP server usage patterns and understand how users interact with your tools in real-time. | <img src=".readme/mcp-prompt-analytics.webp" alt="Prompt Analytics" style="width: 1000px"> |
 | **Auto-Generated Setup Instructions** <br> Help users connect to the client effortlessly.<br>We automatically generate clear, step-by-step instructions for every supported MCP client, eliminating the #1 reason users churn during onboarding.        | <img src=".readme/mcp-instructions.webp" alt="Setup Instructions" style="width: 1000px">   |
 | **Zero-Code Authentication** <br> Identify and manage users securely without writing a single line of code.<br>Our proxy handles all authentication logic, allowing you to provide personalized tools and responses based on user identity.             | <img src=".readme/mcp-authentication.webp" alt="Authentication" style="width: 1000px">     |
-| **Real-Time Debug Logs** <br> Instantly debug issues and understand server behavior in real-time.<br>See detailed logs of every request, response, and error, making it easy to identify and fix problems quickly.                                      | <img src=".readme/mcp-logs.png" alt="Debug Logs" style="width: 1000px">                    |
+| **Real-Time Debug Logs** <br> Instantly debug issues and understand server behavior in real-time.<br>See detailed logs of every request, response, and error, making it easy to identify and fix problems quickly.                                      | <img src=".readme/mcp-logs.webp" alt="Debug Logs" style="width: 1000px">                   |
 
 
 ## 🚀 Quick Start - Get Started in Minutes
@@ -149,11 +150,25 @@ If you encounter any problems, we will be happy to support you wherever we can o
 For bugs, issues or feature requests feel free to [open an issue](https://github.com/hyprmcp/jetski/issues/new/choose).
 We are happy to assist you with anything related to the project.
 
-## 📎 Related Projects
+## 📎 Used Projects
 
-- Model Context Protocol [`modelcontextprotocol/specification`](https://github.com/modelcontextprotocol/specification)
-- Claude Desktop [`anthropics/claude-desktop`](https://claude.ai/download)
-- MCP Servers Directory [`modelcontextprotocol/servers`](https://github.com/modelcontextprotocol/servers)
+HyprMCP is built on top of many amazing open-source projects:
+
+### Core Technologies
+- **[Go](https://github.com/golang/go)** - Primary backend language for the platform
+- **[Angular](https://github.com/angular/angular)** - Frontend framework for the dashboard UI
+- **[Kubernetes](https://github.com/kubernetes/kubernetes)** - Container orchestration platform
+- **[PostgreSQL](https://github.com/postgres/postgres)** - Primary database for storing analytics and metadata
+
+### MCP & Authentication
+- **[MCP Go SDK](https://github.com/modelcontextprotocol/go-sdk)** - Official Go SDK for Model Context Protocol
+- **[Dex](https://github.com/dexidp/dex)** - OpenID Connect (OIDC) identity provider for authentication
+
+### Kubernetes & Infrastructure
+- **[Metacontroller](https://github.com/metacontroller/metacontroller)** - Lightweight Kubernetes controller framework
+
+### UI & Design System
+- **[Spartan](https://github.com/spartan-ng/spartan)** - Collection of UI components for Angular
 
 ## 🤝 How to Contribute to HyprMCP
 
