@@ -93,7 +93,7 @@ HyprMCP uses [mise](https://mise.jdx.dev/) to configure your development environ
   mise trust
   mise install
   pnpm i
-  touch .dex.secret.env
+  cp .dex.secret.env.example .dex.secret.env
   docker compose up -d
   ```
 
