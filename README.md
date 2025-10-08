@@ -92,26 +92,30 @@ HyprMCP uses [mise](https://mise.jdx.dev/) to configure your development environ
   ```bash
   mise trust
   mise install
+  pnpm i
   touch .dex.secret.env
   docker compose up -d
   ```
 
 **Set host file entry:**
-
-Add the following entry to your `/etc/hosts` file:
-  ```
-  127.0.0.1    host.minikube.internal
+  ```bash
+  echo -e "\n127.0.0.1    host.minikube.internal\n" | sudo tee -a /etc/hosts
   ```
 
 **Start the platform:**
+
+In Terminal 1, start the backend:
   ```bash
-  # Terminal 1: Start backend
   mise run serve
+  ```
 
-  # Terminal 2: Start frontend
+In Terminal 2, start the frontend:
+  ```bash
   pnpm run start
+  ```
 
-  # Generate demo data
+Generate demo data:
+  ```bash
   mise run generate
   ```
 
