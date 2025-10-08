@@ -19,8 +19,9 @@
     <a href="https://app.hyprmcp.com/?utm_source=github"><strong>Get started with HyprMCP Cloud »</strong></a>
     <br> <br>
     <a href="https://hyprmcp.com/?utm_source=github"><strong>Explore our website »</strong></a>
-    <br>
-    <br>
+    <br> <br>
+    <a href="https://hyprmcp.com/docs/"><strong>Read the docs »</strong></a>
+    <br> <br>
     <a href="https://github.com/hyprmcp" target="_blank">GitHub</a>
     .
     <a href="https://www.linkedin.com/company/glasskube/" target="_blank">LinkedIn</a>
@@ -42,6 +43,11 @@ It solves the three biggest problems teams face when developing MCP servers with
 
 Our platform manages and deploys instances of our [`mcp-gateway`](https://github.com/hyprmcp/mcp-gateway)  that **sits in front of your MCP server** and handles the complexity.
 It also collects and aggregates all analytics and metrics data captured by the gateway.
+
+> [!IMPORTANT]
+> Note that Jetski in under active development and is still in its infancy.
+> The APIs and command-line interface may change in a backwards incompatible manner.
+
 
 ## 🗄️ Table Of Contents
 
@@ -69,27 +75,53 @@ It also collects and aggregates all analytics and metrics data captured by the g
 
 ## 🚀 Quick Start - Get Started in Minutes
 
-Getting started with HyprMCP is incredibly simple:
+> [!TIP]
+> Get started with our fully managed HyprMCP Cloud at [https://app.hyprmcp.com](https://app.hyprmcp.com/).
 
-### 1. Sign Up
+HyprMCP uses [mise](https://mise.jdx.dev/) to configure your development environment and execute development tasks.
 
-Create your free account at [app.hyprmcp.com](https://app.hyprmcp.com/?utm_source=github) and create your organization.
+### 1. Jetski Analytics Platform
 
+**Install dependencies:**
+  ```bash
+  mise trust
+  mise install
+  docker compose up -d
+  ```
 
-### 2. Connect Your MCP Server
+**Set host file entry:**
 
-Add your existing MCP server URL to HyprMCP - no code changes required:
+Add the following entry to your `/etc/hosts` file:
+  ```
+  127.0.0.1    host.minikube.internal
+  ```
 
-### 3. Start Using Your Enhanced MCP
+**Start the platform:**
+  ```bash
+  # Terminal 1: Start backend
+  mise run serve
 
-That's it! Your MCP server now has:
-- ✅ Auto-generated setup instructions for all clients
-- ✅ Comprehensive analytics and logging
-- ✅ MCP Server Authentication
+  # Terminal 2: Start frontend
+  pnpm run start
 
-Visit your dashboard at [`https://app.hyprmcp.com`](https://app.hyprmcp.com) to see your MCP in action.
+  # Generate demo data
+  mise run generate
+  ```
 
-For detailed setup instructions, check out our [documentation](https://hyprmcp.com/docs/getting-started/).
+Access the frontend at `http://localhost:4200` and log in with: `admin@example.com` / `password`
+
+### 2. Jetski MCP Gateway Orchestration (Optional)
+
+For Kubernetes orchestration, we recommend [Minikube](https://minikube.sigs.k8s.io/docs/) for local testing.
+
+**Setup Kubernetes:**
+  ```bash
+  # Start Minikube
+  mise run minikube-start
+
+  # Deploy metacontroller (⚠️ operates against current kubectl context)
+  mise run serve -- --install-controller
+  ```
 
 ## 🎬 HyprMCP Demo Video
 
