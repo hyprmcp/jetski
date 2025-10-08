@@ -262,23 +262,21 @@ export class ProjectSettingsGeneralComponent {
   }
 
   protected deleteProject(): void {
-    const projectId = this.contextService.selectedProject()?.id;
-    if (projectId) {
+    const project = this.contextService.selectedProject();
+    const org = this.contextService.selectedOrg();
+    if (project && org) {
       this.projectService
-        .deleteProject(projectId)
+        .deleteProject(project.id)
         .pipe(
           tap({
-            next: () => toast.success('Project deleted successfully'),
+            next: () => {
+              this.contextService.registerDeletedProject(project);
+              toast.success(`Project ${project.name} deleted successfully`);
+            },
             error: () =>
-              toast.error('An error occurred while deleting project'),
+              toast.error(`An error occurred while deleting ${project.name}`),
           }),
-          switchMap(() =>
-            this.router.navigate([
-              '/',
-              this.contextService.selectedOrg()?.name,
-              'settings',
-            ]),
-          ),
+          switchMap(() => this.router.navigate(['/', org.name, 'settings'])),
         )
         .subscribe({
           next: (done) => console.log('redirect done', { done }),
