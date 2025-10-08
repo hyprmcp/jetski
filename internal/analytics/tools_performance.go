@@ -69,6 +69,9 @@ func calculateToolsPerformance(logs []types.MCPServerLog) types.ToolsPerformance
 	}
 }
 
+// needsAttention checks if a tool should be listed under the "operations requiring attention" view.
+//
+// Don't forget to update the UI code when changing this function.
 func needsAttention(tool types.PerformingTool) bool {
 	return tool.ErrorRate > 0.05 || tool.AvgLatency > time.Second.Milliseconds()
 }
