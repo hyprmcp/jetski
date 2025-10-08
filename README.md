@@ -2,7 +2,7 @@
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Docs](https://img.shields.io/badge/docs-hyprmcp.com%2Fdocs-blue)](https://hyprmcp.com/docs/getting-started/?utm_source=github)
 [![PRs](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-[![Discord](https://dcbadge.vercel.app/api/server/hyprmcp?style=flat)](https://discord.gg/CgZ775fcsy)
+[![Discord](https://img.shields.io/badge/HyprMCP-Discord-%235865F2.svg)](https://discord.gg/CgZ775fcsy)
 [![Downloads](https://img.shields.io/github/downloads/hyprmcp/jetski/total)](https://github.com/hyprmcp/jetski/releases)
 [![Go Reference](https://pkg.go.dev/badge/github.com/hyprmcp/jetski)](https://pkg.go.dev/github.com/hyprmcp/jetski)
 [![Go Report Card](https://goreportcard.com/badge/github.com/hyprmcp/jetski)](https://goreportcard.com/report/github.com/hyprmcp/jetski)
