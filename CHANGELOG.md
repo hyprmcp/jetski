@@ -1,5 +1,41 @@
 # Changelog
 
+## [0.4.2](https://github.com/hyprmcp/jetski/compare/0.4.1...0.4.2) (2025-10-09)
+
+
+### Bug Fixes
+
+* **deps:** update module sigs.k8s.io/controller-runtime to v0.22.2 ([#281](https://github.com/hyprmcp/jetski/issues/281)) ([a1b2766](https://github.com/hyprmcp/jetski/commit/a1b276683022219320de86a3cf0471900e0981d8))
+* re-fetch context after project deletion ([#288](https://github.com/hyprmcp/jetski/issues/288)) ([2d1596b](https://github.com/hyprmcp/jetski/commit/2d1596b4c8d1161cf51bff2d82629e86aecf62cc))
+
+
+### Other
+
+* add highlighting/explaining why tools are listed as "requiring attention" ([#287](https://github.com/hyprmcp/jetski/issues/287)) ([fa00d6c](https://github.com/hyprmcp/jetski/commit/fa00d6cc486b430645c3590edbf934dc88ef1324))
+* add missing event handler for upgrade button ([#293](https://github.com/hyprmcp/jetski/issues/293)) ([4cee0ec](https://github.com/hyprmcp/jetski/commit/4cee0ec5c41d69ee46ac9a3696a9ead6133bc0dd))
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.524 ([#274](https://github.com/hyprmcp/jetski/issues/274)) ([cf419ff](https://github.com/hyprmcp/jetski/commit/cf419ff0d2050aad54a9c48fdf63c83e63ec3f15))
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.525 ([#289](https://github.com/hyprmcp/jetski/issues/289)) ([dfe0a81](https://github.com/hyprmcp/jetski/commit/dfe0a8185f5a99f99dbda104b597afdd4ed20c2b))
+* **deps:** update angular monorepo to v20.3.4 ([#296](https://github.com/hyprmcp/jetski/issues/296)) ([0d7e04f](https://github.com/hyprmcp/jetski/commit/0d7e04f4adee8a581e36c66d4d41bb9aade84299))
+* **deps:** update angular-cli monorepo to v20.3.5 ([#291](https://github.com/hyprmcp/jetski/issues/291)) ([7797488](https://github.com/hyprmcp/jetski/commit/7797488df5668af8863d6ed3646c561c13b9e9a6))
+* **deps:** update axllent/mailpit docker tag to v1.27.10 ([#300](https://github.com/hyprmcp/jetski/issues/300)) ([e857326](https://github.com/hyprmcp/jetski/commit/e85732686d76dcf344031741c3db8ddc7eb23395))
+* **deps:** update dependency @angular/cdk to v20.2.8 ([#294](https://github.com/hyprmcp/jetski/issues/294)) ([d30d579](https://github.com/hyprmcp/jetski/commit/d30d579a6ff909c63f03de3e24d4d91f03038f21))
+* **deps:** update dependency @sentry/angular to v10.17.0 ([#276](https://github.com/hyprmcp/jetski/issues/276)) ([1c89608](https://github.com/hyprmcp/jetski/commit/1c896080aa1c75047b2b237223f693c43deccef0))
+* **deps:** update dependency go to v1.25.2 ([#290](https://github.com/hyprmcp/jetski/issues/290)) ([51bd579](https://github.com/hyprmcp/jetski/commit/51bd579eb9ca05fbcca1026d7d8642c9aab81892))
+* **deps:** update dependency posthog-js to v1.272.0 ([#277](https://github.com/hyprmcp/jetski/issues/277)) ([285d257](https://github.com/hyprmcp/jetski/commit/285d257f00b21e920394c1559662ef14b3e19c59))
+* **deps:** update dependency typescript-eslint to v8.46.0 ([#282](https://github.com/hyprmcp/jetski/issues/282)) ([f1b057d](https://github.com/hyprmcp/jetski/commit/f1b057d3589e11b1f760415b96b8c40883e5b444))
+* **deps:** update pnpm/action-setup action to v4.2.0 ([#292](https://github.com/hyprmcp/jetski/issues/292)) ([b9cd1ec](https://github.com/hyprmcp/jetski/commit/b9cd1ecec6a4ed7ac5e254e9c602d3b33db53122))
+* update mail template signature ([#285](https://github.com/hyprmcp/jetski/issues/285)) ([5cd415c](https://github.com/hyprmcp/jetski/commit/5cd415ccf8d62a774cbca92fab2bf71176f66315))
+
+
+### Docs
+
+* add example dex secret env ([6119d82](https://github.com/hyprmcp/jetski/commit/6119d82d3f127c12e789cd3483d009d32054f65b))
+* add getting started section ([#298](https://github.com/hyprmcp/jetski/issues/298)) ([56a03f5](https://github.com/hyprmcp/jetski/commit/56a03f55ed9eeed16dc928225a90a2e75f1d76bf))
+* add missing install step ([a8ca2f9](https://github.com/hyprmcp/jetski/commit/a8ca2f95580a833fe6a2c1a6643cc891e748cebe))
+* add missing pnpm i step ([557b30f](https://github.com/hyprmcp/jetski/commit/557b30f0bdc04ba3495248f20206ed5f29cdf8ee))
+* add README.md ([#286](https://github.com/hyprmcp/jetski/issues/286)) ([8e06f29](https://github.com/hyprmcp/jetski/commit/8e06f298279d60ca33c6219508e42a84a7a6bb8c))
+* update discord badge ([#297](https://github.com/hyprmcp/jetski/issues/297)) ([049bcf8](https://github.com/hyprmcp/jetski/commit/049bcf8bf6592c12af1cb3b1944a41116a33d814))
+
 ## [0.4.1](https://github.com/hyprmcp/jetski/compare/0.4.0...0.4.1) (2025-10-06)
 
 
