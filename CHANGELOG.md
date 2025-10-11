@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.4.3](https://github.com/hyprmcp/jetski/compare/0.4.2...0.4.3) (2025-10-11)
+
+
+### Bug Fixes
+
+* **deps:** update module sigs.k8s.io/controller-runtime to v0.22.3 ([#305](https://github.com/hyprmcp/jetski/issues/305)) ([76eca8a](https://github.com/hyprmcp/jetski/commit/76eca8a636f67edf7761db5622a440f51844bf8e))
+
+
+### Other
+
+* **deps:** update [@spartan-ng](https://github.com/spartan-ng) packages to v0.0.1-alpha.526 ([#302](https://github.com/hyprmcp/jetski/issues/302)) ([c0c7a52](https://github.com/hyprmcp/jetski/commit/c0c7a523f6a5a401617647c0b3b1b5e3ea50e7a7))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.20.0 ([#301](https://github.com/hyprmcp/jetski/issues/301)) ([a04e06a](https://github.com/hyprmcp/jetski/commit/a04e06afbed55b648fd92414f4e1c808527d4a6c))
+
 ## [0.4.2](https://github.com/hyprmcp/jetski/compare/0.4.1...0.4.2) (2025-10-09)
 
 
