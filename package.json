@@ -64,7 +64,7 @@
     "@eslint/js": "^9.31.0",
     "@spartan-ng/cli": "^0.0.1-alpha.486",
     "@types/jasmine": "~5.1.0",
-    "angular-eslint": "20.3.0",
+    "angular-eslint": "20.4.0",
     "eslint-config-prettier": "^10.1.5",
     "eslint-plugin-prettier": "^5.5.1",
     "jasmine-core": "~5.12.0",
