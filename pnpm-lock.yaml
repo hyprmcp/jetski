@@ -107,7 +107,7 @@ importers:
         version: 0.0.1-alpha.526(7ec0b0d5e03759449d35ba19e3448952)
       '@types/jasmine':
         specifier: ~5.1.0
-        version: 5.1.9
+        version: 5.1.10
       angular-eslint:
         specifier: 20.4.0
         version: 20.4.0(chokidar@4.0.3)(eslint@9.31.0(jiti@2.6.1))(typescript-eslint@8.46.1(eslint@9.31.0(jiti@2.6.1))(typescript@5.8.3))(typescript@5.8.3)
@@ -2693,8 +2693,8 @@ packages:
   '@types/istanbul-reports@3.0.4':
     resolution: {integrity: sha512-pk2B1NWalF9toCRu6gjBzR69syFjP4Od8WRAX+0mmf9lAjCRicLOWc+ZrxZHx/0XRjotgkF9t6iaMJ+aXcOdZQ==}
 
-  '@types/jasmine@5.1.9':
-    resolution: {integrity: sha512-8t4HtkW4wxiPVedMpeZ63n3vlWxEIquo/zc1Tm8ElU+SqVV7+D3Na2PWaJUp179AzTragMWVwkMv7mvty0NfyQ==}
+  '@types/jasmine@5.1.10':
+    resolution: {integrity: sha512-ctILpOSFD58PTyGwr400GadefIHPqdWQ8VlZI9D65USOWR/aIw8dkDAw17KPCu/Wn+e+r9BWpPtmuB5T/pP8ng==}
 
   '@types/json-schema@7.0.15':
     resolution: {integrity: sha512-5+fP8P8MFNC+AyZCDxrB2pkZFPGzqQWUzpSeuuVLvm8VMcorNYavBqoFcxK8bQz4Qsbn4oUEEem4wDLfcysGHA==}
@@ -10037,7 +10037,7 @@ snapshots:
     dependencies:
       '@types/istanbul-lib-report': 3.0.3
 
-  '@types/jasmine@5.1.9': {}
+  '@types/jasmine@5.1.10': {}
 
   '@types/json-schema@7.0.15': {}
 
