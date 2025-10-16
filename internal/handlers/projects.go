@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -29,6 +30,7 @@ func ProjectsRouter(k8sClient client.Client) func(r chi.Router) {
 		r.Route("/{projectId}", func(r chi.Router) {
 			r.Get("/", getProjectSummary)
 			r.Delete("/", deleteProjectHandler(k8sClient))
+			r.Get("/status", getProjectStatusHandler())
 			r.Get("/logs", getLogsForProject)
 			r.Get("/prompts", getPromptsForProject)
 			r.Get("/deployment-revisions", getDeploymentRevisionsForProject)
@@ -360,6 +362,52 @@ func deleteProjectHandler(k8sClient client.Client) http.HandlerFunc {
 		}
 
 		w.WriteHeader(http.StatusNoContent)
+	}
+}
+
+func getProjectStatusHandler() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ctx := r.Context()
+		log := internalctx.GetLogger(ctx)
+		projectID := getProjectIDIfAllowed(w, r, pathParam)
+		if projectID == uuid.Nil {
+			return
+		}
+
+		if project, err := db.GetProjectSummary(ctx, projectID); err != nil {
+			if errors.Is(err, apierrors.ErrNotFound) {
+				Handle4XXErrorWithStatusText(w, http.StatusNotFound, "project not found")
+			} else {
+				HandleInternalServerError(w, r, err, "failed to get project summary")
+			}
+		} else {
+			reqCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+			defer cancel()
+			log.Info("check mcp url", zap.String("url", project.GetMCPURL()))
+			if req, err := http.NewRequestWithContext(reqCtx, http.MethodGet, project.GetMCPURL(), nil); err != nil {
+				HandleInternalServerError(w, r, err, "failed to create request")
+			} else {
+				var result struct {
+					OK      bool   `json:"ok"`
+					Message string `json:"message"`
+				}
+
+				req.Header.Set("Accept", "text/html")
+
+				if resp, err := http.DefaultClient.Do(req); err != nil {
+					result.Message = fmt.Sprintf("HTTP error: %v", err)
+				} else {
+					_ = resp.Body.Close()
+					if resp.StatusCode == http.StatusUnauthorized || resp.StatusCode == http.StatusNotAcceptable {
+						result.OK = true
+					} else {
+						result.Message = fmt.Sprintf("unexpected HTTP status: %v", resp.Status)
+					}
+				}
+
+				RespondJSON(w, result)
+			}
+		}
 	}
 }
 
