@@ -34,9 +34,9 @@ var (
 	gatewayNamespace              string
 	gatewayIngressClass           string
 	gatewayIngressAnnotations     map[string]string
-	gatewayHostFormat             string
-	gatewayPathFormat             string
-	gatewayHostScheme             string
+	gatewayHostFormat             string = "%v.hyprmcp.cloud"
+	gatewayPathFormat             string = "/%v/mcp"
+	gatewayHostScheme             string = "https"
 )
 
 func Initialize() {
@@ -87,9 +87,9 @@ func Initialize() {
 		parseYAMLMap,
 		map[string]string{},
 	)
-	gatewayHostFormat = envutil.GetEnvOrDefault("GATEWAY_HOST_FORMAT", "%v.jetski.cloud")
-	gatewayPathFormat = envutil.GetEnvOrDefault("GATEWAY_PATH_FORMAT", "/%v/mcp")
-	gatewayHostScheme = envutil.GetEnvOrDefault("GATEWAY_HOST_SCHEME", "https")
+	gatewayHostFormat = envutil.GetEnvOrDefault("GATEWAY_HOST_FORMAT", gatewayHostFormat)
+	gatewayPathFormat = envutil.GetEnvOrDefault("GATEWAY_PATH_FORMAT", gatewayPathFormat)
+	gatewayHostScheme = envutil.GetEnvOrDefault("GATEWAY_HOST_SCHEME", gatewayHostScheme)
 }
 
 func Host() string {

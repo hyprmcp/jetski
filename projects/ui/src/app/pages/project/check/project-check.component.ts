@@ -1,33 +1,24 @@
-import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import {
-  Component,
-  computed,
-  inject,
-  OnDestroy,
-  OnInit,
-  signal,
-} from '@angular/core';
-import { toObservable } from '@angular/core/rxjs-interop';
+import { HttpClient } from '@angular/common/http';
+import { Component, computed, inject, signal } from '@angular/core';
+import { takeUntilDestroyed, toObservable } from '@angular/core/rxjs-interop';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideCircleCheck, lucideExternalLink } from '@ng-icons/lucide';
 import { HlmCardImports } from '@spartan-ng/helm/card';
 import { HlmIcon } from '@spartan-ng/helm/icon';
 import { HlmSpinnerImports } from '@spartan-ng/helm/spinner';
 import {
-  catchError,
   delay,
+  distinctUntilChanged,
   filter,
   map,
   of,
   retry,
-  Subject,
   switchMap,
   take,
-  takeUntil,
   throwError,
 } from 'rxjs';
-import { ContextService } from '../../../services/context.service';
 import { getProjectUrl } from '../../../../api/project';
+import { ContextService } from '../../../services/context.service';
 
 @Component({
   imports: [HlmCardImports, HlmSpinnerImports, NgIcon, HlmIcon],
@@ -90,7 +81,7 @@ import { getProjectUrl } from '../../../../api/project';
     </div>
   `,
 })
-export class ProjectCheckComponent implements OnInit, OnDestroy {
+export class ProjectCheckComponent {
   private readonly contextService = inject(ContextService);
   private readonly httpClient = inject(HttpClient);
   private readonly organization = this.contextService.selectedOrg;
@@ -103,64 +94,34 @@ export class ProjectCheckComponent implements OnInit, OnDestroy {
     }
     return undefined;
   });
-  private readonly projectUrl$ = toObservable(this.projectUrl);
-  private readonly destroyed = new Subject<void>();
   protected readonly success = signal(false);
   protected readonly errorMessage = signal<string | undefined>(undefined);
 
-  ngOnInit(): void {
-    this.projectUrl$
+  constructor() {
+    toObservable(this.project)
       .pipe(
-        filter((url) => url !== undefined),
-        // wait for 10 seconds to allow the ingress config to propagate
-        // Hopefully, this makes on-demand TLS work as expected
-        delay(10_000),
-        switchMap((url) =>
+        map((project) => project?.id),
+        filter((id) => id !== undefined),
+        distinctUntilChanged(),
+        delay(5_000),
+        switchMap((id) =>
           this.httpClient
-            .get(url, {
-              headers: { accept: 'text/html' },
-              observe: 'response',
-              responseType: 'text',
-            })
+            .get<{ ok: boolean }>(`/api/v1/projects/${id}/status`)
             .pipe(
-              map((resp) => resp.status),
-              catchError((e) =>
-                e instanceof HttpErrorResponse
-                  ? of(e.status)
-                  : throwError(() => e),
+              switchMap((result) =>
+                result.ok ? of(true) : throwError(() => 'check failed'),
               ),
-              switchMap((status) => {
-                // We only care about 401 and 406 status! Here's why:
-                // Status 0: Angular network failure --> Not OK
-                // Status 200: Caddy Ingress default response --> Not OK (this should not happen because on-demand TLS would break before this)
-                // Status 401: Gateway reached, authentication is enabled --> OK
-                // Status 404: Gateway reached but the project is not yet in the gateway config --> Not OK
-                // Status 406: Gateway reached, "unacceptable" means that MCP servers don't typically serve text/html --> OK
-                // Any other status: Unexpected --> Not OK
-                if (status === 401 || status === 406) {
-                  return of(true);
-                } else {
-                  return throwError(
-                    () => new Error('unexpected gateway status'),
-                  );
-                }
-              }),
               // try every 5 seconds, stop after 5 minutes
-              retry({ count: 60, delay: 5000 }),
+              retry({ count: 60, delay: 5_000 }),
             ),
         ),
         take(1),
-        takeUntil(this.destroyed),
+        takeUntilDestroyed(),
       )
       .subscribe({
         next: () => this.success.set(true),
         error: (error) =>
           this.errorMessage.set(error?.message || 'An error occurred'),
       });
-  }
-
-  ngOnDestroy(): void {
-    this.destroyed.next();
-    this.destroyed.complete();
   }
 }

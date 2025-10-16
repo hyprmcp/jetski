@@ -1,22 +1,19 @@
 package handlers
 
 import (
-	"fmt"
 	"testing"
 )
 
 func TestValidateNameE(t *testing.T) {
 	expectNil := func(arg string) {
-		if err := validateName(arg); err != nil {
-			t.Log(fmt.Sprintf(`validateNameE("%v")`, arg), "expected nil but found error:", err)
-			t.FailNow()
+		if err := validateName(arg)(); err != nil {
+			t.Errorf(`validateNameE("%v") expected nil but found error: %v`, arg, err)
 		}
 	}
 
 	expectErr := func(arg string) {
-		if err := validateName(arg); err == nil {
-			t.Log(fmt.Sprintf(`validateNameE("%v")`, arg), "expected error but found nil")
-			t.FailNow()
+		if err := validateName(arg)(); err == nil {
+			t.Errorf(`validateNameE("%v") expected error but found nil`, arg)
 		}
 	}
 
@@ -34,16 +31,14 @@ func TestValidateNameE(t *testing.T) {
 
 func TestValidateDomainE(t *testing.T) {
 	expectNil := func(arg string) {
-		if err := validateDomainName(arg); err != nil {
-			t.Log(fmt.Sprintf(`validateDomainE("%v")`, arg), "expected nil but found error:", err)
-			t.FailNow()
+		if err := validateDomainName(arg)(); err != nil {
+			t.Errorf(`validateDomainE("%v") expected nil but found error: %v`, arg, err)
 		}
 	}
 
 	expectErr := func(arg string) {
-		if err := validateDomainName(arg); err == nil {
-			t.Log(fmt.Sprintf(`validateDomainE("%v")`, arg), "expected error but found nil")
-			t.FailNow()
+		if err := validateDomainName(arg)(); err == nil {
+			t.Errorf(`validateDomainE("%v") expected error but found nil`, arg)
 		}
 	}
 
