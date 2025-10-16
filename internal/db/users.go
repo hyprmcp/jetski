@@ -3,6 +3,7 @@ package db
 import (
 	"context"
 	"errors"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/hyprmcp/jetski/internal/apierrors"
@@ -23,7 +24,7 @@ func CreateUser(ctx context.Context, email string) (*types.UserAccount, error) {
 		INSERT INTO UserAccount (email)
 		VALUES (@email)
 		RETURNING id, created_at, email
-	`, pgx.NamedArgs{"email": email})
+	`, pgx.NamedArgs{"email": strings.ToLower(email)})
 	if err != nil {
 		return nil, err
 	}
@@ -68,7 +69,7 @@ func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, erro
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
 		SELECT `+userOutExpr+` FROM UserAccount u WHERE u.email = @email
-	`, pgx.NamedArgs{"email": email})
+	`, pgx.NamedArgs{"email": strings.ToLower(email)})
 	if err != nil {
 		return nil, err
 	}
@@ -81,6 +82,7 @@ func GetUserByEmail(ctx context.Context, email string) (*types.UserAccount, erro
 	}
 	return user, nil
 }
+
 func GetUserByEmailOrCreate(ctx context.Context, email string) (*types.UserAccount, error) {
 	db := internalctx.GetDb(ctx)
 	rows, err := db.Query(ctx, `
@@ -93,7 +95,7 @@ func GetUserByEmailOrCreate(ctx context.Context, email string) (*types.UserAccou
 		SELECT `+userOutExpr+` FROM UserAccount u WHERE u.email = @email
 		UNION
 		SELECT `+userOutExpr+` FROM inserted u
-	`, pgx.NamedArgs{"email": email})
+	`, pgx.NamedArgs{"email": strings.ToLower(email)})
 	if err != nil {
 		return nil, err
 	}
