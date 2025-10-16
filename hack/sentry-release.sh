@@ -1,5 +1,7 @@
 #! /bin/env sh
 
+set -e
+
 if [ -z "$SENTRY_AUTH_TOKEN" ]; then
   echo "SENTRY_AUTH_TOKEN is not set"
   exit 1
