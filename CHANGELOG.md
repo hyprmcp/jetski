@@ -11,6 +11,20 @@
 ### Other
 
 * always convert email address to lowercase ([#327](https://github.com/hyprmcp/jetski/issues/327)) ([c66b03d](https://github.com/hyprmcp/jetski/commit/c66b03d441c84c986c039da531f42376e876e2ef))
+* **main:** release 0.4.3 ([#328](https://github.com/hyprmcp/jetski/issues/328)) ([b7f417f](https://github.com/hyprmcp/jetski/commit/b7f417fa813e9d35895fdee36a640f72090511ae))
+* move mcp endpoint check to backend to prevent browser caching tls error ([#325](https://github.com/hyprmcp/jetski/issues/325)) ([ad5c8a6](https://github.com/hyprmcp/jetski/commit/ad5c8a68f68e5ec5a0ee7c7a457a6d57549c5510))
+
+## [0.4.3](https://github.com/hyprmcp/jetski/compare/0.4.2...0.4.3) (2025-10-16)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/getsentry/sentry-go/otel to v0.36.0 ([#318](https://github.com/hyprmcp/jetski/issues/318)) ([5fe709c](https://github.com/hyprmcp/jetski/commit/5fe709c344e9eb99b1abc3235c884cca363e4579))
+
+
+### Other
+
+* always convert email address to lowercase ([#327](https://github.com/hyprmcp/jetski/issues/327)) ([c66b03d](https://github.com/hyprmcp/jetski/commit/c66b03d441c84c986c039da531f42376e876e2ef))
 * move mcp endpoint check to backend to prevent browser caching tls error ([#325](https://github.com/hyprmcp/jetski/issues/325)) ([ad5c8a6](https://github.com/hyprmcp/jetski/commit/ad5c8a68f68e5ec5a0ee7c7a457a6d57549c5510))
 
 ## [0.4.2](https://github.com/hyprmcp/jetski/compare/0.4.1...0.4.2) (2025-10-16)
