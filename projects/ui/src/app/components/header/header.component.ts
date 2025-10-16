@@ -220,7 +220,7 @@ import { BrnTooltipContentTemplate } from '@spartan-ng/brain/tooltip';
               <hlm-menu>
                 <hlm-menu-label>{{ userData['name'] }}</hlm-menu-label>
                 <p class="text-sm text-muted-foreground px-2 py-1">
-                  {{ userData['email'] }}
+                  {{ userEmail() }}
                 </p>
                 <hlm-menu-separator />
                 <hlm-menu-group>
@@ -250,6 +250,10 @@ export class HeaderComponent {
   private readonly oauthService = inject(OAuthService);
   protected readonly contextService = inject(ContextService);
   protected readonly userData = this.oauthService.getIdentityClaims();
+  protected readonly userEmail = computed(() => {
+    const email = this.userData['email'] as unknown;
+    return typeof email === 'string' ? email.toLowerCase() : email;
+  });
 
   protected readonly projectDropdownData = computed(() => {
     const projects = this.contextService.projects();
