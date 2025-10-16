@@ -34,7 +34,7 @@ importers:
         version: 1.20.0
       '@ng-icons/core':
         specifier: ^32.0.0
-        version: 32.1.0(@angular/common@20.3.5(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2)
+        version: 32.2.0(@angular/common@20.3.5(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2)
       '@ng-icons/lucide':
         specifier: ^32.0.0
         version: 32.1.0
@@ -1988,8 +1988,8 @@ packages:
   '@napi-rs/wasm-runtime@1.0.7':
     resolution: {integrity: sha512-SeDnOO0Tk7Okiq6DbXmmBODgOAb9dp9gjlphokTUxmt8U3liIP1ZsozBahH69j/RJv+Rfs6IwUKHTgQYJ/HBAw==}
 
-  '@ng-icons/core@32.1.0':
-    resolution: {integrity: sha512-QMZSJIZYFg6THQKL9cQDEf7IbBcALcM09wCBmlIf0slmozRWcNJR25T9huiXy9/15OH1APegaRW+606e9bsOIg==}
+  '@ng-icons/core@32.2.0':
+    resolution: {integrity: sha512-42S9QFH+FaigjXQp0QtWLHyJz8G8EaqJqcrK3qfZH4OyH86o32s3pkkf+lWnEtp2tR+07qNPSLYKCIgDE64Tug==}
     peerDependencies:
       '@angular/common': '>=20.0.0'
       '@angular/core': '>=20.0.0'
@@ -9145,7 +9145,7 @@ snapshots:
       '@tybys/wasm-util': 0.10.1
     optional: true
 
-  '@ng-icons/core@32.1.0(@angular/common@20.3.5(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2)':
+  '@ng-icons/core@32.2.0(@angular/common@20.3.5(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2)':
     dependencies:
       '@angular/common': 20.3.5(@angular/core@20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2))(rxjs@7.8.2)
       '@angular/core': 20.3.5(@angular/compiler@20.3.5)(rxjs@7.8.2)
