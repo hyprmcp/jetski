@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.4.4](https://github.com/hyprmcp/jetski/compare/0.4.3...0.4.4) (2025-10-18)
+
+
+### Bug Fixes
+
+* **deps:** update aws-sdk-go-v2 monorepo ([#336](https://github.com/hyprmcp/jetski/issues/336)) ([fbb56f0](https://github.com/hyprmcp/jetski/commit/fbb56f08496106c6305e51a3c812514b817029d3))
+
+
+### Other
+
+* **deps:** update angular monorepo to v20.3.6 ([#331](https://github.com/hyprmcp/jetski/issues/331)) ([8617a52](https://github.com/hyprmcp/jetski/commit/8617a5259ab0303199d781bc3985c57c53463023))
+* **deps:** update dependency @eslint/js to v9.38.0 ([#338](https://github.com/hyprmcp/jetski/issues/338)) ([77336ca](https://github.com/hyprmcp/jetski/commit/77336cafa825139dbf132d68ba8eccd71d210c69))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.20.1 ([#332](https://github.com/hyprmcp/jetski/issues/332)) ([30c8dc2](https://github.com/hyprmcp/jetski/commit/30c8dc284652c4fce4d76ac8deb916567ba65471))
+* **deps:** update dependency @types/jasmine to v5.1.12 ([#339](https://github.com/hyprmcp/jetski/issues/339)) ([24c01bd](https://github.com/hyprmcp/jetski/commit/24c01bd1cadf51d79ba910af4f3fe90ea7020604))
+* **deps:** update sigstore/cosign-installer action to v3.10.1 ([#335](https://github.com/hyprmcp/jetski/issues/335)) ([3cb4d21](https://github.com/hyprmcp/jetski/commit/3cb4d21b60914aa834204aa7fc0ea3ad6a231407))
+
 ## [0.4.3](https://github.com/hyprmcp/jetski/compare/0.4.2...0.4.3) (2025-10-16)
 
 
