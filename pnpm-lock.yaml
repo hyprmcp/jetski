@@ -31,7 +31,7 @@ importers:
         version: 20.3.9(@angular/common@20.3.9(@angular/core@20.3.9(@angular/compiler@20.3.9)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.9(@angular/compiler@20.3.9)(rxjs@7.8.2))(@angular/platform-browser@20.3.9(@angular/common@20.3.9(@angular/core@20.3.9(@angular/compiler@20.3.9)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.9(@angular/compiler@20.3.9)(rxjs@7.8.2)))(rxjs@7.8.2)
       '@modelcontextprotocol/sdk':
         specifier: ^1.18.0
-        version: 1.20.2
+        version: 1.22.0
       '@ng-icons/core':
         specifier: ^32.0.0
         version: 32.2.0(@angular/common@20.3.9(@angular/core@20.3.9(@angular/compiler@20.3.9)(rxjs@7.8.2))(rxjs@7.8.2))(@angular/core@20.3.9(@angular/compiler@20.3.9)(rxjs@7.8.2))(rxjs@7.8.2)
@@ -1643,9 +1643,14 @@ packages:
     resolution: {integrity: sha512-JPwUKWSsbzx+DLFznf/QZ32Qa+ptfbUlHhRLrBQBAFu9iI1iYvizM4p+zhhRDceSsPutXp4z+R/HPVphlIiclg==}
     engines: {node: '>=18'}
 
-  '@modelcontextprotocol/sdk@1.20.2':
-    resolution: {integrity: sha512-6rqTdFt67AAAzln3NOKsXRmv5ZzPkgbfaebKBqUbts7vK1GZudqnrun5a8d3M/h955cam9RHZ6Jb4Y1XhnmFPg==}
+  '@modelcontextprotocol/sdk@1.22.0':
+    resolution: {integrity: sha512-VUpl106XVTCpDmTBil2ehgJZjhyLY2QZikzF8NvTXtLRF1CvO5iEE2UNZdVIUer35vFOwMKYeUGbjJtvPWan3g==}
     engines: {node: '>=18'}
+    peerDependencies:
+      '@cfworker/json-schema': ^4.1.1
+    peerDependenciesMeta:
+      '@cfworker/json-schema':
+        optional: true
 
   '@modern-js/node-bundle-require@2.68.2':
     resolution: {integrity: sha512-MWk/pYx7KOsp+A/rN0as2ji/Ba8x0m129aqZ3Lj6T6CCTWdz0E/IsamPdTmF9Jnb6whQoBKtWSaLTCQlmCoY0Q==}
@@ -4749,6 +4754,10 @@ packages:
     resolution: {integrity: sha512-wpxZs9NoxZaJESJGIZTyDEaYpl0FKSA+FB9aJiyemKhMwkxQg63h4T1KJgUGHpTqPDNRcmmYLugrRjJlBtWvRA==}
     hasBin: true
 
+  js-yaml@4.1.1:
+    resolution: {integrity: sha512-qQKT4zQxXl8lLwBtHMWwaTcGfFOZviOJet3Oy/xmGk2gZH677CJM9EvtfdSkgWcATZhj/55JZ0rmy3myCT5lsA==}
+    hasBin: true
+
   jsesc@3.1.0:
     resolution: {integrity: sha512-/sM3dO2FOzXjKQhJuo0Q173wf2KOo8t4I8vHy6lF9poUp7bKT0/NHE8fPX23PwfhnykfqnC2xRxOnVw5XuGIaA==}
     engines: {node: '>=6'}
@@ -6238,8 +6247,8 @@ packages:
   sax@1.4.1:
     resolution: {integrity: sha512-+aWOz7yVScEGoKNd4PA10LZ8sk0A/z5+nXQG5giUO5rprX9jgYsTdov9qCchZiPIZezbZH+jRut8nPodFAX4Jg==}
 
-  sax@1.4.2:
-    resolution: {integrity: sha512-FySGAa0RGcFiN6zfrO9JvK1r7TB59xuzCcTHOBXBNoKgDejlOQCR2KL/FGk3/iDlsqyYg1ELZpOmlg09B01Czw==}
+  sax@1.4.3:
+    resolution: {integrity: sha512-yqYn1JhPczigF94DMS+shiDMjDowYO6y9+wB/4WgO0Y19jWYk0lQ4tuG5KI7kj4FTp1wxPj5IFfcrz/s1c3jjQ==}
 
   scheduler@0.26.0:
     resolution: {integrity: sha512-NlHwttCI/l5gCPR3D1nNXtWABUmBwvZpEQiD4IXSbIDq8BzLIK/7Ir5gTFSGZDUu37K5cMNp0hFtzO38sC7gWA==}
@@ -8402,7 +8411,7 @@ snapshots:
       globals: 14.0.0
       ignore: 5.3.2
       import-fresh: 3.3.1
-      js-yaml: 4.1.0
+      js-yaml: 4.1.1
       minimatch: 3.1.2
       strip-json-comments: 3.1.1
     transitivePeerDependencies:
@@ -8714,9 +8723,10 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  '@modelcontextprotocol/sdk@1.20.2':
+  '@modelcontextprotocol/sdk@1.22.0':
     dependencies:
-      ajv: 6.12.6
+      ajv: 8.17.1
+      ajv-formats: 3.0.1(ajv@8.17.1)
       content-type: 1.0.5
       cors: 2.8.5
       cross-spawn: 7.0.6
@@ -12496,6 +12506,10 @@ snapshots:
     dependencies:
       argparse: 2.0.1
 
+  js-yaml@4.1.1:
+    dependencies:
+      argparse: 2.0.1
+
   jsesc@3.1.0: {}
 
   json-buffer@3.0.1: {}
@@ -14037,7 +14051,7 @@ snapshots:
   sax@1.4.1:
     optional: true
 
-  sax@1.4.2:
+  sax@1.4.3:
     optional: true
 
   scheduler@0.26.0: {}
@@ -14405,7 +14419,7 @@ snapshots:
       '@adobe/css-tools': 4.3.3
       debug: 4.4.3
       glob: 10.4.5
-      sax: 1.4.2
+      sax: 1.4.3
       source-map: 0.7.6
     transitivePeerDependencies:
       - supports-color
