@@ -23,11 +23,12 @@ func CreateMCPServerLog(ctx context.Context, data *types.MCPServerLog) error {
 		ctx,
 		`WITH inserted AS (
 			INSERT INTO MCPServerLog
-			(user_account_id, mcp_session_id, started_at, duration, deployment_revision_id, auth_token_digest, mcp_request,
+			(user_account_id, mcp_session_id, started_at, duration, deployment_revision_id, project_id, auth_token_digest, mcp_request,
 				mcp_response, user_agent, http_status_code, http_error)
 			VALUES
-			(@userAccountId, @mcpSessionId, @startedAt, @duration, @deploymentRevisionId, @authTokenDigest, @mcpRequest,
-				@mcpResponse, @userAgent, @httpStatusCode, @httpError)
+			(@userAccountId, @mcpSessionId, @startedAt, @duration, @deploymentRevisionId,
+			(SELECT project_id FROM DeploymentRevision WHERE id = @deploymentRevisionId),
+			@authTokenDigest, @mcpRequest, @mcpResponse, @userAgent, @httpStatusCode, @httpError)
 			RETURNING *
 		)
 		SELECT * FROM inserted`,
@@ -75,7 +76,7 @@ func GetLogsForProject(
 ) ([]types.MCPServerLog, error) {
 	db := internalctx.GetDb(ctx)
 	offset := pagination.Count * pagination.Page
-	filters := []string{"deployment_revision_id IN (SELECT id FROM DeploymentRevision WHERE project_id = @projectId)"}
+	filters := []string{"project_id = @projectId"}
 	if id != nil {
 		filters = append(filters, "id = @id")
 	}
@@ -108,7 +109,7 @@ func GetPromptsForProject(
 ) ([]types.MCPServerLogPromptData, error) {
 	db := internalctx.GetDb(ctx)
 	offset := pagination.Count * pagination.Page
-	filters := []string{"deployment_revision_id IN (SELECT id FROM DeploymentRevision WHERE project_id = @projectId)"}
+	filters := []string{"project_id = @projectId"}
 	if mcpSessionID != nil {
 		filters = append(filters, "mcp_session_id = @mcpSessionId")
 	}
