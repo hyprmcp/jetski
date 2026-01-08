@@ -1,0 +1,1 @@
+ALTER TABLE MCPServerLog DROP COLUMN project_id;
