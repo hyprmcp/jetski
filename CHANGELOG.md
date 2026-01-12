@@ -1,5 +1,60 @@
 # Changelog
 
+## [0.4.4](https://github.com/hyprmcp/jetski/compare/0.4.3...0.4.4) (2026-01-12)
+
+
+### Bug Fixes
+
+* **deps:** update aws-sdk-go-v2 monorepo ([#336](https://github.com/hyprmcp/jetski/issues/336)) ([fbb56f0](https://github.com/hyprmcp/jetski/commit/fbb56f08496106c6305e51a3c812514b817029d3))
+* **deps:** update aws-sdk-go-v2 monorepo ([#352](https://github.com/hyprmcp/jetski/issues/352)) ([ce08c3e](https://github.com/hyprmcp/jetski/commit/ce08c3e0ca75d4c61444c8730e4f69ebcd49b7d6))
+* **deps:** update aws-sdk-go-v2 monorepo ([#363](https://github.com/hyprmcp/jetski/issues/363)) ([671c18b](https://github.com/hyprmcp/jetski/commit/671c18b98a02811ba0108e4236f2d8f845997fd9))
+* **deps:** update aws-sdk-go-v2 monorepo ([#373](https://github.com/hyprmcp/jetski/issues/373)) ([04ea6ed](https://github.com/hyprmcp/jetski/commit/04ea6ed2ab823013a85220880236ebb150241a57))
+* **deps:** update module github.com/aws/aws-sdk-go-v2/config to v1.31.14 ([#347](https://github.com/hyprmcp/jetski/issues/347)) ([91df27c](https://github.com/hyprmcp/jetski/commit/91df27c072708741ee333bf99209a87b354030d4))
+* **deps:** update module github.com/getsentry/sentry-go to v0.36.1 ([#344](https://github.com/hyprmcp/jetski/issues/344)) ([a524446](https://github.com/hyprmcp/jetski/commit/a5244460dd0701a3318e7f89479cee568697a930))
+* **deps:** update module github.com/getsentry/sentry-go to v0.36.2 ([#357](https://github.com/hyprmcp/jetski/issues/357)) ([0c7d16e](https://github.com/hyprmcp/jetski/commit/0c7d16e13dfa9687d74c80915e27379dc02c92cc))
+* **deps:** update module github.com/getsentry/sentry-go/otel to v0.36.1 ([#345](https://github.com/hyprmcp/jetski/issues/345)) ([7ac4bfa](https://github.com/hyprmcp/jetski/commit/7ac4bfa6480fab4950c9ac9f0a2ea2fca3a94106))
+* **deps:** update module github.com/getsentry/sentry-go/otel to v0.36.2 ([#358](https://github.com/hyprmcp/jetski/issues/358)) ([771d79a](https://github.com/hyprmcp/jetski/commit/771d79a6e8ecce4fb9d602c8ad67348e23abf28b))
+* **deps:** update module github.com/lestrrat-go/jwx/v3 to v3.0.12 ([#342](https://github.com/hyprmcp/jetski/issues/342)) ([5b57832](https://github.com/hyprmcp/jetski/commit/5b57832e374c8ef8f9339cecae32191ec4dad52e))
+* **deps:** update module sigs.k8s.io/controller-runtime to v0.22.4 ([#369](https://github.com/hyprmcp/jetski/issues/369)) ([2db57e1](https://github.com/hyprmcp/jetski/commit/2db57e1ea81a47c1da56b62978cc53fbe47f52bf))
+
+
+### Other
+
+* add watch exec to mise toml ([a482612](https://github.com/hyprmcp/jetski/commit/a482612cfa4b64dce6772055ab8b0dd6ae07230b))
+* **deps:** update actions/checkout action to v6 ([#377](https://github.com/hyprmcp/jetski/issues/377)) ([7040543](https://github.com/hyprmcp/jetski/commit/7040543eb62742d8a24c1253a095d20aa66dc35d))
+* **deps:** update angular monorepo to v20.3.6 ([#331](https://github.com/hyprmcp/jetski/issues/331)) ([8617a52](https://github.com/hyprmcp/jetski/commit/8617a5259ab0303199d781bc3985c57c53463023))
+* **deps:** update angular monorepo to v20.3.7 ([#348](https://github.com/hyprmcp/jetski/issues/348)) ([8f0ace9](https://github.com/hyprmcp/jetski/commit/8f0ace90d3efbd99188f0e6852f4d744a81012fc))
+* **deps:** update angular monorepo to v20.3.9 ([#359](https://github.com/hyprmcp/jetski/issues/359)) ([b56741e](https://github.com/hyprmcp/jetski/commit/b56741e7024041c82bcde4425f2c10415292169c))
+* **deps:** update angular-cli monorepo to v20.3.7 ([#349](https://github.com/hyprmcp/jetski/issues/349)) ([b37c1b5](https://github.com/hyprmcp/jetski/commit/b37c1b5b0372d9b4ecbbf4c157bf8b7da0079033))
+* **deps:** update angular-cli monorepo to v20.3.8 ([#360](https://github.com/hyprmcp/jetski/issues/360)) ([4675c69](https://github.com/hyprmcp/jetski/commit/4675c6912a2ae87221e988ac3629b1334f06c62b))
+* **deps:** update dependency @angular/cdk to v20.2.10 ([#346](https://github.com/hyprmcp/jetski/issues/346)) ([1d8c96c](https://github.com/hyprmcp/jetski/commit/1d8c96c2b02f3c8d2050ff954cb57148ebb6473e))
+* **deps:** update dependency @angular/cdk to v20.2.11 ([#365](https://github.com/hyprmcp/jetski/issues/365)) ([7cbf236](https://github.com/hyprmcp/jetski/commit/7cbf2369be9c4ab5c9c84778a32625cf3ea007d1))
+* **deps:** update dependency @eslint/js to v9.38.0 ([#338](https://github.com/hyprmcp/jetski/issues/338)) ([77336ca](https://github.com/hyprmcp/jetski/commit/77336cafa825139dbf132d68ba8eccd71d210c69))
+* **deps:** update dependency @eslint/js to v9.39.0 ([#366](https://github.com/hyprmcp/jetski/issues/366)) ([c10e60f](https://github.com/hyprmcp/jetski/commit/c10e60f4aa58a4da855d7a433c0c94bf624c91a0))
+* **deps:** update dependency @eslint/js to v9.39.1 ([#370](https://github.com/hyprmcp/jetski/issues/370)) ([0693b38](https://github.com/hyprmcp/jetski/commit/0693b38343d29926534a2f33274a220ccbb11347))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.20.1 ([#332](https://github.com/hyprmcp/jetski/issues/332)) ([30c8dc2](https://github.com/hyprmcp/jetski/commit/30c8dc284652c4fce4d76ac8deb916567ba65471))
+* **deps:** update dependency @modelcontextprotocol/sdk to v1.20.2 ([#351](https://github.com/hyprmcp/jetski/issues/351)) ([f670c62](https://github.com/hyprmcp/jetski/commit/f670c62d4c5ab4e6261926d14c5756ffc6b80d39))
+* **deps:** update dependency @sentry/cli to v2.57.0 ([#355](https://github.com/hyprmcp/jetski/issues/355)) ([9892f99](https://github.com/hyprmcp/jetski/commit/9892f99d4b033d7e9c979fa22f9ae880afeb87ec))
+* **deps:** update dependency @types/jasmine to v5.1.12 ([#339](https://github.com/hyprmcp/jetski/issues/339)) ([24c01bd](https://github.com/hyprmcp/jetski/commit/24c01bd1cadf51d79ba910af4f3fe90ea7020604))
+* **deps:** update dependency angular-eslint to v20.5.0 ([#356](https://github.com/hyprmcp/jetski/issues/356)) ([fd063e6](https://github.com/hyprmcp/jetski/commit/fd063e6cf2bf6a3e74495c2611adb79f372944b8))
+* **deps:** update dependency angular-eslint to v20.5.1 ([#367](https://github.com/hyprmcp/jetski/issues/367)) ([c9885f2](https://github.com/hyprmcp/jetski/commit/c9885f29e5c3300738d2428b8a909404685d665a))
+* **deps:** update dependency golangci-lint to v2.8.0 ([#361](https://github.com/hyprmcp/jetski/issues/361)) ([078b05e](https://github.com/hyprmcp/jetski/commit/078b05eafb959d928d33a8c58faaa1a6f09f5b33))
+* **deps:** update dependency jasmine-core to v5.12.1 ([#362](https://github.com/hyprmcp/jetski/issues/362)) ([ad157ad](https://github.com/hyprmcp/jetski/commit/ad157ada3c03ba38f32e0be8371b4cb4ece0780f))
+* **deps:** update dependency typescript-eslint to v8.46.2 ([#343](https://github.com/hyprmcp/jetski/issues/343)) ([a6f1f63](https://github.com/hyprmcp/jetski/commit/a6f1f6353183c961d32a11dff18637fbfebba674))
+* **deps:** update dependency typescript-eslint to v8.46.3 ([#368](https://github.com/hyprmcp/jetski/issues/368)) ([b245806](https://github.com/hyprmcp/jetski/commit/b245806a033d9513cff87fc550911d75e7d9aaeb))
+* **deps:** update docker/metadata-action action to v5.10.0 ([#372](https://github.com/hyprmcp/jetski/issues/372)) ([7133f31](https://github.com/hyprmcp/jetski/commit/7133f3175e559c01e8d6ee5c7c5e904c8afda555))
+* **deps:** update gcr.io/distroless/static-debian12:nonroot docker digest to cba10d7 ([#376](https://github.com/hyprmcp/jetski/issues/376)) ([a65e8aa](https://github.com/hyprmcp/jetski/commit/a65e8aa9f3b911b55708debd3fe35668ddb9a84c))
+* **deps:** update googleapis/release-please-action action to v4.4.0 ([#353](https://github.com/hyprmcp/jetski/issues/353)) ([1eb4e5c](https://github.com/hyprmcp/jetski/commit/1eb4e5cb9462617d5e526668c8a314d86211df8e))
+* **deps:** update sigstore/cosign-installer action to v3.10.1 ([#335](https://github.com/hyprmcp/jetski/issues/335)) ([3cb4d21](https://github.com/hyprmcp/jetski/commit/3cb4d21b60914aa834204aa7fc0ea3ad6a231407))
+* **deps:** update sigstore/cosign-installer action to v4 ([#337](https://github.com/hyprmcp/jetski/issues/337)) ([f0bd796](https://github.com/hyprmcp/jetski/commit/f0bd79646030895d059e838161b099d155a85343))
+* **deps:** update tailwindcss monorepo to v4.1.15 ([#341](https://github.com/hyprmcp/jetski/issues/341)) ([e38048d](https://github.com/hyprmcp/jetski/commit/e38048d443e935101c4f6b8b3b8036c84759e65b))
+* **deps:** update tailwindcss monorepo to v4.1.16 ([#350](https://github.com/hyprmcp/jetski/issues/350)) ([aedad71](https://github.com/hyprmcp/jetski/commit/aedad71cca03a3e24cee30c8d4e92c91486a0f82))
+
+
+### Performance
+
+* **backend:** store project_id for MCPLogRecord ([#378](https://github.com/hyprmcp/jetski/issues/378)) ([c12c145](https://github.com/hyprmcp/jetski/commit/c12c145606bcc6aab6e81034dbd491ca9320309e))
+
 ## [0.4.3](https://github.com/hyprmcp/jetski/compare/0.4.2...0.4.3) (2025-10-16)
 
 
