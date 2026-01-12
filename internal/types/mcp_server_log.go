@@ -16,6 +16,7 @@ type MCPServerLog struct {
 	StartedAt            time.Time          `db:"started_at" json:"startedAt"`
 	Duration             time.Duration      `db:"duration" json:"duration"`
 	DeploymentRevisionID uuid.UUID          `db:"deployment_revision_id" json:"deploymentRevisionId"`
+	ProjectID            uuid.UUID          `db:"project_id" json:"-"`
 	AuthTokenDigest      *string            `db:"auth_token_digest" json:"authTokenDigest"`
 	MCPRequest           *jsonrpc2.Request  `db:"mcp_request" json:"mcpRequest,omitempty"`
 	MCPResponse          *jsonrpc2.Response `db:"mcp_response" json:"mcpResponse,omitempty"`

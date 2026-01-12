@@ -54,12 +54,14 @@ func NewHandler() http.HandlerFunc {
 
 		if id, err := uuid.Parse(r.PathValue("deploymentRevisionID")); err != nil {
 			http.Error(w, "deploymentRevisionID must be a UUID", http.StatusBadRequest)
+			return
 		} else {
 			mcpLogEntry.DeploymentRevisionID = id
 		}
 
 		if user, err := db.GetUserByEmail(ctx, payload.SubjectEmail); err != nil {
 			log.Warn("user not found", zap.Error(err))
+			return
 		} else {
 			mcpLogEntry.UserAccountID = &user.ID
 		}
