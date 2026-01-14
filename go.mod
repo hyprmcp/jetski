@@ -22,7 +22,7 @@ require (
 	github.com/lestrrat-go/jwx/v3 v3.0.13
 	github.com/modelcontextprotocol/go-sdk v1.0.0
 	github.com/sourcegraph/jsonrpc2 v0.2.1
-	github.com/spf13/cobra v1.10.1
+	github.com/spf13/cobra v1.10.2
 	github.com/wneessen/go-mail v0.7.2
 	go.opentelemetry.io/contrib/instrumentation/github.com/aws/aws-sdk-go-v2/otelaws v0.63.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.63.0
