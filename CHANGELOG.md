@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.4.5](https://github.com/hyprmcp/jetski/compare/0.4.4...0.4.5) (2026-01-15)
+
+
+### Bug Fixes
+
+* **deps:** update module github.com/go-chi/chi/v5 to v5.2.4 ([#395](https://github.com/hyprmcp/jetski/issues/395)) ([ec86f8a](https://github.com/hyprmcp/jetski/commit/ec86f8ad15fdb9eac34fca5f91a6563d4450b87a))
+* **deps:** update module github.com/golang-migrate/migrate/v4 to v4.19.1 ([#388](https://github.com/hyprmcp/jetski/issues/388)) ([3bbba2c](https://github.com/hyprmcp/jetski/commit/3bbba2c15a5764d10c62bef1f2e3b46643782533))
+* **deps:** update module github.com/lestrrat-go/httprc/v3 to v3.0.3 ([#389](https://github.com/hyprmcp/jetski/issues/389)) ([ebffe6a](https://github.com/hyprmcp/jetski/commit/ebffe6ab796e5b1e2eeca94893f4e1ac924fd66b))
+* **deps:** update module github.com/lestrrat-go/jwx/v3 to v3.0.13 ([#390](https://github.com/hyprmcp/jetski/issues/390)) ([d8d4569](https://github.com/hyprmcp/jetski/commit/d8d4569646720a3b2ea0fb35d61fe97c5349620e))
+* **deps:** update module github.com/spf13/cobra to v1.10.2 ([#391](https://github.com/hyprmcp/jetski/issues/391)) ([05b05c1](https://github.com/hyprmcp/jetski/commit/05b05c1ed17083e01797c7e0ac26fa2bc97b1760))
+* **deps:** update module go.uber.org/zap to v1.27.1 ([#392](https://github.com/hyprmcp/jetski/issues/392)) ([b10d491](https://github.com/hyprmcp/jetski/commit/b10d491de7c5e0cebddc65dd3e82e5e1bfb98eaa))
+* **deps:** update module sigs.k8s.io/structured-merge-diff/v6 to v6.3.1 ([#393](https://github.com/hyprmcp/jetski/issues/393)) ([8a09009](https://github.com/hyprmcp/jetski/commit/8a09009a2a1ef954077f9a25cc29bbd0eb223c5d))
+
+
+### Other
+
+* **deps:** update angular monorepo to v20.3.16 ([#379](https://github.com/hyprmcp/jetski/issues/379)) ([951a304](https://github.com/hyprmcp/jetski/commit/951a30456daf900e9613d6a77ee530d99115211a))
+* **deps:** update angular-cli monorepo to v20.3.14 ([#380](https://github.com/hyprmcp/jetski/issues/380)) ([4e282c2](https://github.com/hyprmcp/jetski/commit/4e282c251ee65822c1e273cae45e4c72d81e46f0))
+* **deps:** update dependency @angular/cdk to v20.2.14 ([#382](https://github.com/hyprmcp/jetski/issues/382)) ([16ef18e](https://github.com/hyprmcp/jetski/commit/16ef18e13450a7e6ff6a26614ce59a212058c8f3))
+* **deps:** update dependency @eslint/js to v9.39.2 ([#383](https://github.com/hyprmcp/jetski/issues/383)) ([0f8ec15](https://github.com/hyprmcp/jetski/commit/0f8ec15b2dd194ba29742f5ba644e53819de1061))
+* **deps:** update dependency @types/jasmine to v5.1.15 ([#384](https://github.com/hyprmcp/jetski/issues/384)) ([1acfe59](https://github.com/hyprmcp/jetski/commit/1acfe59e3e9fa4523b37fff86605a2f5a7610b56))
+* **deps:** update dependency eslint-plugin-prettier to v5.5.5 ([#394](https://github.com/hyprmcp/jetski/issues/394)) ([d7db331](https://github.com/hyprmcp/jetski/commit/d7db331845b1d2b6e920fcec2888d8a14bb9bd86))
+* **deps:** update golang docker tag to v1.25.5 ([#386](https://github.com/hyprmcp/jetski/issues/386)) ([e3e014c](https://github.com/hyprmcp/jetski/commit/e3e014c7556acf42a1d04f9e5ee28dd81936692a))
+* **deps:** update tailwindcss monorepo to v4.1.18 ([#387](https://github.com/hyprmcp/jetski/issues/387)) ([f7db1e1](https://github.com/hyprmcp/jetski/commit/f7db1e18a55439a8c514b7e866662e8c48bc164f))
+
 ## [0.4.4](https://github.com/hyprmcp/jetski/compare/0.4.3...0.4.4) (2026-01-12)
 
 
