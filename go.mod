@@ -2,7 +2,7 @@ module github.com/hyprmcp/jetski
 
 go 1.24.4
 
-toolchain go1.25.3
+toolchain go1.26.2
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.39.6
